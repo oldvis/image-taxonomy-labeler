@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/image-taxonomy-labeler/favicon.svg" type="image/svg+xml">
+  <title>OldVis Taxonomy</title>
+  <meta name="description" content="OldVis Taxonomy">
+  <script type="module" crossorigin src="/image-taxonomy-labeler/assets/index-CfPyQ4Eq.js"></script>
+  <link rel="stylesheet" crossorigin href="/image-taxonomy-labeler/assets/index-AjwcJ8yO.css">
+</head>
+<body class="font-sans dark:text-gray-300 dark:bg-hex-121212">
+  <div id="app"></div>
+  <noscript>
+    <div>Please enable JavaScript to use this application.</div>
+  </noscript>
+  <script>
+    (function () {
+      const prefersDark = window.matchMedia
+        && window.matchMedia('(prefers-color-scheme: dark)').matches
+      const setting = localStorage.getItem('color-schema') || 'auto'
+      if (setting === 'dark' || (prefersDark && setting !== 'light')) {
+        document.documentElement.classList.toggle('dark', true)
+      }
+    })()
+  </script>
+</body>
+</html>
