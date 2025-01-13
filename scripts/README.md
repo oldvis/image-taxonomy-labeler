@@ -1,3 +1,7 @@
+<a href="https://github.com/psf/black">
+    <img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg">
+</a>
+
 # README
 
 This directory holds scripts for precomputing/caching resources to be used by the server.
