@@ -1,0 +1,11 @@
+# Ignore the image directories.
+images/
+thumbnails/
+200x200/
+400x400/
+
+# Ignore the symbolic link (if exist) to the image directory.
+images
+
+# Ignore the image embeddings.
+embeddings.jsonl
