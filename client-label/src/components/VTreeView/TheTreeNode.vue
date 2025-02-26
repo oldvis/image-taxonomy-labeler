@@ -103,6 +103,7 @@ const onClickEdit = () => {
 
 /** Whether the user is dragging an image over this node. */
 const isDraggingImageOver = ref(false)
+/** Whether the user is dragging an image over the multi-label zone of this node. */
 const isInMultiLabelZone = ref(false)
 
 /**
@@ -180,7 +181,7 @@ const onDrop = (e: DragEvent) => {
       merge
     </div>
 
-    <!-- Allow drop image as merge only for leaf nodes. -->
+    <!-- Allow drop image to assign label only for leaf nodes. -->
     <div
       v-if="node.isLeaf"
       class="border px-1 h-6 flex items-center text-gray"
