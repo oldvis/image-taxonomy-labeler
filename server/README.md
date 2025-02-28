@@ -8,6 +8,14 @@ The `server` of OldVis image taxonomy labeler.
 
 This server is shared by the web clients in [client-label](../client-label) and [client-compare](../client-compare).
 
+## Quick Start
+
+1. Under directory `./server`, execute `poetry install` to install dependencies (assuming [Python 3.10](https://www.python.org/downloads/) and [Poetry](https://python-poetry.org/) have been installed).
+2. Under directory `./server/static`, execute `poetry run setup_samples.py`.
+3. Under directory `./server`, execute `poetry run python server.py`.
+
+Note: The steps above have the same effect as executing Step 1.1 Option 2, Step 1.2, Step 1.3, and Step 2 described in [How to Use](#how-to-use).
+
 ## How to Use
 
 To use the `server`, please follow the steps below.
