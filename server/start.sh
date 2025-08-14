@@ -28,6 +28,11 @@ fi
 # Setup server resources (sample images, thumbnails, embeddings)
 echo "Setting up server resources (sample images, thumbnails, embeddings)..."
 poetry run python static/setup_samples.py
+if [ $? -ne 0 ]; then
+    echo "❌ Failed to setup server resources. Exiting."
+    exit 1
+fi
+echo "✅ Server resources setup completed successfully."
 
 echo "Starting backend server on http://localhost:5001..."
 poetry run python server.py
