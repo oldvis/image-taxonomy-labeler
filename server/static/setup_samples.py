@@ -7,6 +7,7 @@ Setup the server resources with
 
 import os
 import zipfile
+from pathlib import Path
 from typing import List, TypedDict
 
 import requests
@@ -82,13 +83,15 @@ def fetch_imgs(urls: List[str], img_dir: str) -> None:
 if __name__ == "__main__":
     # Download sample images.
     img_urls = get_img_urls()
-    img_dir = "./images"
-    fetch_imgs(img_urls, img_dir)
+    img_dir = Path(__file__).parent / "images"
+    fetch_imgs(img_urls, str(img_dir))
 
     # Unzip the embeddings.
-    with zipfile.ZipFile("./embeddings.zip", "r") as zip_ref:
-        zip_ref.extractall("./")
+    embeddings_path = Path(__file__).parent / "embeddings.zip"
+    with zipfile.ZipFile(embeddings_path, "r") as zip_ref:
+        zip_ref.extractall(Path(__file__).parent)
 
     # Unzip the thumbnails
-    with zipfile.ZipFile("./thumbnails.zip", "r") as zip_ref:
-        zip_ref.extractall("./")
+    thumbnails_path = Path(__file__).parent / "thumbnails.zip"
+    with zipfile.ZipFile(thumbnails_path, "r") as zip_ref:
+        zip_ref.extractall(Path(__file__).parent)

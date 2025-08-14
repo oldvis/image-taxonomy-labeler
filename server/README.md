@@ -8,23 +8,34 @@ The `server` of OldVis image taxonomy labeler.
 
 This server is shared by the web clients in [client-label](../client-label) and [client-compare](../client-compare).
 
-## Quick Start
+## Getting Started
 
-1. Under directory `./server`, execute `poetry install` to install dependencies (assuming [Python 3.10](https://www.python.org/downloads/) and [Poetry](https://python-poetry.org/) have been installed).
-2. Under directory `./server/static`, execute `poetry run setup_samples.py`.
-3. Under directory `./server`, execute `poetry run python server.py`.
+Before launching the server, make sure you have [Python 3.10+](https://www.python.org/downloads/) and [Poetry](https://github.com/python-poetry/poetry).
+
+### Quick Start
+
+The easiest way to get started is to use the startup script:
+
+```bash
+bash start.sh
+```
+
+This script will:
+1. Install dependencies using Poetry with `poetry install`.
+2. Set up server resources with `poetry run python static/setup_samples.py` (downloads sample images, unzips thumbnails and embeddings).
+3. Launch the backend server with `poetry run python server.py`.
 
 Note: The steps above have the same effect as executing Step 1.1 Option 2, Step 1.2, Step 1.3, and Step 2 described in [How to Use](#how-to-use).
 
-## How to Use
+### Manual Setup
 
-To use the `server`, please follow the steps below.
+If you prefer to setup the `server` manually, please follow the steps below.
 
-### Step 1: Setup the Server Resources
+#### Step 1: Setup the Server Resources
 
-#### Step 1.1: Setup images
+##### Step 1.1: Setup images
 
-##### Option 1: Download the image resources
+###### Option 1: Download the image resources
 
 Use [oldvis_dataset](https://github.com/oldvis/oldvis_dataset) to download the image resources and store it to `./static/images/`.
 
@@ -37,21 +48,21 @@ fetch_images(metadata_path="./static/visualizations.json", img_dir="./static/ima
 > [!WARNING]  
 > The image download can be very slow and take days.
 
-##### Option 2: Download a sample of the image resources
+###### Option 2: Download a sample of the image resources
 
 A sample of 400 images are available at [oldvis/image-taxonomy](https://github.com/oldvis/image-taxonomy/tree/main/images).
 
 Download these images and store at `./static/images/`.
 
-#### Step 1.2: Setup thumbnails
+##### Step 1.2: Setup thumbnails
 
 Unzip `./static/thumbnails.zip` and store the unzipped images at `./static/thumbnails/`.
 
-#### Step 1.3: Setup embeddings
+##### Step 1.3: Setup embeddings
 
 Unzip `./static/embeddings.zip` and store the unzipped `embeddings.jsonl` at `./static/embeddings.jsonl`.
 
-### Step 2: Launch the Server
+#### Step 2: Launch the Server
 
 Before launching the server, make sure you have [Python 3.10](https://www.python.org/downloads/) and [Poetry](https://python-poetry.org/) installed.
 
