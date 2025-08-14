@@ -30,9 +30,9 @@ watch(nDataObjects, () => {
       :key="d.uuid"
       :datum="d"
       class="mb-1"
-      @contextmenu.stop.prevent="(e) => {
+      @contextmenu.stop.prevent="(e: MouseEvent) => {
         tooltipVisible = true
-        activeTarget = e.currentTarget
+        activeTarget = e.currentTarget as HTMLElement
         activeDatum = d
       }"
     />

@@ -165,7 +165,7 @@ const barWidth = 30
             : 'dark:fill-gray-300'
         )"
         :text-columns="[{
-          value: (d) => getSubjectsUnion(d.name).length,
+          value: (d) => getSubjectsUnion(d.name).length.toString(),
           x: textColumnNumberStart,
           textAnchor: 'end',
           class: 'dark:fill-gray-300',
@@ -216,7 +216,7 @@ const barWidth = 30
             : 'dark:fill-gray-300'
         )"
         :text-columns="[{
-          value: (d) => getSubjects(profile.username, d.name).length,
+          value: (d) => getSubjects(profile.username, d.name).length.toString(),
           x: textColumnNumberStart,
           textAnchor: 'end',
           class: 'dark:fill-gray-300',

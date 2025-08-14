@@ -4,6 +4,8 @@ import { difference, isEqual } from 'lodash'
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { buildForest } from '~/builtins/label-tasks/taxonomization/utils'
 
+export type { TreeNodeWithUsers } from '~/builtins/label-tasks/taxonomization/types'
+
 interface TaskProgress {
   taskName: string
   categories: unknown[]

@@ -77,9 +77,9 @@ watch(nDataObjects, () => {
             'grid-column-start': uuid2cell[d.uuid][1] + 1,
             'grid-column-end': uuid2cell[d.uuid][1] + 2,
           }"
-          @contextmenu.stop.prevent="(e) => {
+          @contextmenu.stop.prevent="(e: MouseEvent) => {
             tooltipVisible = true
-            activeTarget = e.currentTarget
+            activeTarget = e.currentTarget as HTMLElement
             activeDatum = d
           }"
         >
