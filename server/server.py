@@ -1,105 +1,116 @@
-from os import listdir
-from os.path import isfile, join
-from typing import List, Union
+from pathlib import Path
 
-from flask import Flask, jsonify, request, send_from_directory
-from flask_cors import CORS
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from pydantic import BaseModel
+import uvicorn
 
 from utils.assign_grid import assign_grid
 from utils.captioning import captioning
 from utils.clustering import clustering, find_center_uuid
 from utils.loaders import load_embeddings
 
-app = Flask(__name__)
-CORS(app)
 
-image_dir = "./static/images"
-thumbnail_dir = "./static/thumbnails"
-filenames = [d for d in listdir(image_dir) if isfile(join(image_dir, d))]
-uuid2filename = {d.split(".")[0]: d for d in filenames}
+app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-
-@app.route("/ping", methods=["GET"])
-def pong():
-    return "pong"
-
-
-@app.route("/uuids/<uuid>/image", methods=["GET"])
-def get_image(uuid: str):
-    return send_from_directory(image_dir, uuid2filename[uuid])
+BASE_DIR = Path(__file__).parent
+IMAGE_DIR = BASE_DIR / "static" / "images"
+UUID2FILENAME = {
+    f.name.split(".")[0]: f.name for f in IMAGE_DIR.iterdir() if f.is_file()
+}
 
 
-@app.route("/uuids/<uuid>/thumbnail", methods=["GET"])
-def get_thumbnail(uuid: str):
-    return send_from_directory(thumbnail_dir, uuid2filename[uuid])
+@app.get("/uuids/{uuid}/image")
+async def get_image(uuid: str):
+    if uuid not in UUID2FILENAME:
+        raise HTTPException(status_code=404, detail="Image not found")
+    return FileResponse(IMAGE_DIR / UUID2FILENAME[uuid])
 
 
-@app.route("/uuids/<uuid>/caption", methods=["GET"])
-def get_caption(uuid: str):
-    caption_path = "./static/captions.jsonl"
-    caption = captioning(uuid, caption_path)
-    return jsonify(caption)
+@app.get("/uuids/{uuid}/thumbnail")
+async def get_thumbnail(uuid: str):
+    thumbnail_dir = BASE_DIR / "static" / "thumbnails"
+    if uuid not in UUID2FILENAME:
+        raise HTTPException(status_code=404, detail="Thumbnail not found")
+    return FileResponse(thumbnail_dir / UUID2FILENAME[uuid])
 
 
-@app.route("/captioning", methods=["POST"])
-def calc_captions():
-    data = request.json
-    uuids: List[Union[str, None]] = data["uuids"]
-    caption_path = "./static/captions.jsonl"
+@app.get("/uuids/{uuid}/caption")
+async def get_caption(uuid: str):
+    if uuid not in UUID2FILENAME:
+        raise HTTPException(status_code=404, detail="Caption not found")
+    caption_path = BASE_DIR / "static" / "captions.jsonl"
+    caption = captioning(uuid, str(caption_path))
+    return caption
+
+
+@app.post("/captioning")
+async def calc_captions(uuids: list[str | None]):
+    caption_path = BASE_DIR / "static" / "captions.jsonl"
     captions = [
-        captioning(uuid, caption_path) if uuids is not None else None for uuid in uuids
+        captioning(uuid, str(caption_path)) if uuid is not None else None
+        for uuid in uuids
     ]
-    return jsonify(captions)
+    return captions
 
 
-@app.route("/clustering", methods=["POST"])
-def calc_cluster_labels():
-    data = request.json
-    uuids: List[str] = data["uuids"]
-    n_clusters: int = data["nClusters"]
-    embedding_path = "./static/embeddings.jsonl"
-    embeddings = load_embeddings(uuids, embedding_path)
+class ClusteringRequest(BaseModel):
+    uuids: list[str]
+    nClusters: int
+
+
+@app.post("/clustering")
+async def calc_cluster_labels(req: ClusteringRequest):
+    uuids = req.uuids
+    n_clusters = req.nClusters
+    embedding_path = BASE_DIR / "static" / "embeddings.jsonl"
+    embeddings = load_embeddings(uuids, str(embedding_path))
     labels = clustering(embeddings, n_clusters)
-    return jsonify(labels.tolist())
+    return labels.tolist()
 
 
-@app.route("/findCenter", methods=["POST"])
-def calc_center_uuid():
-    data = request.json
-    uuids: List[str] = data["uuids"]
-    embedding_path = "./static/embeddings.jsonl"
-    embeddings = load_embeddings(uuids, embedding_path)
+@app.post("/findCenter")
+async def calc_center_uuid(uuids: list[str]):
+    embedding_path = BASE_DIR / "static" / "embeddings.jsonl"
+    embeddings = load_embeddings(uuids, str(embedding_path))
     uuid = find_center_uuid(embeddings, uuids)
-    return jsonify(uuid)
+    return uuid
 
 
-@app.route("/findCenters", methods=["POST"])
-def calc_center_uuids():
-    data = request.json
-    groups: List[List[str]] = data["groups"]
-    embedding_path = "./static/embeddings.jsonl"
+@app.post("/findCenters")
+async def calc_center_uuids(groups: list[list[str]]):
+    embedding_path = BASE_DIR / "static" / "embeddings.jsonl"
     center_uuids = [
-        find_center_uuid(load_embeddings(uuids, embedding_path), uuids)
+        find_center_uuid(load_embeddings(uuids, str(embedding_path)), uuids)
         for uuids in groups
     ]
-    return jsonify(center_uuids)
+    return center_uuids
 
 
-@app.route("/assignGrid", methods=["POST"])
-def calc_cell_indices():
-    data = request.json
-    uuids: List[str] = data["uuids"]
-    n_rows: int = data["nRows"]
-    n_cols: int = data["nCols"]
-    embedding_path = "./static/embeddings.jsonl"
-    embeddings = load_embeddings(uuids, embedding_path)
+class AssignGridRequest(BaseModel):
+    uuids: list[str]
+    nRows: int
+    nCols: int
+
+
+@app.post("/assignGrid")
+async def calc_cell_indices(req: AssignGridRequest):
+    uuids = req.uuids
+    n_rows = req.nRows
+    n_cols = req.nCols
+    embedding_path = BASE_DIR / "static" / "embeddings.jsonl"
+    embeddings = load_embeddings(uuids, str(embedding_path))
     assignment = assign_grid(embeddings, n_rows, n_cols)
-    return jsonify(assignment.tolist())
+    return assignment.tolist()
 
 
 if __name__ == "__main__":
-    # NOTE: If host is not explicitly set (i.e., takes the default value of `127.0.0.1`),
-    # The service will not be available at `localhost` on Mac.
-    # NOTE: port 5000 is occupied on Mac
-    # Reference: https://stackoverflow.com/questions/69818376/localhost5000-unavailable-in-macos-v12-monterey
-    app.run(host="0.0.0.0", port=5001, debug=True)
+    uvicorn.run(f"{Path(__file__).stem}:app", host="0.0.0.0", port=5001, reload=True)

@@ -3,7 +3,6 @@ This module provides functions to load precomputed image embeddings and captions
 """
 
 from functools import cache
-from typing import Dict, List, Union
 
 import numpy as np
 from libquery.utils.jsonl import load_jl
@@ -18,8 +17,8 @@ def filename2uuid(filename: str) -> str:
 
 @cache
 def load_uuid2embedding(
-    embedding_path: str, max_dim: Union[int, None] = None
-) -> Dict[str, np.ndarray]:
+    embedding_path: str, max_dim: int | None = None
+) -> dict[str, np.ndarray]:
     """
     Load the mapping from uuid to embedding.
     The loaded mapping is cached.
@@ -34,7 +33,7 @@ def load_uuid2embedding(
 
     Returns
     -------
-    Dict[str, np.ndarray]
+    dict[str, np.ndarray]
         Mapping from UUID to embedding.
     """
 
@@ -54,7 +53,7 @@ def load_uuid2embedding(
 
 
 def load_embeddings(
-    uuids: List[str], embedding_path: str, max_dim: Union[int, None] = 20
+    uuids: list[str], embedding_path: str, max_dim: int | None = 20
 ) -> np.ndarray:
     """
     Load the embeddings of the files with the given UUIDs.
@@ -62,7 +61,7 @@ def load_embeddings(
 
     Parameters
     ----------
-    uuids : List[str]
+    uuids : list[str]
         List of UUIDs.
     embedding_path : str
         Path to the JSONL file containing the embeddings.
@@ -82,7 +81,7 @@ def load_embeddings(
 
 
 @cache
-def load_uuid2caption(caption_path: str) -> Dict[str, str]:
+def load_uuid2caption(caption_path: str) -> dict[str, str]:
     """
     Load the mapping from uuid to caption.
     The loaded mapping is cached.

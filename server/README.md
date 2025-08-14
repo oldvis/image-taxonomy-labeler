@@ -89,7 +89,6 @@ The server provides the following API services.
 
 | Method | URL                       | Description                                                                                | Used By                             |
 | ------ | ------------------------- | ------------------------------------------------------------------------------------------ | ----------------------------------- |
-| GET    | `/ping`                   | Returns `pong`. Used for checking the availability of the server.                          | /                                   |
 | GET    | `/uuids/<uuid>/image`     | Returns the image (original size) with the given UUID.                                     | `client-label` and `client-compare` |
 | GET    | `/uuids/<uuid>/thumbnail` | Returns the image thumbnail with the given UUID.                                           | `client-label` and `client-compare` |
 | GET    | `/uuids/<uuid>/caption`   | Returns the caption of the image with the given UUID.                                      | /                                   |

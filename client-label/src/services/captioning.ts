@@ -29,7 +29,7 @@ export const getCaptions = showProgressBar(async (
   const captions = (
     await axios.post(
       `${BASE_URL}/captioning`,
-      JSON.stringify({ uuids }),
+      JSON.stringify(uuids),
       CONFIG,
     )
   ).data as (string | null)[]

@@ -4,7 +4,8 @@ Compute embeddings for images in `img_dir` and save them to a JSONL file.
 
 import json
 import os
-from typing import List, TypedDict, Union
+from pathlib import Path
+from typing import TypedDict
 
 import torch
 from libquery.utils.jsonl import load_jl
@@ -19,22 +20,22 @@ Image.MAX_IMAGE_PIXELS = 5e8
 
 class EmbeddingObject(TypedDict):
     filename: str
-    embedding: List[float]
+    embedding: list[float]
 
 
-def filter_filenames(filenames: List[str], embedding_path: str) -> List[str]:
+def filter_filenames(filenames: list[str], embedding_path: str) -> list[str]:
     """
     Discards the images whose embeddings are readily computed.
     """
 
-    stored: List[EmbeddingObject] = (
+    stored: list[EmbeddingObject] = (
         load_jl(embedding_path) if os.path.exists(embedding_path) else []
     )
     stored_filenames = set([d["filename"] for d in stored])
     return [d for d in filenames if d not in stored_filenames]
 
 
-def try_open(path: str) -> Union[Image.Image, None]:
+def try_open(path: str) -> Image.Image | None:
     try:
         return Image.open(path)
     except:
@@ -91,6 +92,7 @@ def save_embeddings(img_dir: str, save_to: str) -> None:
 
 
 if __name__ == "__main__":
-    img_dir = "../server/static/images/"
-    embedding_path = "../server/static/embeddings.jsonl"
-    save_embeddings(img_dir, embedding_path)
+    server_dir = Path(__file__).parent.parent / "server"
+    img_dir = server_dir / "static" / "images"
+    embedding_path = server_dir / "static" / "embeddings.jsonl"
+    save_embeddings(str(img_dir), str(embedding_path))

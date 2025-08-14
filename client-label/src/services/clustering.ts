@@ -32,7 +32,7 @@ export const findCenter = showProgressBar(async (
   const uuid = (
     await axios.post(
       `${BASE_URL}/findCenter`,
-      JSON.stringify({ uuids }),
+      JSON.stringify(uuids),
       CONFIG,
     )
   ).data as string
@@ -46,7 +46,7 @@ export const findCenters = showProgressBar(async (
   const uuids = (
     await axios.post(
       `${BASE_URL}/findCenters`,
-      JSON.stringify({ groups }),
+      JSON.stringify(groups),
       CONFIG,
     )
   ).data as (string | null)[]

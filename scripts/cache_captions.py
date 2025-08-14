@@ -4,7 +4,7 @@ Compute embeddings for images in a directory and save them to a JSONL file.
 
 import json
 import os
-from typing import Callable, List, NamedTuple, Tuple, TypedDict, Union
+from typing import Callable, NamedTuple, TypedDict
 
 import torch
 from libquery.utils.jsonl import load_jl
@@ -25,22 +25,22 @@ Image.MAX_IMAGE_PIXELS = 5e8
 
 class EmbeddingObject(TypedDict):
     filename: str
-    embedding: List[float]
+    embedding: list[float]
 
 
-def filter_filenames(filenames: List[str], embedding_path: str) -> List[str]:
+def filter_filenames(filenames: list[str], embedding_path: str) -> list[str]:
     """
     Discards the images whose embeddings are readily computed.
     """
 
-    stored: List[EmbeddingObject] = (
+    stored: list[EmbeddingObject] = (
         load_jl(embedding_path) if os.path.exists(embedding_path) else []
     )
     stored_filenames = set([d["filename"] for d in stored])
     return [d for d in filenames if d not in stored_filenames]
 
 
-def try_open(path: str) -> Union[Image.Image, None]:
+def try_open(path: str) -> Image.Image | None:
     try:
         return Image.open(path)
     except:
@@ -109,21 +109,21 @@ def save_captions(
             f.write(f"{json.dumps(entry)}\n")
 
 
-def get_blip() -> Tuple[PreTrainedModel, AutoProcessor]:
+def get_blip() -> tuple[PreTrainedModel, AutoProcessor]:
     model_name = "Salesforce/blip-image-captioning-large"
     model = BlipForConditionalGeneration.from_pretrained(model_name)
     processor = AutoProcessor.from_pretrained(model_name)
     return model, processor
 
 
-def get_blip_vqa() -> Tuple[PreTrainedModel, AutoProcessor]:
+def get_blip_vqa() -> tuple[PreTrainedModel, AutoProcessor]:
     model_name = "Salesforce/blip-vqa-base"
     model = BlipForQuestionAnswering.from_pretrained(model_name)
     processor = AutoProcessor.from_pretrained(model_name)
     return model, processor
 
 
-def get_blip2() -> Tuple[PreTrainedModel, AutoProcessor]:
+def get_blip2() -> tuple[PreTrainedModel, AutoProcessor]:
     model_name = "Salesforce/blip2-opt-2.7b"
     model = Blip2ForConditionalGeneration.from_pretrained(model_name)
     processor = AutoProcessor.from_pretrained(model_name)
@@ -132,7 +132,7 @@ def get_blip2() -> Tuple[PreTrainedModel, AutoProcessor]:
 
 class Setup(NamedTuple):
     directory: str
-    getter: Callable[[], Tuple[PreTrainedModel, AutoProcessor]]
+    getter: Callable[[], tuple[PreTrainedModel, AutoProcessor]]
 
 
 if __name__ == "__main__":

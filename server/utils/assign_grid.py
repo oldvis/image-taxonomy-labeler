@@ -2,9 +2,6 @@
 This module provides functions to assign 2D embeddings to a grid.
 """
 
-from numbers import Number
-from typing import Tuple
-
 import numpy as np
 from scipy.optimize import linear_sum_assignment
 from scipy.spatial.distance import cdist
@@ -24,7 +21,7 @@ def get_embeddings_2d(embeddings: np.ndarray) -> np.ndarray:
 
 
 def fit_to_rect(
-    points: np.ndarray, width: Number = 1.0, height: Number = 1.0
+    points: np.ndarray, width: int | float = 1.0, height: int | float = 1.0
 ) -> np.ndarray:
     """
     Fitting points to a rect [0, width] * [0, height].
@@ -48,7 +45,7 @@ def build_grid(width: float, height: float, n_rows: int, n_cols: int) -> np.ndar
     return grid
 
 
-def solve_assignment(cost_matrix: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+def solve_assignment(cost_matrix: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Solve a bipartite graph assignment problem given the edge costs."""
 
     row_ind, col_ind = linear_sum_assignment(cost_matrix)

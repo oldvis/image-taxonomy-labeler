@@ -4,7 +4,7 @@ Compute the thumbnail version for images in `img_dir` and save them to `thumbnai
 
 import math
 import os
-from typing import List, Tuple
+from pathlib import Path
 
 from PIL import Image
 from tqdm import tqdm
@@ -13,7 +13,7 @@ from tqdm import tqdm
 Image.MAX_IMAGE_PIXELS = 5e8
 
 
-def filter_filenames(filenames: List[str], thumbnail_dir: str) -> List[str]:
+def filter_filenames(filenames: list[str], thumbnail_dir: str) -> list[str]:
     """
     Discards the images whose thumbnails are readily computed.
     """
@@ -27,7 +27,7 @@ def get_resize_dims(
     h: int,
     w_limit: int,
     h_limit: int,
-) -> Tuple[int, int]:
+) -> tuple[int, int]:
     """
     Compute the dimensions of the resized image such that it fits within the limits.
 
@@ -44,7 +44,7 @@ def get_resize_dims(
 
     Returns
     -------
-    Tuple[int, int]
+    tuple[int, int]
         Dimensions of the resized image.
     """
 
@@ -94,11 +94,12 @@ def create_thumbnails(
 
 
 if __name__ == "__main__":
-    img_dir = "../server/static/images/"
-    thumbnail_dir = "../server/static/thumbnails/"
+    server_dir = Path(__file__).parent.parent / "server"
+    img_dir = server_dir / "static" / "images"
+    thumbnail_dir = server_dir / "static" / "thumbnails"
     create_thumbnails(
-        img_dir=img_dir,
-        thumbnail_dir=thumbnail_dir,
+        img_dir=str(img_dir),
+        thumbnail_dir=str(thumbnail_dir),
         w_limit=100,
         h_limit=100,
     )

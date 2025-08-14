@@ -2,8 +2,6 @@
 This module provides functions to cluster embeddings.
 """
 
-from typing import List, Union
-
 import numpy as np
 from sklearn.cluster import KMeans
 
@@ -14,7 +12,7 @@ def clustering(embeddings: np.ndarray, n_clusters: int) -> np.ndarray:
     return model.labels_
 
 
-def find_center_uuid(embeddings: np.ndarray, uuids: List[str]) -> Union[str, None]:
+def find_center_uuid(embeddings: np.ndarray, uuids: list[str]) -> str | None:
     """
     Get the uuid of the data point closest to the center of the embeddings.
     Returns None if the input uuids is empty.
