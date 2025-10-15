@@ -1,6 +1,7 @@
 import axios from 'axios'
-import showProgressBar from '~/plugins/showProgressBar'
+import withProgressBar from 'with-progress-bar'
 import { BASE_ALGORITHM_URL as BASE_URL } from './params'
+import 'with-progress-bar/style.css'
 
 const CONFIG = {
   headers: {
@@ -10,7 +11,7 @@ const CONFIG = {
 }
 
 /** Clustering the data objects given their UUIDs. */
-export const clustering = showProgressBar(async (
+export const clustering = withProgressBar(async (
   uuids: string[],
   nClusters: number,
 ) => {
@@ -25,7 +26,7 @@ export const clustering = showProgressBar(async (
 })
 
 /** Find the center data object among the data objects given their UUIDs. */
-export const findCenter = showProgressBar(async (
+export const findCenter = withProgressBar(async (
   uuids: string[],
 ): Promise<string | null> => {
   if (uuids.length === 0) return null
@@ -40,7 +41,7 @@ export const findCenter = showProgressBar(async (
 })
 
 /** Find the center data objects in each group given their UUIDs. */
-export const findCenters = showProgressBar(async (
+export const findCenters = withProgressBar(async (
   groups: string[][],
 ): Promise<(string | null)[]> => {
   const uuids = (

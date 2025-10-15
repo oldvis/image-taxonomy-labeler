@@ -32,9 +32,6 @@ importers:
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
-      nprogress:
-        specifier: ^0.2.0
-        version: 0.2.0
       pinia:
         specifier: ^3.0.3
         version: 3.0.3(typescript@5.9.2)(vue@3.5.18(typescript@5.9.2))
@@ -56,6 +53,9 @@ importers:
       vue-router:
         specifier: ^4.5.1
         version: 4.5.1(vue@3.5.18(typescript@5.9.2))
+      with-progress-bar:
+        specifier: ^0.1.2
+        version: 0.1.2
     devDependencies:
       '@antfu/eslint-config':
         specifier: ^5.2.1
@@ -81,9 +81,6 @@ importers:
       '@types/node':
         specifier: ^24.2.1
         version: 24.2.1
-      '@types/nprogress':
-        specifier: ^0.2.3
-        version: 0.2.3
       '@types/seedrandom':
         specifier: ^3.0.8
         version: 3.0.8
@@ -1179,9 +1176,6 @@ packages:
 
   '@types/node@24.2.1':
     resolution: {integrity: sha512-DRh5K+ka5eJic8CjH7td8QpYEV6Zo10gfRkjHCO3weqZHWDtAaSTFtl4+VMqOJ4N5jcuhZ9/l+yy8rVgw7BQeQ==}
-
-  '@types/nprogress@0.2.3':
-    resolution: {integrity: sha512-k7kRA033QNtC+gLc4VPlfnue58CM1iQLgn1IMAU8VPHGOj7oIHPp9UlhedEnD/Gl8evoCjwkZjlBORtZ3JByUA==}
 
   '@types/seedrandom@3.0.8':
     resolution: {integrity: sha512-TY1eezMU2zH2ozQoAFAQFOPpvP15g+ZgSfTZt31AUUH/Rxtnz3H+A/Sv1Snw2/amp//omibc+AEkTaA8KUeOLQ==}
@@ -3763,6 +3757,9 @@ packages:
     engines: {node: '>=8'}
     hasBin: true
 
+  with-progress-bar@0.1.2:
+    resolution: {integrity: sha512-dcB1d2wiGvTzKQKDfK9pwWJ/WJKQXl+BXNDAOsdiaX3H3ILCBFXzLn0b2oXv3BI3Aqv28tB4VrVJaB8UgX2b7Q==}
+
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
@@ -4677,8 +4674,6 @@ snapshots:
   '@types/node@24.2.1':
     dependencies:
       undici-types: 7.10.0
-
-  '@types/nprogress@0.2.3': {}
 
   '@types/seedrandom@3.0.8': {}
 
@@ -7824,6 +7819,10 @@ snapshots:
     dependencies:
       siginfo: 2.0.0
       stackback: 0.0.2
+
+  with-progress-bar@0.1.2:
+    dependencies:
+      nprogress: 0.2.0
 
   wrappy@1.0.2: {}
 
