@@ -10,7 +10,7 @@ This server is shared by the web clients in [client-label](../client-label) and 
 
 ## Getting Started
 
-Before launching the server, make sure you have [Python 3.10+](https://www.python.org/downloads/) and [Poetry](https://github.com/python-poetry/poetry).
+Before launching the server, make sure you have [Python 3.10+](https://www.python.org/downloads/) and [uv](https://docs.astral.sh/uv/).
 
 ### Quick Start
 
@@ -21,9 +21,9 @@ bash start.sh
 ```
 
 This script will:
-1. Install dependencies using Poetry with `poetry install`.
-2. Set up server resources with `poetry run python static/setup_samples.py` (downloads sample images, unzips thumbnails and embeddings).
-3. Launch the backend server with `poetry run python server.py`.
+1. Install dependencies using uv with `uv sync`.
+2. Set up server resources with `uv run python static/setup_samples.py` (downloads sample images, unzips thumbnails and embeddings).
+3. Launch the backend server with `uv run python server.py`.
 
 Note: The steps above have the same effect as executing Step 1.1 Option 2, Step 1.2, Step 1.3, and Step 2 described in [How to Use](#how-to-use).
 
@@ -64,23 +64,29 @@ Unzip `./static/embeddings.zip` and store the unzipped `embeddings.jsonl` at `./
 
 #### Step 2: Launch the Server
 
-Before launching the server, make sure you have [Python 3.10](https://www.python.org/downloads/) and [Poetry](https://python-poetry.org/) installed.
+Before launching the server, make sure you have [Python 3.10](https://www.python.org/downloads/) and [uv](https://docs.astral.sh/uv/) installed.
 
 To launch the server, you need to:
 
 ```bash
-poetry install
-poetry run python server.py
+uv sync
+uv run python server.py
+```
+
+By default the server listens on `127.0.0.1:5001`.
+To expose on the LAN intentionally:
+
+```bash
+SERVER_HOST=0.0.0.0 uv run python server.py
 ```
 
 If you see the following output, the server is successfully launched 🚀.
 
-```bash
- * Serving Flask app 'server'
- ...
+```text
+INFO:     Uvicorn running on http://127.0.0.1:5001
 ```
 
-To verify the server is working and the resources are correctly set up, you can try to access the following URL in your browser: `http://localhost:5001/uuids/7ded1f58-a160-5127-a994-46797eca8e9a/image`.
+To verify the server is working and the resources are correctly set up, you can try to access the following URL in your browser: `http://127.0.0.1:5001/uuids/7ded1f58-a160-5127-a994-46797eca8e9a/image`.
 If you see an image of a chart, the server is working as intended 🎉.
 
 ## API

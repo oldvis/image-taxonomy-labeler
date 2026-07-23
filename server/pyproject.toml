@@ -3,26 +3,27 @@ name = "server"
 version = "0.1.0"
 description = ""
 authors = [
-    {name = "Yu Zhang",email = "yuzhang94@outlook.com"}
+    {name = "Yu Zhang", email = "yuzhang94@outlook.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.10,<4.0"
 dependencies = [
-    "libquery (>=0.1.1,<0.2.0)",
-    "tqdm (>=4.67.1,<5.0.0)",
-    "scikit-learn (>=1.7.1,<2.0.0)",
-    "numpy (==1.26.4)",
-    "fastapi[standard] (>=0.116.1,<0.117.0)",
-    "pydantic (>=2.11.7,<3.0.0)",
-    "requests (>=2.32.4,<3.0.0)"
+    "libquery>=0.1.1,<0.2.0",
+    "tqdm>=4.67.1,<5.0.0",
+    "scikit-learn>=1.7.1,<2.0.0",
+    "numpy==1.26.4",
+    "fastapi[standard]>=0.116.1,<0.117.0",
+    "pydantic>=2.11.7,<3.0.0",
+    "requests>=2.32.4,<3.0.0",
+    "scipy>=1.11.0,<2.0.0",
 ]
 
+[dependency-groups]
+dev = [
+    "black>=25.1.0",
+    "flake8>=7.3.0",
+    "pytest>=8.4.0",
+]
 
-[build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.group.dev.dependencies]
-black = "^25.1.0"
-flake8 = "^7.3.0"
-
+[tool.uv]
+package = false

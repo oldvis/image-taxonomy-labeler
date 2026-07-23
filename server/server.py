@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -16,13 +17,18 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 BASE_DIR = Path(__file__).parent
 IMAGE_DIR = BASE_DIR / "static" / "images"
+if not IMAGE_DIR.is_dir():
+    raise SystemExit(
+        f"images directory not found: {IMAGE_DIR}. "
+        "Run `uv run python static/setup_samples.py` or see server/README.md."
+    )
 UUID2FILENAME = {
     f.name.split(".")[0]: f.name for f in IMAGE_DIR.iterdir() if f.is_file()
 }
@@ -113,4 +119,9 @@ async def calc_cell_indices(req: AssignGridRequest):
 
 
 if __name__ == "__main__":
-    uvicorn.run(f"{Path(__file__).stem}:app", host="0.0.0.0", port=5001, reload=True)
+    uvicorn.run(
+        f"{Path(__file__).stem}:app",
+        host=os.environ.get("SERVER_HOST", "127.0.0.1"),
+        port=5001,
+        reload=True,
+    )

@@ -1,41 +1,61 @@
-
 #!/usr/bin/env bash
-# Script to start backend and client-compare with dependency checks
+set -euo pipefail
 
-echo "🚀 Starting Image Taxonomy Comparison Interface..."
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BACKEND_PID=""
+CLIENT_PID=""
+BACKEND_URL="http://127.0.0.1:5001/docs"
+# Sample image download can take a long time on a flaky network.
+BACKEND_WAIT_TIMEOUT_S="${BACKEND_WAIT_TIMEOUT_S:-3600}"
 
-# Start backend in background
-echo "Starting backend server on http://localhost:5001..."
-cd server
-source ./start.sh &
-BACKEND_PID=$!
-cd ..
-
-sleep 2
-
-# Start client-compare
-echo "Starting client-compare on http://localhost:3333..."
-cd client-compare
-source ./start.sh &
-CLIENT_PID=$!
-cd ..
-
-echo "🎉 Image Taxonomy Comparison Interface is starting up!"
-echo "📱 Frontend: http://localhost:3333"
-echo "🔧 Backend API: http://localhost:5001"
-echo ""
-echo "Press Ctrl+C to stop both servers."
-
-# Cleanup on exit
 cleanup() {
 	echo ""
-	echo "🛑 Stopping servers..."
-	kill $BACKEND_PID 2>/dev/null
-	kill $CLIENT_PID 2>/dev/null
-	echo "✅ Servers stopped"
+	echo "Stopping servers..."
+	if [[ -n "${CLIENT_PID}" ]] && kill -0 "${CLIENT_PID}" 2>/dev/null; then
+		kill "${CLIENT_PID}" 2>/dev/null || true
+	fi
+	if [[ -n "${BACKEND_PID}" ]] && kill -0 "${BACKEND_PID}" 2>/dev/null; then
+		kill "${BACKEND_PID}" 2>/dev/null || true
+	fi
+	wait 2>/dev/null || true
+	echo "Servers stopped"
 	exit 0
 }
 trap cleanup SIGINT SIGTERM
 
-# Wait for background jobs
-wait $BACKEND_PID $CLIENT_PID
+wait_for_backend() {
+	local elapsed=0
+	echo "Waiting for image setup to finish and backend to listen on ${BACKEND_URL}..."
+	while (( elapsed < BACKEND_WAIT_TIMEOUT_S )); do
+		if ! kill -0 "${BACKEND_PID}" 2>/dev/null; then
+			echo "❌ Backend exited before becoming ready (setup may have failed)."
+			wait "${BACKEND_PID}" || true
+			exit 1
+		fi
+		if curl -sf --max-time 2 "${BACKEND_URL}" -o /dev/null 2>/dev/null; then
+			echo "✅ Backend is ready."
+			return 0
+		fi
+		sleep 2
+		elapsed=$((elapsed + 2))
+	done
+	echo "❌ Timed out waiting for backend after ${BACKEND_WAIT_TIMEOUT_S}s."
+	exit 1
+}
+
+echo "Starting Image Taxonomy Comparison Interface..."
+echo "Starting backend (deps → sample setup → API) on http://127.0.0.1:5001..."
+bash "${ROOT_DIR}/server/start.sh" &
+BACKEND_PID=$!
+
+wait_for_backend
+
+echo "Starting client-compare on http://localhost:3333..."
+bash "${ROOT_DIR}/client-compare/start.sh" &
+CLIENT_PID=$!
+
+echo "Frontend: http://localhost:3333"
+echo "Backend API: http://127.0.0.1:5001"
+echo "Press Ctrl+C to stop both servers."
+
+wait "${BACKEND_PID}" "${CLIENT_PID}"

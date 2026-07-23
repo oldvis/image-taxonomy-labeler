@@ -2,19 +2,46 @@
 
 Thanks for being interested in contributing to this project!
 
-## Development 
+## Development
 
 ### Setup
 
-Clone this repo to your local machine and install the dependencies.
+This repository is a multi-package project (no root `package.json`).
+
+**Frontend (pick one client):**
 
 ```bash
+cd client-label   # or client-compare
 pnpm install
+pnpm run dev
 ```
+
+**Backend:**
+
+```bash
+cd server
+uv sync
+uv run python server.py
+```
+
+Or use the root helpers: `bash start-label.sh` / `bash start-compare.sh`.
 
 ## Code Style
 
-Use `pnpm run lint --fix` to detect code style issues and fix the issues before committing.
+**Frontend** (from the client directory):
+
+```bash
+pnpm run lint --fix
+pnpm run typecheck
+```
+
+**Backend** (from `server/`):
+
+```bash
+uv run black .
+uv run flake8 .
+uv run pytest
+```
 
 ## Thanks
 

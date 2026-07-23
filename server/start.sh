@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 # Start script for backend server with dependency checks
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "${SCRIPT_DIR}"
 
 # Check Python 3.10+
 if ! command -v python3 &> /dev/null; then
@@ -13,26 +17,23 @@ if [[ $(echo -e "$PYTHON_VERSION\n$REQUIRED_PYTHON" | sort -V | head -n1) != "$R
     exit 1
 fi
 
-# Check poetry
-if ! command -v poetry &> /dev/null; then
-    echo "⚠️  Poetry is not installed. Installing poetry..."
-    curl -sSL https://install.python-poetry.org | python3 -
+# Ensure uv is available
+if ! command -v uv &> /dev/null; then
+    echo "⚠️  uv is not installed. Installing uv..."
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    export PATH="${HOME}/.local/bin:${PATH}"
 fi
-
-# Install backend dependencies
-if [ ! -d ".venv" ]; then
-    echo "Installing backend dependencies..."
-    poetry install
-fi
-
-# Setup server resources (sample images, thumbnails, embeddings)
-echo "Setting up server resources (sample images, thumbnails, embeddings)..."
-poetry run python static/setup_samples.py
-if [ $? -ne 0 ]; then
-    echo "❌ Failed to setup server resources. Exiting."
+if ! command -v uv &> /dev/null; then
+    echo "❌ uv is not on PATH after install. Add ~/.local/bin to PATH and retry."
     exit 1
 fi
+
+echo "Syncing backend dependencies with uv..."
+uv sync
+
+echo "Setting up server resources (sample images, thumbnails, embeddings)..."
+uv run python static/setup_samples.py
 echo "✅ Server resources setup completed successfully."
 
 echo "Starting backend server on http://localhost:5001..."
-poetry run python server.py
+uv run python server.py
