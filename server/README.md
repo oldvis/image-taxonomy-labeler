@@ -103,3 +103,24 @@ The server provides the following API services.
 | POST   | `/findCenter`             | Returns the UUID of the image that is closest to the center of the given images.           | `client-label`                      |
 | POST   | `/findCenters`            | Returns the UUIDs of the images that are closest to the centers of the given image groups. | `client-label`                      |
 | POST   | `/assignGrid`             | Returns the cell indices of the images in the grid with the given number of rows and cols. | `client-label` and `client-compare` |
+
+### Performance notes (large selections)
+
+To keep large selections fast, the server applies PCA when loading embeddings and reduces them to 20 dimensions before clustering, center-finding, and grid assignment. You do not need to run PCA yourself.
+
+Symbols used below:
+
+| Symbol | Meaning |
+| ------ | ------- |
+| *n* | number of selected images |
+| *k* | number of clusters (k-means) |
+| *d* | embedding dimensionality after PCA (20) |
+| *m* | number of grid cells (*rows × cols*), with *m* ≥ *n* |
+
+| Endpoint | Bottleneck | Scaling (rough) |
+| -------- | ---------- | --------------- |
+| `/clustering` | k-means | *O(n · k · d)* — usually fine into the low thousands |
+| `/findCenter`, `/findCenters` | mean + distances | *O(n · d)* — cheap |
+| `/assignGrid` | t-SNE, then Hungarian assignment | t-SNE *O(n² · d)*; assignment *O(m³)* — this is the main slowdown for large sets |
+
+Prefer smaller selections for grid layout when interactivity matters.
