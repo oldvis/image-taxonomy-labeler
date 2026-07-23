@@ -44,7 +44,7 @@ wait_for_backend() {
 }
 
 echo "Starting Image Taxonomy Labeling Interface..."
-echo "Starting backend (deps → sample setup → API) on http://127.0.0.1:5001..."
+echo "Starting backend (deps → sample setup → API) on http://localhost:5001..."
 bash "${ROOT_DIR}/server/start.sh" &
 BACKEND_PID=$!
 
@@ -55,7 +55,7 @@ bash "${ROOT_DIR}/apps/label/start.sh" &
 CLIENT_PID=$!
 
 echo "Frontend: http://localhost:3333"
-echo "Backend API: http://127.0.0.1:5001"
+echo "Backend API: http://localhost:5001"
 echo "Press Ctrl+C to stop both servers."
 
 wait "${BACKEND_PID}" "${CLIENT_PID}"

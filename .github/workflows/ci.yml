@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  clients:
+  frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,6 +24,12 @@ jobs:
       - run: pnpm -r run test
         env:
           NODE_OPTIONS: --max_old_space_size=4096
+      - name: Build apps
+        env:
+          NODE_OPTIONS: --max_old_space_size=4096
+        run: |
+          pnpm --filter ./apps/label build
+          pnpm --filter ./apps/compare build
 
   server:
     runs-on: ubuntu-latest

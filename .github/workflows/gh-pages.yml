@@ -22,6 +22,7 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
       - name: Install and Build
         env:
+          VITE_BASE: /image-taxonomy-labeler/
           NODE_OPTIONS: --max_old_space_size=4096
         run: |
           pnpm install
