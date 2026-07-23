@@ -7,6 +7,7 @@ Setup the server resources with
 
 import os
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import TypedDict
 from zipfile import ZipFile
@@ -18,13 +19,14 @@ from urllib3.util.retry import Retry
 
 MAX_ATTEMPTS = 5
 REQUEST_TIMEOUT = 60
+MAX_WORKERS = max(1, int(os.environ.get("SAMPLE_DOWNLOAD_WORKERS", "8")))
 
 
 class FileMetadata(TypedDict):
     download_url: str
 
 
-def _session() -> requests.Session:
+def _session(pool_size: int = MAX_WORKERS) -> requests.Session:
     session = requests.Session()
     retries = Retry(
         total=3,
@@ -35,7 +37,11 @@ def _session() -> requests.Session:
         allowed_methods=frozenset({"GET"}),
         raise_on_status=False,
     )
-    adapter = HTTPAdapter(max_retries=retries)
+    adapter = HTTPAdapter(
+        max_retries=retries,
+        pool_connections=pool_size,
+        pool_maxsize=pool_size,
+    )
     session.mount("https://", adapter)
     session.mount("http://", adapter)
     return session
@@ -102,7 +108,9 @@ def _download_one(session: requests.Session, url: str, dest: Path) -> None:
             last_error = exc
             if attempt < MAX_ATTEMPTS:
                 time.sleep(min(2**attempt, 30))
-    raise RuntimeError(f"Failed to download {url} after {MAX_ATTEMPTS} attempts") from last_error
+    raise RuntimeError(
+        f"Failed to download {url} after {MAX_ATTEMPTS} attempts"
+    ) from last_error
 
 
 def fetch_imgs(urls: list[str], img_dir: str) -> None:
@@ -120,11 +128,28 @@ def fetch_imgs(urls: list[str], img_dir: str) -> None:
     if not os.path.exists(img_dir):
         os.makedirs(img_dir)
 
-    session = _session()
+    session = _session(MAX_WORKERS)
     urls_filtered = filter_queries(urls, img_dir)
-    for url in tqdm(urls_filtered, desc="Fetch Image Progress"):
-        dest = Path(img_dir) / url2filename(url)
-        _download_one(session, url, dest)
+    if not urls_filtered:
+        return
+
+    workers = min(MAX_WORKERS, len(urls_filtered))
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        futures = {
+            executor.submit(
+                _download_one,
+                session,
+                url,
+                Path(img_dir) / url2filename(url),
+            ): url
+            for url in urls_filtered
+        }
+        for future in tqdm(
+            as_completed(futures),
+            total=len(futures),
+            desc="Fetch Image Progress",
+        ):
+            future.result()
 
 
 if __name__ == "__main__":
