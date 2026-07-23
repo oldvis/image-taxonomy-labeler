@@ -33,6 +33,9 @@ Use the startup script (assume [Node.js](https://nodejs.org/) and [Python](https
 bash start-label.sh
 ```
 
+> Server features require a running backend. On GitHub Pages they are disabled.
+> Override with `VITE_API_BASE` / `VITE_USE_SERVICES` (see `client-label/.env.example`).
+
 ### Manual Setup
 
 1. Setup the server resources and launch the server (see details at [./server/README.md](./server/README.md#how-to-use)).

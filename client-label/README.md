@@ -21,6 +21,15 @@ pnpm run dev
 
 If you see your browser automatically opening the page `http://localhost:3333/`, the client is successfully launched 🚀.
 
+### Environment
+
+Copy `.env.example` to `.env` if you need non-default settings:
+
+- `VITE_API_BASE` — backend origin (default `http://localhost:5001`)
+- `VITE_USE_SERVICES` — `true` / `false` / unset (see `.env.example`)
+
+GitHub Pages builds leave services disabled (non-local URL + unset flag).
+
 ## Features
 
 The following features are implemented in `./src/builtins/labelTasks/taxonomization/useOperators.ts`:

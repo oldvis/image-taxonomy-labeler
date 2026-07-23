@@ -6,7 +6,6 @@ import 'with-progress-bar/style.css'
 const CONFIG = {
   headers: {
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
   },
 }
 
