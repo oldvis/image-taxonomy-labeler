@@ -10,7 +10,7 @@ import uvicorn
 from utils.assign_grid import assign_grid
 from utils.captioning import captioning
 from utils.clustering import clustering, find_center_uuid
-from utils.loaders import load_embeddings
+from utils.loaders import build_uuid2filename, load_embeddings
 
 
 app = FastAPI()
@@ -24,14 +24,10 @@ app.add_middleware(
 
 BASE_DIR = Path(__file__).parent
 IMAGE_DIR = BASE_DIR / "static" / "images"
-if not IMAGE_DIR.is_dir():
-    raise SystemExit(
-        f"images directory not found: {IMAGE_DIR}. "
-        "Run `uv run python static/setup_samples.py` or see server/README.md."
-    )
-UUID2FILENAME = {
-    f.name.split(".")[0]: f.name for f in IMAGE_DIR.iterdir() if f.is_file()
-}
+try:
+    UUID2FILENAME = build_uuid2filename(IMAGE_DIR)
+except FileNotFoundError as exc:
+    raise SystemExit(str(exc)) from exc
 
 
 @app.get("/uuids/{uuid}/image")

@@ -1,8 +1,10 @@
 """
-This module provides functions to load precomputed image embeddings and captions.
+This module provides functions to load precomputed image embeddings, captions,
+and the on-disk image filename index.
 """
 
 from functools import cache
+from pathlib import Path
 
 import numpy as np
 from libquery.utils.jsonl import load_jl
@@ -13,6 +15,20 @@ def filename2uuid(filename: str) -> str:
     """Extract UUID from filename."""
 
     return filename.split(".")[0]
+
+
+def build_uuid2filename(image_dir: Path) -> dict[str, str]:
+    """
+    Map image UUID (filename stem) to filename for files directly under image_dir.
+    """
+    if not image_dir.is_dir():
+        raise FileNotFoundError(
+            f"images directory not found: {image_dir}. "
+            "Run `uv run python static/setup_samples.py` or see server/README.md."
+        )
+    return {
+        f.name.split(".")[0]: f.name for f in image_dir.iterdir() if f.is_file()
+    }
 
 
 @cache
