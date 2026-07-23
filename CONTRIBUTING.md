@@ -52,7 +52,7 @@ uv run pytest
 Pull requests run `.github/workflows/ci.yml`:
 
 - ESLint, `vue-tsc`, and Vitest across the pnpm workspace (both clients + `@image-taxonomy-labeler/shared`)
-- `pytest` for `server/`
+- `black --check`, `flake8`, and `pytest` for `server/`
 
 Please run the same checks locally before opening a PR.
 

@@ -20,15 +20,18 @@ def filename2uuid(filename: str) -> str:
 def build_uuid2filename(image_dir: Path) -> dict[str, str]:
     """
     Map image UUID (filename stem) to filename for files directly under image_dir.
+
+    Raises
+    ------
+    FileNotFoundError
+        If ``image_dir`` does not exist or is not a directory.
     """
     if not image_dir.is_dir():
         raise FileNotFoundError(
             f"images directory not found: {image_dir}. "
             "Run `uv run python static/setup_samples.py` or see server/README.md."
         )
-    return {
-        f.name.split(".")[0]: f.name for f in image_dir.iterdir() if f.is_file()
-    }
+    return {f.name.split(".")[0]: f.name for f in image_dir.iterdir() if f.is_file()}
 
 
 @cache

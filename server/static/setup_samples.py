@@ -51,7 +51,7 @@ def get_img_urls() -> list[str]:
     """
     Get the download URLs of the sample images.
 
-    Reference: https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#get-repository-content
+    See https://docs.github.com/en/rest/repos/contents#get-repository-content.
     """
 
     url = "https://api.github.com/repos/oldvis/image-taxonomy/contents/images"
@@ -89,6 +89,15 @@ def filter_queries(urls: list[str], img_dir: str) -> list[str]:
 
 
 def _download_one(session: requests.Session, url: str, dest: Path) -> None:
+    """
+    Download a single URL to dest, retrying transient network failures.
+
+    Raises
+    ------
+    RuntimeError
+        If the download fails after ``MAX_ATTEMPTS`` attempts.
+    """
+
     last_error: Exception | None = None
     for attempt in range(1, MAX_ATTEMPTS + 1):
         try:
@@ -113,6 +122,52 @@ def _download_one(session: requests.Session, url: str, dest: Path) -> None:
     ) from last_error
 
 
+def _is_within_directory(directory: Path, target: Path) -> bool:
+    try:
+        target.resolve().relative_to(directory.resolve())
+        return True
+    except ValueError:
+        return False
+
+
+def safe_extract(zip_path: Path, dest_dir: Path) -> None:
+    """
+    Extract a zip archive into dest_dir after validating member paths.
+
+    Raises
+    ------
+    RuntimeError
+        If a member path would escape ``dest_dir`` (zip-slip).
+    """
+
+    with ZipFile(zip_path, "r") as zf:
+        for member in zf.infolist():
+            target = dest_dir / member.filename
+            if not _is_within_directory(dest_dir, target):
+                raise RuntimeError(f"Illegal zip path: {member.filename}")
+        zf.extractall(dest_dir)
+
+
+def extract_if_needed(zip_path: Path, dest_dir: Path, marker: Path) -> None:
+    """
+    Extract zip_path into dest_dir unless marker already exists.
+
+    Raises
+    ------
+    RuntimeError
+        If extraction is needed and a member path would escape ``dest_dir``.
+    """
+
+    if marker.exists():
+        return
+    safe_extract(zip_path, dest_dir)
+
+
+def _thumbnails_ready(base_dir: Path) -> bool:
+    thumbnails = base_dir / "thumbnails"
+    return thumbnails.is_dir() and any(thumbnails.iterdir())
+
+
 def fetch_imgs(urls: list[str], img_dir: str) -> None:
     """
     Given the URLs of the images, download them to the specified directory.
@@ -123,6 +178,11 @@ def fetch_imgs(urls: list[str], img_dir: str) -> None:
         The URLs of the images to be downloaded.
     img_dir : str
         The directory to save the images.
+
+    Raises
+    ------
+    RuntimeError
+        If any image download fails after retries.
     """
 
     if not os.path.exists(img_dir):
@@ -160,12 +220,14 @@ if __name__ == "__main__":
     img_dir = base_dir / "images"
     fetch_imgs(img_urls, str(img_dir))
 
-    # Unzip the embeddings.
-    embeddings_path = base_dir / "embeddings.zip"
-    with ZipFile(embeddings_path, "r") as zip_ref:
-        zip_ref.extractall(base_dir)
+    # Unzip the embeddings (skip if already present).
+    extract_if_needed(
+        base_dir / "embeddings.zip",
+        base_dir,
+        marker=base_dir / "embeddings.jsonl",
+    )
 
-    # Unzip the thumbnails
-    thumbnails_path = base_dir / "thumbnails.zip"
-    with ZipFile(thumbnails_path, "r") as zip_ref:
-        zip_ref.extractall(base_dir)
+    # Unzip the thumbnails (skip if directory already has files).
+    thumbnails_zip = base_dir / "thumbnails.zip"
+    if not _thumbnails_ready(base_dir):
+        safe_extract(thumbnails_zip, base_dir)

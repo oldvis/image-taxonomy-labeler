@@ -12,7 +12,6 @@ from utils.captioning import captioning
 from utils.clustering import clustering, find_center_uuid
 from utils.loaders import build_uuid2filename, load_embeddings
 
-
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -34,7 +33,10 @@ except FileNotFoundError as exc:
 async def get_image(uuid: str):
     if uuid not in UUID2FILENAME:
         raise HTTPException(status_code=404, detail="Image not found")
-    return FileResponse(IMAGE_DIR / UUID2FILENAME[uuid])
+    path = IMAGE_DIR / UUID2FILENAME[uuid]
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail="Image not found")
+    return FileResponse(path)
 
 
 @app.get("/uuids/{uuid}/thumbnail")
@@ -42,7 +44,10 @@ async def get_thumbnail(uuid: str):
     thumbnail_dir = BASE_DIR / "static" / "thumbnails"
     if uuid not in UUID2FILENAME:
         raise HTTPException(status_code=404, detail="Thumbnail not found")
-    return FileResponse(thumbnail_dir / UUID2FILENAME[uuid])
+    path = thumbnail_dir / UUID2FILENAME[uuid]
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail="Thumbnail not found")
+    return FileResponse(path)
 
 
 @app.get("/uuids/{uuid}/caption")
@@ -50,18 +55,22 @@ async def get_caption(uuid: str):
     if uuid not in UUID2FILENAME:
         raise HTTPException(status_code=404, detail="Caption not found")
     caption_path = BASE_DIR / "static" / "captions.jsonl"
-    caption = captioning(uuid, str(caption_path))
-    return caption
+    try:
+        return captioning(uuid, str(caption_path))
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=f"Unknown uuid: {exc}") from exc
 
 
 @app.post("/captioning")
 async def calc_captions(uuids: list[str | None]):
     caption_path = BASE_DIR / "static" / "captions.jsonl"
-    captions = [
-        captioning(uuid, str(caption_path)) if uuid is not None else None
-        for uuid in uuids
-    ]
-    return captions
+    try:
+        return [
+            captioning(uuid, str(caption_path)) if uuid is not None else None
+            for uuid in uuids
+        ]
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=f"Unknown uuid: {exc}") from exc
 
 
 class ClusteringRequest(BaseModel):
@@ -73,8 +82,16 @@ class ClusteringRequest(BaseModel):
 async def calc_cluster_labels(req: ClusteringRequest):
     uuids = req.uuids
     n_clusters = req.nClusters
+    if n_clusters < 1 or n_clusters > len(uuids):
+        raise HTTPException(
+            status_code=400,
+            detail="nClusters must be between 1 and len(uuids)",
+        )
     embedding_path = BASE_DIR / "static" / "embeddings.jsonl"
-    embeddings = load_embeddings(uuids, str(embedding_path))
+    try:
+        embeddings = load_embeddings(uuids, str(embedding_path))
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=f"Unknown uuid: {exc}") from exc
     labels = clustering(embeddings, n_clusters)
     return labels.tolist()
 
@@ -82,19 +99,23 @@ async def calc_cluster_labels(req: ClusteringRequest):
 @app.post("/findCenter")
 async def calc_center_uuid(uuids: list[str]):
     embedding_path = BASE_DIR / "static" / "embeddings.jsonl"
-    embeddings = load_embeddings(uuids, str(embedding_path))
-    uuid = find_center_uuid(embeddings, uuids)
-    return uuid
+    try:
+        embeddings = load_embeddings(uuids, str(embedding_path))
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=f"Unknown uuid: {exc}") from exc
+    return find_center_uuid(embeddings, uuids)
 
 
 @app.post("/findCenters")
 async def calc_center_uuids(groups: list[list[str]]):
     embedding_path = BASE_DIR / "static" / "embeddings.jsonl"
-    center_uuids = [
-        find_center_uuid(load_embeddings(uuids, str(embedding_path)), uuids)
-        for uuids in groups
-    ]
-    return center_uuids
+    try:
+        return [
+            find_center_uuid(load_embeddings(uuids, str(embedding_path)), uuids)
+            for uuids in groups
+        ]
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=f"Unknown uuid: {exc}") from exc
 
 
 class AssignGridRequest(BaseModel):
@@ -108,8 +129,23 @@ async def calc_cell_indices(req: AssignGridRequest):
     uuids = req.uuids
     n_rows = req.nRows
     n_cols = req.nCols
+    if n_rows < 1 or n_cols < 1:
+        raise HTTPException(status_code=400, detail="nRows and nCols must be >= 1")
+    if n_rows * n_cols < len(uuids):
+        raise HTTPException(
+            status_code=400,
+            detail="nRows * nCols must be >= len(uuids)",
+        )
+    if len(uuids) < 2:
+        raise HTTPException(
+            status_code=400,
+            detail="assignGrid requires at least 2 uuids",
+        )
     embedding_path = BASE_DIR / "static" / "embeddings.jsonl"
-    embeddings = load_embeddings(uuids, str(embedding_path))
+    try:
+        embeddings = load_embeddings(uuids, str(embedding_path))
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=f"Unknown uuid: {exc}") from exc
     assignment = assign_grid(embeddings, n_rows, n_cols)
     return assignment.tolist()
 

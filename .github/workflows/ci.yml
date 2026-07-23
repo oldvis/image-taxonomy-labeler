@@ -42,4 +42,6 @@ jobs:
           mkdir -p static/images
           printf 'x' > static/images/ci-dummy.jpg
           touch static/embeddings.jsonl
+      - run: uv run black --check .
+      - run: uv run flake8 .
       - run: uv run pytest -v
