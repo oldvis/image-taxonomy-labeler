@@ -1,7 +1,3 @@
-<a href="http://commitizen.github.io/cz-cli/">
-    <img alt="Commitizen friendly" src="https://img.shields.io/badge/commitizen-friendly-brightgreen.svg">
-</a>
-
 # OldVis Image Taxonomy Labeler
 
 A web-based system for taxonomy labeling and comparison of old visualization images.
@@ -39,7 +35,7 @@ bash start-label.sh
 
 ### Manual Setup
 
-1. Setup the server resources and launch the server (see details at [./server/README.md](./server/README.md#how-to-use)).
+1. Setup the server resources and launch the server (see details at [./server/README.md](./server/README.md#getting-started)).
 2. Launch the `taxonomy labeling interface` (see details at [./apps/label/README.md](./apps/label/README.md#how-to-use)).
 
 ## How to Use the Taxonomy Comparison Interface
@@ -54,7 +50,7 @@ bash start-compare.sh
 
 ### Manual Setup
 
-1. Setup the server resources and launch the server (see details at [./server/README.md](./server/README.md#how-to-use)).
+1. Setup the server resources and launch the server (see details at [./server/README.md](./server/README.md#getting-started)).
 2. Launch the `taxonomy comparison interface` (see details at [./apps/compare/README.md](./apps/compare/README.md#how-to-use)).
 
 ## Reference

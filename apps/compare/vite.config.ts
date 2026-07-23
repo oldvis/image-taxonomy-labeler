@@ -10,7 +10,6 @@ import Pages from 'vite-plugin-pages'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
-  // Netlify serves compare at site root (label uses GH Pages under /image-taxonomy-labeler/).
   base: '/',
   resolve: {
     alias: {

@@ -4,7 +4,7 @@ The following are the steps to reproduce Figure 2 of the paper "[VisTaxa: Develo
 
 1. clone this repository <https://github.com/oldvis/image-taxonomy-labeler>.
 2. **Setup the server:** Within the cloned repository:
-    1. Under directory `./server`, execute `uv sync` to install dependencies (assuming [Python 3.10](https://www.python.org/downloads/) and [uv](https://docs.astral.sh/uv/) have been installed).
+    1. Under directory `./server`, execute `uv sync` to install dependencies (assuming [Python 3.10+](https://www.python.org/downloads/) and [uv](https://docs.astral.sh/uv/) have been installed).
     2. Under directory `./server`, execute `uv run python static/setup_samples.py`.
         - Note: This script will download 400 images, unzip `./server/static/embeddings.zip`, and unzip `./server/static/thumbnails.zip`. Note that the image downloading will take some time and occupy in total around 400MB storage.
     3. Under directory `./server`, execute `uv run python server.py` to launch the server (make sure port `5001` has not been occupied before launching the server).

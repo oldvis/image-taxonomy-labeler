@@ -25,7 +25,7 @@ This script will:
 2. Set up server resources with `uv run python static/setup_samples.py` (downloads sample images, unzips thumbnails and embeddings).
 3. Launch the backend server with `uv run python server.py`.
 
-Note: The steps above have the same effect as executing Step 1.1 Option 2, Step 1.2, Step 1.3, and Step 2 described in [How to Use](#how-to-use).
+Note: The steps above have the same effect as executing Step 1.1 Option 2, Step 1.2, Step 1.3, and Step 2 described in [Manual Setup](#manual-setup).
 
 ### Manual Setup
 
@@ -64,7 +64,7 @@ Unzip `./static/embeddings.zip` and store the unzipped `embeddings.jsonl` at `./
 
 #### Step 2: Launch the Server
 
-Before launching the server, make sure you have [Python 3.10](https://www.python.org/downloads/) and [uv](https://docs.astral.sh/uv/) installed.
+Before launching the server, make sure you have [Python 3.10+](https://www.python.org/downloads/) and [uv](https://docs.astral.sh/uv/) installed.
 
 To launch the server, you need to:
 

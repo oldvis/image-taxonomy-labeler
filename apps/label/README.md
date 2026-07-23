@@ -30,7 +30,7 @@ GitHub Pages builds leave services disabled (non-local URL + unset flag).
 
 ## Features
 
-The following features are implemented in `./src/builtins/labelTasks/taxonomization/useOperators.ts`:
+The following features are implemented in `./src/builtins/label-tasks/taxonomization/useOperators.ts`:
 
 - Editing the taxonomic hierarchy
     - **Create** a taxon

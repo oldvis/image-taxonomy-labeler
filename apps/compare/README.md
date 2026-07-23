@@ -26,7 +26,7 @@ Copy `.env.example` to `.env` if you need non-default settings:
 - `VITE_API_BASE` — backend origin (default `http://localhost:5001`)
 - `VITE_USE_SERVICES` — `true` / `false` / unset (see `.env.example`)
 
-GitHub Pages builds leave services disabled (non-local URL + unset flag).
+Unset is fine locally (services on for localhost). GitHub Pages leaves services off.
 
 The annotations to be compared can be exported from the [taxonomy labeling interface](../label/).
 
