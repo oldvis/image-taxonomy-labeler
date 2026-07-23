@@ -43,6 +43,15 @@ uv run flake8 .
 uv run pytest
 ```
 
+## Continuous Integration
+
+Pull requests run `.github/workflows/ci.yml`:
+
+- ESLint, `vue-tsc`, and Vitest for both clients
+- `pytest` for `server/`
+
+Please run the same checks locally before opening a PR.
+
 ## Thanks
 
 Thank you again for being interested in this project! You are awesome!

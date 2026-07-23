@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  clients:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        client: [client-label, client-compare]
+    defaults:
+      run:
+        working-directory: ${{ matrix.client }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.18.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: ${{ matrix.client }}/pnpm-lock.yaml
+      - run: pnpm install
+      - run: pnpm run lint
+      - run: pnpm run typecheck
+      - run: pnpm exec vitest run
+
+  server:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: '3.12'
+      - name: Install deps
+        run: uv sync
+      - name: Ensure dummy images dir for import
+        run: |
+          mkdir -p static/images
+          printf 'x' > static/images/ci-dummy.jpg
+          touch static/embeddings.jsonl
+      - run: uv run pytest -v

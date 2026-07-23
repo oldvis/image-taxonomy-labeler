@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { resolveServiceFlags, resolveBaseUrl } from '../src/services/resolveParams'
+import { resolveBaseUrl, resolveServiceFlags } from '../src/services/resolveParams'
 
 describe('resolveBaseUrl', () => {
   it('uses env override when provided', () => {

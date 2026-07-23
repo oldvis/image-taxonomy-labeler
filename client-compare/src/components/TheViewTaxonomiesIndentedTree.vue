@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { HierarchyNode } from 'd3'
 import type { TreeNodeWithUsers } from '~/stores/profile'
 import { onClickOutside } from '@vueuse/core'
 import VBarColumns from './VIndentedTree/VBarColumns.vue'
@@ -17,9 +18,12 @@ const props = defineProps({
     type: String as PropType<string>,
     required: true,
   },
-  /** The function for computing a tree node's text class. */
+  /**
+   * Class for each hierarchy node.
+   * Receives a d3 `HierarchyNode` — use `d.data` for the `TreeNodeWithUsers` payload.
+   */
   treeTextClassMap: {
-    type: Function as PropType<(d: TreeNodeWithUsers) => string>,
+    type: Function as PropType<(d: HierarchyNode<TreeNodeWithUsers>, i?: number) => string>,
     required: true,
   },
   /**
@@ -134,10 +138,13 @@ const submit = (newValue: string, e: Event): void => {
         </div>
       </template>
     </div>
+    <!--
+      VIndentedTree* are domain-agnostic; cast at this boundary from TreeNodeWithUsers.
+    -->
     <VIndentedTree
-      :data="forest[0]"
+      :data="(forest[0] as any)"
       :width="svgSingleTreeWidth"
-      :text-class-map="treeTextClassMap"
+      :text-class-map="(treeTextClassMap as any)"
       @hover-node="emit('hoverNode', $event)"
       @leave-node="emit('leaveNode', $event)"
       @click-node="emit('clickNode', $event)"
@@ -145,11 +152,11 @@ const submit = (newValue: string, e: Event): void => {
       <template #node="{ node }">
         <VTextColumns
           :node="node"
-          :columns="textColumns"
+          :columns="(textColumns as any)"
         />
         <VBarColumns
           :node="node"
-          :columns="barColumns"
+          :columns="(barColumns as any)"
         />
       </template>
     </VIndentedTree>
