@@ -8,9 +8,9 @@ The following are the steps to reproduce Figure 2 of the paper "[VisTaxa: Develo
     2. Under directory `./server`, execute `uv run python static/setup_samples.py`.
         - Note: This script will download 400 images, unzip `./server/static/embeddings.zip`, and unzip `./server/static/thumbnails.zip`. Note that the image downloading will take some time and occupy in total around 400MB storage.
     3. Under directory `./server`, execute `uv run python server.py` to launch the server (make sure port `5001` has not been occupied before launching the server).
-3. **Setup the client:** Within the cloned repository, enter the directory `./client-label`. Under this directory:
-    1. Execute `pnpm install` to install dependencies (assuming [node.js](https://nodejs.org/) and [pnpm](https://pnpm.io/) have been installed).
-    2. Execute `pnpm run dev` to launch the dev server.
+3. **Setup the client:** Within the cloned repository (repo root):
+    1. Execute `pnpm install` to install workspace dependencies (assuming [node.js](https://nodejs.org/) and [pnpm](https://pnpm.io/) have been installed).
+    2. Execute `pnpm --filter ./apps/label dev` to launch the labeling app.
     3. A webpage with the URL `http://localhost:3333/` should automatically pop up in the browser, which corresponds to the interface screenshot in Figure 2 in the paper.
 4. **Upload the annotations:**
     1. Manually download the annotations stored at <https://github.com/oldvis/image-taxonomy/blob/main/annotations.json>. (There is no restriction on the filename when storing the downloaded annotations.)

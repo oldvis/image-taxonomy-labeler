@@ -6,7 +6,7 @@
 
 The `server` of OldVis image taxonomy labeler.
 
-This server is shared by the web clients in [client-label](../client-label) and [client-compare](../client-compare).
+This server is shared by the web clients in [apps/label](../apps/label) and [apps/compare](../apps/compare).
 
 ## Getting Started
 
@@ -95,14 +95,14 @@ The server provides the following API services.
 
 | Method | URL                       | Description                                                                                | Used By                             |
 | ------ | ------------------------- | ------------------------------------------------------------------------------------------ | ----------------------------------- |
-| GET    | `/uuids/<uuid>/image`     | Returns the image (original size) with the given UUID.                                     | `client-label` and `client-compare` |
-| GET    | `/uuids/<uuid>/thumbnail` | Returns the image thumbnail with the given UUID.                                           | `client-label` and `client-compare` |
+| GET    | `/uuids/<uuid>/image`     | Returns the image (original size) with the given UUID.                                     | `apps/label` and `apps/compare` |
+| GET    | `/uuids/<uuid>/thumbnail` | Returns the image thumbnail with the given UUID.                                           | `apps/label` and `apps/compare` |
 | GET    | `/uuids/<uuid>/caption`   | Returns the caption of the image with the given UUID.                                      | /                                   |
-| POST   | `/captioning`             | Returns the captions of the images with the given UUIDs.                                   | `client-label`                      |
-| POST   | `/clustering`             | Returns the cluster labels of the images with the given UUIDs.                             | `client-label`                      |
-| POST   | `/findCenter`             | Returns the UUID of the image that is closest to the center of the given images.           | `client-label`                      |
-| POST   | `/findCenters`            | Returns the UUIDs of the images that are closest to the centers of the given image groups. | `client-label`                      |
-| POST   | `/assignGrid`             | Returns the cell indices of the images in the grid with the given number of rows and cols. | `client-label` and `client-compare` |
+| POST   | `/captioning`             | Returns the captions of the images with the given UUIDs.                                   | `apps/label`                        |
+| POST   | `/clustering`             | Returns the cluster labels of the images with the given UUIDs.                             | `apps/label`                        |
+| POST   | `/findCenter`             | Returns the UUID of the image that is closest to the center of the given images.           | `apps/label`                        |
+| POST   | `/findCenters`            | Returns the UUIDs of the images that are closest to the centers of the given image groups. | `apps/label`                        |
+| POST   | `/assignGrid`             | Returns the cell indices of the images in the grid with the given number of rows and cols. | `apps/label` and `apps/compare` |
 
 ### Performance notes (large selections)
 

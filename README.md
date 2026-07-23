@@ -11,15 +11,18 @@ The functions related to the server are disabled in the live demo.
 To use the full-fledged version, please follow the instructions in [How to Use](#how-to-use-the-taxonomy-labeling-interface).
 
 This repository is structured as:
-- [`./client-label`](./client-label/): The interface for taxonomy labeling.
-- [`./client-compare`](./client-compare/): The interface for taxonomy comparison.
+- [`./apps/label`](./apps/label/): The interface for taxonomy labeling.
+- [`./apps/compare`](./apps/compare/): The interface for taxonomy comparison.
+- [`./packages/shared`](./packages/shared/): Shared leaf modules (`@image-taxonomy-labeler/shared`) — API helpers and the visualization catalog. Vue UI stays in each app.
 - [`./scripts`](./scripts/): The scripts for one-time data preprocessing.
-- [`./server`](./server/): The server shared by `./client-label` and `./client-compare` for serving image resource and computation services.
+- [`./server`](./server/): The server shared by the apps for serving image resource and computation services.
+
+Install frontend deps from the repo root: `pnpm install`, then `pnpm --filter ./apps/label dev` (or `./apps/compare`).
 
 > [!WARNING]  
 > The following instructions for setting up the interfaces assume the annotated dataset is [oldvis/dataset](https://github.com/oldvis/dataset/blob/main/dataset/output/visualizations.json).
 > If you want to use the interfaces to annotate other images datasets, you will need to
-> 1. ensure the image metadata matches the structure of [visualizations.json](https://github.com/oldvis/dataset/blob/main/dataset/output/visualizations.json) and replace the metadata at `./client-compare/src/assets/visualizations.json` and `./client-label/src/assets/visualizations.json`
+> 1. ensure the image metadata matches the structure of [visualizations.json](https://github.com/oldvis/dataset/blob/main/dataset/output/visualizations.json) and replace the metadata at [`./packages/shared/assets/visualizations.json`](./packages/shared/assets/visualizations.json)
 > 2. store the images at `./server/static/images/`
 > 3. setup the cache files (with `./scripts/setup_cache.py`)
 
@@ -33,13 +36,11 @@ Use the startup script (assume [Node.js](https://nodejs.org/) and [Python](https
 bash start-label.sh
 ```
 
-> Server features require a running backend. On GitHub Pages they are disabled.
-> Override with `VITE_API_BASE` / `VITE_USE_SERVICES` (see `client-label/.env.example`).
 
 ### Manual Setup
 
 1. Setup the server resources and launch the server (see details at [./server/README.md](./server/README.md#how-to-use)).
-2. Launch the `taxonomy labeling interface` (see details at [./client-label/README.md](./client-label/README.md#how-to-use)).
+2. Launch the `taxonomy labeling interface` (see details at [./apps/label/README.md](./apps/label/README.md#how-to-use)).
 
 ## How to Use the Taxonomy Comparison Interface
 
@@ -54,7 +55,7 @@ bash start-compare.sh
 ### Manual Setup
 
 1. Setup the server resources and launch the server (see details at [./server/README.md](./server/README.md#how-to-use)).
-2. Launch the `taxonomy comparison interface` (see details at [./client-compare/README.md](./client-compare/README.md#how-to-use)).
+2. Launch the `taxonomy comparison interface` (see details at [./apps/compare/README.md](./apps/compare/README.md#how-to-use)).
 
 ## Reference
 

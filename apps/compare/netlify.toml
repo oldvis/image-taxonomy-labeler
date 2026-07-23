@@ -1,0 +1,14 @@
+# Netlify "Base directory" must be the repository root (not apps/compare).
+[build]
+publish = "apps/compare/dist"
+command = "pnpm install && pnpm --filter ./apps/compare build"
+
+[build.environment]
+NPM_FLAGS = "--version"
+NODE_VERSION = "22"
+NETLIFY_USE_PNPM = "true"
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200

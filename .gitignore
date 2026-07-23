@@ -1,1 +1,9 @@
 .DS_Store
+node_modules
+dist
+**/dist
+*.log
+.idea/
+.env
+.env.*
+!.env.example

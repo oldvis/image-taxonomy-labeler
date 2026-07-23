@@ -1,0 +1,15 @@
+# Netlify "Base directory" must be the repository root (not apps/label).
+[build]
+publish = "apps/label/dist"
+command = "pnpm install && pnpm --filter ./apps/label build"
+
+[build.environment]
+NPM_FLAGS = "--version"
+NODE_VERSION = "22"
+# Workspace filter needs the root lockfile / package graph.
+NETLIFY_USE_PNPM = "true"
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200

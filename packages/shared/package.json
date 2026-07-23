@@ -1,0 +1,39 @@
+{
+  "name": "@image-taxonomy-labeler/shared",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./services/*": "./src/services/*",
+    "./plugins/*": "./src/plugins/*",
+    "./stores/*": "./src/stores/*",
+    "./assets/*": "./assets/*"
+  },
+  "scripts": {
+    "typecheck": "vue-tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "pinia": "^3.0.0",
+    "pinia-plugin-persistedstate": "^4.5.0",
+    "vue": "^3.5.0"
+  },
+  "dependencies": {
+    "axios": "^1.12.2",
+    "iso-639-3": "^3.0.1",
+    "seedrandom": "^3.0.5",
+    "with-progress-bar": "^0.1.2"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^5.4.1",
+    "@types/seedrandom": "^3.0.8",
+    "eslint": "^9.37.0",
+    "pinia": "^3.0.3",
+    "pinia-plugin-persistedstate": "^4.5.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4",
+    "vue": "^3.5.22",
+    "vue-tsc": "^3.1.1"
+  }
+}

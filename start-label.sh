@@ -50,8 +50,8 @@ BACKEND_PID=$!
 
 wait_for_backend
 
-echo "Starting client-label on http://localhost:3333..."
-bash "${ROOT_DIR}/client-label/start.sh" &
+echo "Starting apps/label on http://localhost:3333..."
+bash "${ROOT_DIR}/apps/label/start.sh" &
 CLIENT_PID=$!
 
 echo "Frontend: http://localhost:3333"

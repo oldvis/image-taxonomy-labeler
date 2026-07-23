@@ -10,9 +10,6 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./client-label
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -22,17 +19,18 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-          cache-dependency-path: client-label/pnpm-lock.yaml
+          cache-dependency-path: pnpm-lock.yaml
       - name: Install and Build
         env:
           NODE_OPTIONS: --max_old_space_size=4096
         run: |
           pnpm install
-          pnpm run build
+          pnpm --filter ./apps/label build
       - name: Create 404 Page
+        working-directory: ./apps/label
         run: cp dist/index.html dist/404.html
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: client-label/dist
+          folder: apps/label/dist

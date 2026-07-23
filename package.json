@@ -1,0 +1,10 @@
+{
+  "name": "image-taxonomy-labeler",
+  "private": true,
+  "packageManager": "pnpm@10.18.3",
+  "scripts": {
+    "lint": "pnpm -r run lint",
+    "typecheck": "pnpm -r run typecheck",
+    "test": "pnpm -r run test"
+  }
+}

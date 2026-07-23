@@ -50,8 +50,8 @@ BACKEND_PID=$!
 
 wait_for_backend
 
-echo "Starting client-compare on http://localhost:3333..."
-bash "${ROOT_DIR}/client-compare/start.sh" &
+echo "Starting apps/compare on http://localhost:3333..."
+bash "${ROOT_DIR}/apps/compare/start.sh" &
 CLIENT_PID=$!
 
 echo "Frontend: http://localhost:3333"

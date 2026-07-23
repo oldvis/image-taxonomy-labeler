@@ -6,15 +6,17 @@ Thanks for being interested in contributing to this project!
 
 ### Setup
 
-This repository is a multi-package project (no root `package.json`).
+This repository is a pnpm workspace (`apps/*`, `packages/*`).
 
-**Frontend (pick one client):**
+**Frontend** (install once from the repo root):
 
 ```bash
-cd client-label   # or client-compare
 pnpm install
-pnpm run dev
+pnpm --filter ./apps/label dev
+# or: pnpm --filter ./apps/compare dev
 ```
+
+`@image-taxonomy-labeler/shared` holds leaf API/catalog code only. Vue UI stays in each app because the apps may diverge.
 
 **Backend:**
 
@@ -28,12 +30,14 @@ Or use the root helpers: `bash start-label.sh` / `bash start-compare.sh`.
 
 ## Code Style
 
-**Frontend** (from the client directory):
+**Frontend** (from the repo root):
 
 ```bash
-pnpm run lint --fix
-pnpm run typecheck
+pnpm -r run lint --fix
+pnpm -r run typecheck
 ```
+
+Or target one package: `pnpm --filter ./apps/label run lint --fix`.
 
 **Backend** (from `server/`):
 
@@ -47,7 +51,7 @@ uv run pytest
 
 Pull requests run `.github/workflows/ci.yml`:
 
-- ESLint, `vue-tsc`, and Vitest for both clients
+- ESLint, `vue-tsc`, and Vitest across the pnpm workspace (both clients + `@image-taxonomy-labeler/shared`)
 - `pytest` for `server/`
 
 Please run the same checks locally before opening a PR.

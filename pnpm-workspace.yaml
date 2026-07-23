@@ -1,0 +1,7 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+# Keep vue-tsc on 3.1.x: 3.3+ flags template-only refs under noUnusedLocals.
+overrides:
+  vue-tsc: 3.1.1
