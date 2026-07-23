@@ -87,7 +87,3 @@ const _visualizations: Visualization[] = (
 const SEED = '0'
 const random = xor4096(SEED)
 export const visualizations = randomShuffle(_visualizations, random)
-
-// Warm up the image cache by preloading image thumbnails sequentially.
-// NOTE: Continuously loading images may cause lag in the interface.
-// preloadSequential(visualizations.map((d) => getThumbnailUrl(d.uuid)))

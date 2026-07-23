@@ -4,13 +4,13 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
-    "./services/*": "./src/services/*",
-    "./plugins/*": "./src/plugins/*",
-    "./stores/*": "./src/stores/*",
+    "./services/*": "./src/services/*.ts",
+    "./plugins/*": "./src/plugins/*.ts",
+    "./stores/*": "./src/stores/*.ts",
     "./assets/*": "./assets/*"
   },
   "scripts": {
-    "typecheck": "vue-tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run"
   },
@@ -33,7 +33,6 @@
     "pinia-plugin-persistedstate": "^4.5.0",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4",
-    "vue": "^3.5.22",
-    "vue-tsc": "^3.1.1"
+    "vue": "^3.5.22"
   }
 }

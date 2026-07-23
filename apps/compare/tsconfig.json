@@ -6,11 +6,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "paths": {
-      "~/*": ["./src/*"],
-      "@image-taxonomy-labeler/shared/services/*": ["../../packages/shared/src/services/*"],
-      "@image-taxonomy-labeler/shared/plugins/*": ["../../packages/shared/src/plugins/*"],
-      "@image-taxonomy-labeler/shared/stores/*": ["../../packages/shared/src/stores/*"],
-      "@image-taxonomy-labeler/shared/assets/*": ["../../packages/shared/assets/*"]
+      "~/*": ["./src/*"]
     },
     "resolveJsonModule": true,
     "types": [
