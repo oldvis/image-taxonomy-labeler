@@ -1,3 +1,12 @@
+"""FastAPI app for image taxonomy labeling.
+
+Serves images, thumbnails, and captions, and exposes clustering and grid
+assignment endpoints. CPU-heavy sklearn work runs via asyncio.to_thread so
+the event loop can still serve image GETs during /clustering, /findCenter(s),
+and /assignGrid.
+"""
+
+import asyncio
 import os
 from pathlib import Path
 
@@ -28,6 +37,10 @@ try:
 except FileNotFoundError as exc:
     raise SystemExit(str(exc)) from exc
 
+_MISSING_RESOURCE = (
+    "Server resource missing; run setup_samples.py / check static/"
+)
+
 
 @app.get("/uuids/{uuid}/image")
 async def get_image(uuid: str):
@@ -57,6 +70,8 @@ async def get_caption(uuid: str):
     caption_path = BASE_DIR / "static" / "captions.jsonl"
     try:
         return captioning(uuid, str(caption_path))
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=503, detail=_MISSING_RESOURCE) from exc
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=f"Unknown uuid: {exc}") from exc
 
@@ -69,6 +84,8 @@ async def calc_captions(uuids: list[str | None]):
             captioning(uuid, str(caption_path)) if uuid is not None else None
             for uuid in uuids
         ]
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=503, detail=_MISSING_RESOURCE) from exc
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=f"Unknown uuid: {exc}") from exc
 
@@ -82,6 +99,8 @@ class ClusteringRequest(BaseModel):
 async def calc_cluster_labels(req: ClusteringRequest):
     uuids = req.uuids
     n_clusters = req.nClusters
+    if not uuids:
+        raise HTTPException(status_code=400, detail="uuids must be non-empty")
     if n_clusters < 1 or n_clusters > len(uuids):
         raise HTTPException(
             status_code=400,
@@ -90,32 +109,53 @@ async def calc_cluster_labels(req: ClusteringRequest):
     embedding_path = BASE_DIR / "static" / "embeddings.jsonl"
     try:
         embeddings = load_embeddings(uuids, str(embedding_path))
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=503, detail=_MISSING_RESOURCE) from exc
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=f"Unknown uuid: {exc}") from exc
-    labels = clustering(embeddings, n_clusters)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    labels = await asyncio.to_thread(clustering, embeddings, n_clusters)
     return labels.tolist()
 
 
 @app.post("/findCenter")
 async def calc_center_uuid(uuids: list[str]):
+    if not uuids:
+        raise HTTPException(status_code=400, detail="uuids must be non-empty")
     embedding_path = BASE_DIR / "static" / "embeddings.jsonl"
     try:
         embeddings = load_embeddings(uuids, str(embedding_path))
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=503, detail=_MISSING_RESOURCE) from exc
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=f"Unknown uuid: {exc}") from exc
-    return find_center_uuid(embeddings, uuids)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return await asyncio.to_thread(find_center_uuid, embeddings, uuids)
 
 
 @app.post("/findCenters")
 async def calc_center_uuids(groups: list[list[str]]):
     embedding_path = BASE_DIR / "static" / "embeddings.jsonl"
-    try:
+
+    def _centers() -> list[str]:
         return [
             find_center_uuid(load_embeddings(uuids, str(embedding_path)), uuids)
             for uuids in groups
         ]
+
+    try:
+        for uuids in groups:
+            if not uuids:
+                raise HTTPException(status_code=400, detail="uuids must be non-empty")
+        return await asyncio.to_thread(_centers)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=503, detail=_MISSING_RESOURCE) from exc
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=f"Unknown uuid: {exc}") from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 class AssignGridRequest(BaseModel):
@@ -144,9 +184,13 @@ async def calc_cell_indices(req: AssignGridRequest):
     embedding_path = BASE_DIR / "static" / "embeddings.jsonl"
     try:
         embeddings = load_embeddings(uuids, str(embedding_path))
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=503, detail=_MISSING_RESOURCE) from exc
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=f"Unknown uuid: {exc}") from exc
-    assignment = assign_grid(embeddings, n_rows, n_cols)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    assignment = await asyncio.to_thread(assign_grid, embeddings, n_rows, n_cols)
     return assignment.tolist()
 
 
