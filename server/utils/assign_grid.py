@@ -10,13 +10,21 @@ from sklearn.manifold import TSNE
 
 def get_embeddings_2d(embeddings: np.ndarray) -> np.ndarray:
     """
-    Compute 2D embeddings using t-SNE.
+    Compute 2D embeddings using t-SNE (n >= 3) or a deterministic layout (n < 3).
     """
 
+    n = embeddings.shape[0]
+    if n == 0:
+        return np.zeros((0, 2), dtype=float)
+    if n == 1:
+        return np.array([[0.0, 0.0]], dtype=float)
+    if n == 2:
+        # Two points on a line — enough for assignment without t-SNE.
+        return np.array([[0.0, 0.0], [1.0, 0.0]], dtype=float)
     return TSNE(
         n_components=2,
         random_state=0,
-        perplexity=min(30, embeddings.shape[0] / 3),
+        perplexity=min(30, n / 3),
     ).fit_transform(embeddings)
 
 
@@ -25,11 +33,16 @@ def fit_to_rect(
 ) -> np.ndarray:
     """
     Fitting points to a rect [0, width] * [0, height].
+
+    Axes with zero range are left at 0 after translation (avoids NaN).
     """
 
+    points = points.astype(float, copy=True)
     points -= points.min(axis=0)
-    points /= points.max(axis=0)
-    points *= np.array([width, height])
+    scale = points.max(axis=0)
+    scale[scale == 0] = 1.0
+    points /= scale
+    points *= np.array([width, height], dtype=float)
     return points
 
 

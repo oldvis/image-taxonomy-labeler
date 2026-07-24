@@ -37,6 +37,14 @@ const uuid2cell = ref<Record<string, [number, number]>>()
 const updateAssignment = async () => {
   uuid2cell.value = undefined
   const uuids = dataObjects.value.map((d) => d.uuid)
+  if (uuids.length === 0) {
+    uuid2cell.value = {}
+    return
+  }
+  if (uuids.length === 1) {
+    uuid2cell.value = { [uuids[0]]: [0, 0] }
+    return
+  }
   const assignment = await assignGrid(uuids, shape.value.nRows, shape.value.nCols)
   uuid2cell.value = Object.fromEntries(
     assignment.map((d, i) => [uuids[i], d]),
