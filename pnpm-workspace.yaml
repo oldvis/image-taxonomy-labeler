@@ -2,6 +2,16 @@ packages:
   - 'apps/*'
   - 'packages/*'
 
+allowBuilds:
+  # Native deps required by Vite / Sass watch.
+  '@parcel/watcher': true
+  esbuild: true
+
+minimumReleaseAgeExclude:
+  - sass@1.101.7
+
 # Keep vue-tsc on 3.1.x: 3.3+ flags template-only refs under noUnusedLocals.
+# Keep TypeScript on 5.9.x until typescript-eslint supports TS 7+.
 overrides:
   vue-tsc: 3.1.1
+  typescript: 5.9.3

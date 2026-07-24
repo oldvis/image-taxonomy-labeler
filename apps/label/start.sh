@@ -7,7 +7,7 @@ ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 # Check Node.js
 if ! command -v node &> /dev/null; then
-    echo "❌ Node.js is not installed. Please install Node.js 16+ first."
+    echo "❌ Node.js is not installed. Please install Node.js 20.19+ or 22.12+ first."
     exit 1
 fi
 

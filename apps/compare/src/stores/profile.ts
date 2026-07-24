@@ -89,7 +89,7 @@ const mergeTwoForests = (
     }
   })
   forest2.forEach((node2) => {
-    if (!forest1.find((d) => d.name === node2.name)) {
+    if (!forest1.some((d) => d.name === node2.name)) {
       merged.push(node2)
     }
   })

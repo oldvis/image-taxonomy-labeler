@@ -9,7 +9,8 @@ To use the full-fledged version, please follow the instructions in [How to Use](
 This repository is structured as:
 - [`./apps/label`](./apps/label/): The interface for taxonomy labeling.
 - [`./apps/compare`](./apps/compare/): The interface for taxonomy comparison.
-- [`./packages/shared`](./packages/shared/): Shared leaf modules (`@image-taxonomy-labeler/shared`) — API helpers and the visualization catalog. Vue UI stays in each app.
+- [`./packages/shared`](./packages/shared/): Shared leaf modules (`@image-taxonomy-labeler/shared`) — API helpers and the visualization catalog.
+- [`./packages/ui`](./packages/ui/): Shared Vue helpers and chrome (`@image-taxonomy-labeler/ui`) — label-task composables, `VImage`, dialogs, pagination, styles.
 - [`./scripts`](./scripts/): The scripts for one-time data preprocessing.
 - [`./server`](./server/): The server shared by the apps for serving image resource and computation services.
 
@@ -29,7 +30,7 @@ Install frontend deps from the repo root: `pnpm install`, then `pnpm --filter ./
 Use the startup script (assume [Node.js](https://nodejs.org/) and [Python](https://www.python.org/downloads/) are installed):
 
 ```bash
-bash start-label.sh
+pnpm run start:label
 ```
 
 
@@ -45,7 +46,7 @@ bash start-label.sh
 Use the startup script (assume [Node.js](https://nodejs.org/) and [Python](https://www.python.org/downloads/) are installed):
 
 ```bash
-bash start-compare.sh
+pnpm run start:compare
 ```
 
 ### Manual Setup

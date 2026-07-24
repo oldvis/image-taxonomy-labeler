@@ -2,12 +2,18 @@ import antfu from '@antfu/eslint-config'
 
 export default antfu(
   {
-    vue: false,
+    vue: true,
     typescript: true,
-    ignores: ['assets/**/*.json'],
+    ignores: [
+      '**/dist/**',
+      '**/shims.d.ts',
+      '**/auto-imports.d.ts',
+      '**/components.d.ts',
+      '**/src/**/*.json',
+      'packages/shared/assets/**/*.json',
+    ],
   },
   {
-    files: ['src/**/*.ts', 'test/**/*.ts'],
     rules: {
       'arrow-parens': ['error', 'always'],
       'style/arrow-parens': ['error', 'always'],

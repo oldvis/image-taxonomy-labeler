@@ -1,6 +1,6 @@
 # `@image-taxonomy-labeler/ui`
 
-Shared leaf modules used by both `apps/label` and `apps/compare`:
+Shared Vue-aware modules used by both `apps/label` and `apps/compare`:
 
 - label-task types / composables (`label-tasks/`)
 - presentational data-display (`VImage`)

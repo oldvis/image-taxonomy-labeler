@@ -50,11 +50,11 @@ BACKEND_PID=$!
 
 wait_for_backend
 
-echo "Starting apps/compare on http://localhost:3333..."
+echo "Starting apps/compare on http://localhost:3334..."
 bash "${ROOT_DIR}/apps/compare/start.sh" &
 CLIENT_PID=$!
 
-echo "Frontend: http://localhost:3333"
+echo "Frontend: http://localhost:3334"
 echo "Backend API: http://localhost:5001"
 echo "Press Ctrl+C to stop both servers."
 

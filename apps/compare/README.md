@@ -1,6 +1,6 @@
 # Taxonomy Comparison Interface
 
-![](./public/screenshot.png)
+![Screenshot of the taxonomy comparison interface](./public/screenshot.png)
 
 The `taxonomy comparison interface` of OldVis image taxonomy labeler.
 
@@ -17,7 +17,9 @@ pnpm install
 pnpm --filter ./apps/compare dev
 ```
 
-If you see your browser automatically opening the page `http://localhost:3333/`, the client is successfully launched 🚀.
+If you see your browser automatically opening the page `http://localhost:3334/`, the client is successfully launched 🚀.
+
+(Label uses `3333`; compare uses `3334` so both can run at once.)
 
 ### Environment
 
@@ -25,8 +27,9 @@ Copy `.env.example` to `.env` if you need non-default settings:
 
 - `VITE_API_BASE` — backend origin (default `http://localhost:5001`)
 - `VITE_USE_SERVICES` — `true` / `false` / unset (see `.env.example`)
+- `VITE_BASE` — public path when not served from domain root (optional)
 
-Unset is fine locally (services on for localhost). GitHub Pages leaves services off.
+Unset `VITE_USE_SERVICES` is fine locally (services on for localhost).
 
 The annotations to be compared can be exported from the [taxonomy labeling interface](../label/).
 

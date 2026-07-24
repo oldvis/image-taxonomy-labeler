@@ -1,10 +1,20 @@
 {
   "name": "image-taxonomy-labeler",
+  "type": "module",
   "private": true,
-  "packageManager": "pnpm@10.18.3",
+  "packageManager": "pnpm@11.17.0",
   "scripts": {
-    "lint": "pnpm -r run lint",
+    "start:label": "bash start-label.sh",
+    "start:compare": "bash start-compare.sh",
+    "lint": "eslint apps packages",
     "typecheck": "pnpm -r run typecheck",
-    "test": "pnpm -r run test"
+    "test": "pnpm -r run test",
+    "up": "taze major -Ir"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^9.2.0",
+    "eslint": "^10.7.0",
+    "taze": "^19.16.0",
+    "typescript": "^5.9.3"
   }
 }

@@ -11,7 +11,6 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "lint": "eslint .",
     "test": "vitest run"
   },
   "peerDependencies": {
@@ -20,19 +19,18 @@
     "vue": "^3.5.0"
   },
   "dependencies": {
-    "axios": "^1.12.2",
+    "axios": "^1.18.1",
     "iso-639-3": "^3.0.1",
     "seedrandom": "^3.0.5",
     "with-progress-bar": "^0.1.2"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^5.4.1",
     "@types/seedrandom": "^3.0.8",
-    "eslint": "^9.37.0",
-    "pinia": "^3.0.3",
-    "pinia-plugin-persistedstate": "^4.5.0",
+    "pinia": "^4.0.2",
+    "pinia-plugin-persistedstate": "^4.7.1",
     "typescript": "^5.9.3",
-    "vitest": "^3.2.4",
-    "vue": "^3.5.22"
+    "vite": "^8.1.5",
+    "vitest": "^4.1.10",
+    "vue": "^3.5.40"
   }
 }

@@ -1,6 +1,6 @@
 # Taxonomy Labeling Interface
 
-![](./public/screenshot.png)
+![Screenshot of the taxonomy labeling interface](./public/screenshot.png)
 
 The `taxonomy labeling interface` of OldVis image taxonomy labeler ([live demo](https://oldvis.github.io/image-taxonomy-labeler/)).
 
@@ -19,12 +19,15 @@ pnpm --filter ./apps/label dev
 
 If you see your browser automatically opening the page `http://localhost:3333/`, the client is successfully launched 🚀.
 
+(Compare uses `3334` so both apps can run at once.)
+
 ### Environment
 
 Copy `.env.example` to `.env` if you need non-default settings:
 
 - `VITE_API_BASE` — backend origin (default `http://localhost:5001`)
 - `VITE_USE_SERVICES` — `true` / `false` / unset (see `.env.example`)
+- `VITE_BASE` — public path when not served from domain root (GitHub Pages sets this in CI)
 
 GitHub Pages builds leave services disabled (non-local URL + unset flag).
 
