@@ -1,6 +1,7 @@
 import type { Category, TreeNode } from './useLabelTask'
 import { getCaptions } from '~/services/captioning'
 import { clustering, findCenters } from '~/services/clustering'
+import { generateUniqueName as generateUniqueNameFrom } from './uniqueName'
 import { useLabelTask } from './useLabelTaskWithForest'
 
 /**
@@ -100,23 +101,9 @@ export const useOperators = (uuids: Ref<string[]>, userName: Ref<string | null>)
   } = useLabelTask()
 
   /** Generate a new node name that differs from existing node names, based on a tentative name. */
-  const generateUniqueName = (name: string = 'new category'): string => {
-    const existingNames = categories.value.map((d) => d.name)
-    if (!existingNames.includes(name)) return name
-    const indices = new Set(existingNames
-      .map((d) => {
-        if (d === name) return 1
-        const re = new RegExp(`${name} \\((?<index>[\\d+]*)\\)`)
-        const index = d.match(re)?.groups?.index
-        return Number(index)
-      })
-      .filter((d) => !Number.isNaN(d)))
-    // Find the smallest index that is not in indices.
-    for (let i = 2; i <= indices.size; i += 1) {
-      if (!indices.has(i)) return `${name} (${i})`
-    }
-    return `${name} (${Math.max(...indices) + 1})`
-  }
+  const generateUniqueName = (name: string = 'new category'): string => (
+    generateUniqueNameFrom(categories.value.map((d) => d.name), name)
+  )
 
   /**
    * Create a child taxon and append to the parent node.

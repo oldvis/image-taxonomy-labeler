@@ -11,11 +11,19 @@ describe('isLocalhost', () => {
     expect(isLocalhost('https://example.com/img')).toBe(false)
     expect(isLocalhost(null)).toBe(false)
   })
+
+  it('returns false for invalid URLs', () => {
+    expect(isLocalhost('not a url')).toBe(false)
+  })
 })
 
 describe('isHttps', () => {
   it('detects https', () => {
     expect(isHttps('https://cdn.example/a.jpg')).toBe(true)
     expect(isHttps('http://localhost:5001/a')).toBe(false)
+  })
+
+  it('returns false for invalid URLs', () => {
+    expect(isHttps('://bad')).toBe(false)
   })
 })

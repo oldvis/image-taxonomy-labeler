@@ -5,6 +5,7 @@ import { useLabelTask as useClassification } from '~/builtins/label-tasks/classi
 import { useLabelTask as useTaxonomization } from '~/builtins/label-tasks/taxonomization/useLabelTaskWithForest'
 import { buildForest } from '~/builtins/label-tasks/taxonomization/utils'
 import { saveJsonFile, uploadJsonFile } from '~/plugins/file'
+import { useStore as useMessageStore } from '~/stores/message'
 import { useStore as useWorkspaceStore } from '~/stores/workspace'
 
 interface TaskProgress {
@@ -41,8 +42,22 @@ const save = () => {
 }
 
 const { uuidsLoaded } = storeToRefs(useWorkspaceStore())
+const { addErrorMessage } = useMessageStore()
 const upload = async () => {
-  const loadedProgresses = (await uploadJsonFile()) as TaskProgress[]
+  let loadedProgresses: TaskProgress[]
+  try {
+    const loaded = await uploadJsonFile()
+    if (loaded == null) return
+    if (!Array.isArray(loaded)) {
+      throw new TypeError('Invalid JSON file')
+    }
+    loadedProgresses = loaded as TaskProgress[]
+  }
+  catch {
+    addErrorMessage('Invalid JSON file')
+    return
+  }
+
   loadedProgresses.forEach((d) => {
     const { taskName } = d
     const taskComposable = taskNameToTaskComposable.value[taskName]

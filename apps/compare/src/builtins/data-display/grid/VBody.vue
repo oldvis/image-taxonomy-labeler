@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Visualization } from '@image-taxonomy-labeler/shared/plugins/visualization'
 import { assignGrid } from '@image-taxonomy-labeler/shared/services/layout'
+import { watchDebounced } from '@vueuse/core'
 import VDatumTooltip from '../VDatumTooltip.vue'
 import VDatum from './VDatum.vue'
 
@@ -34,7 +35,10 @@ const shape = computed(() => {
 })
 
 const uuid2cell = ref<Record<string, [number, number]>>()
+let assignGen = 0
+
 const updateAssignment = async () => {
+  const gen = ++assignGen
   uuid2cell.value = undefined
   const uuids = dataObjects.value.map((d) => d.uuid)
   if (uuids.length === 0) {
@@ -45,13 +49,23 @@ const updateAssignment = async () => {
     uuid2cell.value = { [uuids[0]]: [0, 0] }
     return
   }
-  const assignment = await assignGrid(uuids, shape.value.nRows, shape.value.nCols)
+  const { nRows, nCols } = shape.value
+  const assignment = await assignGrid(uuids, nRows, nCols)
+  if (gen !== assignGen) return
   uuid2cell.value = Object.fromEntries(
     assignment.map((d, i) => [uuids[i], d]),
   )
 }
-onMounted(updateAssignment)
-watch(dataObjects, updateAssignment)
+
+watchDebounced(dataObjects, () => {
+  void updateAssignment()
+}, {
+  debounce: 150,
+  immediate: true,
+})
+onUnmounted(() => {
+  assignGen += 1
+})
 
 const tooltipVisible = ref(false)
 const activeTarget = ref<HTMLElement>()

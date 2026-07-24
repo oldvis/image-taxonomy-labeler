@@ -2,6 +2,7 @@
 import type { Annotation } from '~/builtins/label-tasks/types'
 import { storeToRefs } from 'pinia'
 import { parseJsonFile, uploadFiles } from '~/plugins/file'
+import { useStore as useMessageStore } from '~/stores/message'
 import { buildAnnotatorProfile, useStore } from '~/stores/profile'
 
 interface TaskProgress {
@@ -12,9 +13,10 @@ interface TaskProgress {
 
 const { addProfiles } = useStore()
 const { profiles } = storeToRefs(useStore())
+const { addErrorMessage } = useMessageStore()
 
 /**
- * Generate a new node name that differs from existing node names,
+ * Generate a new name that differs from existing names,
  * based on a tentative name.
  */
 const generateUniqueName = (
@@ -22,27 +24,47 @@ const generateUniqueName = (
   existingNames: string[],
 ): string => {
   if (!existingNames.includes(name)) return name
-  const indices = new Set(existingNames
-    .map((d) => {
-      if (d === name) return 1
-      const re = new RegExp(`${name} \\((?<index>[\\d+]*)\\)`)
-      const index = d.match(re)?.groups?.index
-      return Number(index)
-    })
-    .filter((d) => !Number.isNaN(d)))
-  // Find the smallest index that is not in indices.
-  for (let i = 2; i <= indices.size; i += 1) {
+  const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const re = new RegExp(`^${escaped} \\((?<index>\\d+)\\)$`)
+  const indices = new Set(
+    existingNames
+      .map((d) => {
+        if (d === name) return 1
+        const index = d.match(re)?.groups?.index
+        return index === undefined ? Number.NaN : Number(index)
+      })
+      .filter((d) => !Number.isNaN(d)),
+  )
+  for (let i = 2; i <= indices.size + 1; i += 1) {
     if (!indices.has(i)) return `${name} (${i})`
   }
   return `${name} (${Math.max(...indices) + 1})`
 }
 
 const upload = async () => {
-  const files = (await uploadFiles()) as FileList
+  const files = await uploadFiles()
+  if (files == null) return
+
+  let taskProgressesByFile: { file: File, taskProgresses: TaskProgress[] }[]
+  try {
+    taskProgressesByFile = await Promise.all(
+      Array.from(files).map(async (file) => {
+        const loaded = await parseJsonFile(file)
+        if (!Array.isArray(loaded)) {
+          throw new TypeError('Invalid JSON file')
+        }
+        return { file, taskProgresses: loaded as TaskProgress[] }
+      }),
+    )
+  }
+  catch {
+    addErrorMessage('Invalid JSON file')
+    return
+  }
+
   const existingUsernames = profiles.value.map((d) => d.username)
   const oldProfiles = await Promise.all(
-    Array.from(files).map(async (file) => {
-      const taskProgresses = await parseJsonFile(file) as TaskProgress[]
+    taskProgressesByFile.map(({ file, taskProgresses }) => {
       const newUsername = generateUniqueName(file.name, existingUsernames)
       existingUsernames.push(newUsername)
       return buildAnnotatorProfile(taskProgresses, newUsername)
