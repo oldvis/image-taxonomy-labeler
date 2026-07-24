@@ -1,4 +1,4 @@
-import type { Category, TreeNode } from './useLabelTask'
+import type { Category, TreeNode } from '@image-taxonomy-labeler/ui/label-tasks/taxonomization/useLabelTask'
 import { getCaptions } from '~/services/captioning'
 import { clustering, findCenters } from '~/services/clustering'
 import { generateUniqueName as generateUniqueNameFrom } from './uniqueName'

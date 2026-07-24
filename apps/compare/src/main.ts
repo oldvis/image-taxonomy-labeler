@@ -6,8 +6,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import App from './App.vue'
 
 import '@unocss/reset/tailwind.css'
-import './styles/main.css'
-import './styles/scrollbar.css'
+import '@image-taxonomy-labeler/ui/styles/main.css'
+import '@image-taxonomy-labeler/ui/styles/scrollbar.css'
 import 'uno.css'
 
 const app = createApp(App)

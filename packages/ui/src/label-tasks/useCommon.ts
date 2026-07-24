@@ -1,6 +1,6 @@
 import type { Annotation } from './types'
 import { groupBy, omit } from 'lodash'
-import { readonly } from 'vue'
+import { readonly, ref } from 'vue'
 
 /** Common states and utility functions for various label tasks. */
 export const useCommon = () => {

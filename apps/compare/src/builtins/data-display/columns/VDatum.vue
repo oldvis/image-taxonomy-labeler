@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Visualization } from '@image-taxonomy-labeler/shared/plugins/visualization'
-import VImage from '../VImage.vue'
+import VImage from '@image-taxonomy-labeler/ui/data-display/VImage.vue'
 
 defineProps({
   /** Render the given part of the visualization metadata. */

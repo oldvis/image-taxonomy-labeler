@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { TreeNode } from '~/builtins/label-tasks/taxonomization/useLabelTask'
+import type { TreeNode } from '@image-taxonomy-labeler/ui/label-tasks/taxonomization/useLabelTask'
 import { storeToRefs } from 'pinia'
 import { useLabelTask } from '~/builtins/label-tasks/taxonomization/useLabelTaskWithForest'
 import { useOperators } from '~/builtins/label-tasks/taxonomization/useOperators'
@@ -164,7 +164,7 @@ const onNodeRemove = (node: TreeNode) => {
         @node-drop="onNodeDrop"
       >
         <template #default="{ node, dragState }">
-          <TheTreeNode
+          <VTreeNode
             :node="node"
             :is-dragging-over="(dragState?.draggingOver === node.data) && (dragState?.dragging !== node.data)"
             :is-in-merge-zone="(dragState?.draggingOver === node.data) && dragState?.isInMergeZone"

@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import VPagination from '@image-taxonomy-labeler/ui/components/VPagination.vue'
 import { useElementSize } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useStore as useSelectorStore } from '~/stores/selector'
 import { useStore as useWorkspaceStore } from '~/stores/workspace'
 import VHeader from '../VHeader.vue'
-import VPagination from '../VPagination.vue'
 import VBody from './VBody.vue'
 
 const { visualizationsLoaded: visualizations } = storeToRefs(useWorkspaceStore())

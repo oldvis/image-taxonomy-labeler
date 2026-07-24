@@ -33,7 +33,7 @@ const layout = defineModel({
     <div class="font-bold">
       Entries
     </div>
-    <TheToggleLayout v-model:layout="layout" />
+    <VToggleLayout v-model:layout="layout" />
     <div class="grow" />
     <div class="flex">
       <div class="flex border-l px-1">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Annotation } from '~/builtins/label-tasks/types'
+import type { Annotation } from '@image-taxonomy-labeler/ui/label-tasks/types'
 import { storeToRefs } from 'pinia'
 import { parseJsonFile, uploadFiles } from '~/plugins/file'
 import { useStore as useMessageStore } from '~/stores/message'

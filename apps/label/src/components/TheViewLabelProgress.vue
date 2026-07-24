@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { useLabelTask as useClassification } from '@image-taxonomy-labeler/ui/label-tasks/classification/useLabelTask'
 import { storeToRefs } from 'pinia'
-import { useLabelTask as useClassification } from '~/builtins/label-tasks/classification/useLabelTask'
 import { useStore as useWorkspaceStore } from '~/stores/workspace'
 
 const { annotationsByValue, annotatedUuids } = useClassification()

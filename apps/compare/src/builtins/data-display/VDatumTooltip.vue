@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { Visualization } from '@image-taxonomy-labeler/shared/plugins/visualization'
+import type { PropType } from 'vue'
+import { isDark } from '@image-taxonomy-labeler/ui/composables/dark'
 import { ElTooltip } from 'element-plus'
-import { isDark } from '~/composables/dark'
+import { toRefs } from 'vue'
 import VDatumTooltipBody from './VDatumTooltipBody.vue'
 import 'element-plus/es/components/tooltip/style/css'
 

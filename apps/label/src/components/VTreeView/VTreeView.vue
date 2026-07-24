@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import type { TreeNode } from '@image-taxonomy-labeler/ui/label-tasks/taxonomization/useLabelTask'
 import type ElementNode from 'element-plus/es/components/tree/src/model/node'
-import type { TreeNode } from '~/builtins/label-tasks/taxonomization/useLabelTask'
 import { ElTree } from 'element-plus'
 import 'element-plus/es/components/tree/style/css'
 

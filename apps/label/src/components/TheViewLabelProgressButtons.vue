@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { Annotation } from '~/builtins/label-tasks/types'
+import type { Annotation } from '@image-taxonomy-labeler/ui/label-tasks/types'
+import { useLabelTask as useClassification } from '@image-taxonomy-labeler/ui/label-tasks/classification/useLabelTask'
+import { buildForest } from '@image-taxonomy-labeler/ui/label-tasks/taxonomization/utils'
 import { storeToRefs } from 'pinia'
-import { useLabelTask as useClassification } from '~/builtins/label-tasks/classification/useLabelTask'
 import { useLabelTask as useTaxonomization } from '~/builtins/label-tasks/taxonomization/useLabelTaskWithForest'
-import { buildForest } from '~/builtins/label-tasks/taxonomization/utils'
 import { saveJsonFile, uploadJsonFile } from '~/plugins/file'
 import { useStore as useMessageStore } from '~/stores/message'
 import { useStore as useWorkspaceStore } from '~/stores/workspace'

@@ -1,4 +1,4 @@
-import type { TreeNode } from './types'
+import type { TreeNode } from '@image-taxonomy-labeler/ui/label-tasks/taxonomization/types'
 
 /** Find the node with the given name. */
 const findNode = (forest: TreeNode[], name: string): TreeNode | undefined => {

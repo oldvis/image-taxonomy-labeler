@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import VPagination from '@image-taxonomy-labeler/ui/components/VPagination.vue'
+import { useLabelTask as useClassification } from '@image-taxonomy-labeler/ui/label-tasks/classification/useLabelTask'
+import { useLabelTask as useTaxonomization } from '@image-taxonomy-labeler/ui/label-tasks/taxonomization/useLabelTask'
 import { useElementSize } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import VColumnsBody from '~/builtins/data-display/columns/VBody.vue'
 import VGridBody from '~/builtins/data-display/grid/VBody.vue'
 import VSingleObjectBody from '~/builtins/data-display/single-object/VBody.vue'
-import VPagination from '~/builtins/data-display/VPagination.vue'
-import { useLabelTask as useClassification } from '~/builtins/label-tasks/classification/useLabelTask'
-import { useLabelTask as useTaxonomization } from '~/builtins/label-tasks/taxonomization/useLabelTask'
 import { useStore as useSelectorStore } from '~/stores/selector'
 import { useStore as useWorkspaceStore } from '~/stores/workspace'
 

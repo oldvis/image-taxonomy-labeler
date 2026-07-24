@@ -48,12 +48,17 @@ export default defineConfig({
       dts: true,
       dirs: [
         './src/composables',
+        path.resolve(__dirname, '../../packages/ui/src/composables'),
       ],
       vueTemplate: true,
     }),
 
     // https://github.com/antfu/vite-plugin-components
     Components({
+      dirs: [
+        'src/components',
+        path.resolve(__dirname, '../../packages/ui/src/components'),
+      ],
       dts: true,
     }),
 

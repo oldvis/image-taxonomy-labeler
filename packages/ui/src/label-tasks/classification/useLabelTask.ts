@@ -8,6 +8,7 @@
 
 import type { Annotation } from '../types'
 import { v4 as uuidv4 } from 'uuid'
+import { ref } from 'vue'
 import { useCommon } from '../useCommon'
 
 export type { Annotation } from '../types'

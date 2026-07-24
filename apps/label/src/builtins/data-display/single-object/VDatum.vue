@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { Visualization } from '@image-taxonomy-labeler/shared/plugins/visualization'
+import { isDark } from '@image-taxonomy-labeler/ui/composables/dark'
+import VImage from '@image-taxonomy-labeler/ui/data-display/VImage.vue'
 import { useClipboard } from '@vueuse/core'
 import { VObjectInspector } from 'v-object-inspector'
-import { isDark } from '~/composables/dark'
 import { useStore } from '~/stores/message'
-import VImage from '../VImage.vue'
 import 'v-object-inspector/dist/style.css'
 
 const { datum } = defineProps({

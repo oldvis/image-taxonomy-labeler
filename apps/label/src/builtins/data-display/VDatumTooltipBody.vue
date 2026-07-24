@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { Visualization } from '@image-taxonomy-labeler/shared/plugins/visualization'
+import type { PropType } from 'vue'
 import { useClipboard } from '@vueuse/core'
+import { toRefs } from 'vue'
 import { useStore } from '~/stores/message'
 
 const props = defineProps({

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useLabelTask as useClassification } from '~/builtins/label-tasks/classification/useLabelTask'
+import { useLabelTask as useClassification } from '@image-taxonomy-labeler/ui/label-tasks/classification/useLabelTask'
 
 const { categories } = useClassification()
 categories.value = ['Unsure', 'Sure']

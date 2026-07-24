@@ -17,8 +17,6 @@ declare module 'vue' {
     TheDataDisplayHeader: typeof import('./src/components/TheDataDisplayHeader.vue')['default']
     TheDialogLogin: typeof import('./src/components/TheDialogLogin.vue')['default']
     TheNavBar: typeof import('./src/components/TheNavBar.vue')['default']
-    TheToggleLayout: typeof import('./src/components/TheToggleLayout.vue')['default']
-    TheTreeNode: typeof import('./src/components/VTreeView/TheTreeNode.vue')['default']
     TheViewLabelProgress: typeof import('./src/components/TheViewLabelProgress.vue')['default']
     TheViewLabelProgressButtons: typeof import('./src/components/TheViewLabelProgressButtons.vue')['default']
     TheViewSelectors: typeof import('./src/components/TheViewSelectors.vue')['default']
@@ -27,11 +25,13 @@ declare module 'vue' {
     TheWidgetLoad: typeof import('./src/components/TheWidgetLoad.vue')['default']
     TheWidgetSearch: typeof import('./src/components/TheWidgetSearch.vue')['default']
     TheWidgetTaxonomization: typeof import('./src/components/TheWidgetTaxonomization.vue')['default']
-    VDialog: typeof import('./src/components/VDialog.vue')['default']
+    VDialog: typeof import('./../../packages/ui/src/components/VDialog.vue')['default']
     VInput: typeof import('./src/components/VTreeView/VInput.vue')['default']
     VMessage: typeof import('./src/components/VMessage.vue')['default']
     VMessages: typeof import('./src/components/VMessages.vue')['default']
     VSelector: typeof import('./src/components/VSelector.vue')['default']
+    VToggleLayout: typeof import('./../../packages/ui/src/components/VToggleLayout.vue')['default']
+    VTreeNode: typeof import('./src/components/VTreeView/VTreeNode.vue')['default']
     VTreeView: typeof import('./src/components/VTreeView/VTreeView.vue')['default']
   }
 }

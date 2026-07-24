@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import type { PropType } from 'vue'
 import type { Message } from '~/stores/message'
 import { promiseTimeout } from '@vueuse/core'
+import { onMounted, ref, watch } from 'vue'
 import { MessageType } from '~/stores/message'
 
 const { message } = defineProps({

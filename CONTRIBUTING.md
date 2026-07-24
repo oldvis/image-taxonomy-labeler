@@ -16,7 +16,9 @@ pnpm --filter ./apps/label dev
 # or: pnpm --filter ./apps/compare dev
 ```
 
-`@image-taxonomy-labeler/shared` holds leaf API/catalog code only. Vue UI stays in each app because the apps may diverge.
+`@image-taxonomy-labeler/shared` holds leaf API/catalog code only.
+`@image-taxonomy-labeler/ui` holds shared label-task helpers and lean presentational widgets.
+App chrome (toasts, search widget, screens) stays in each app.
 
 **Backend:**
 

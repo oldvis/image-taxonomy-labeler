@@ -1,8 +1,8 @@
+import type { Annotation } from '@image-taxonomy-labeler/ui/label-tasks/types'
 import type { Category, TreeNode, TreeNodeWithUsers } from '~/builtins/label-tasks/taxonomization/types'
-import type { Annotation } from '~/builtins/label-tasks/types'
+import { buildForest } from '@image-taxonomy-labeler/ui/label-tasks/taxonomization/utils'
 import { difference, isEqual } from 'lodash'
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import { buildForest } from '~/builtins/label-tasks/taxonomization/utils'
 
 export type { TreeNodeWithUsers } from '~/builtins/label-tasks/taxonomization/types'
 

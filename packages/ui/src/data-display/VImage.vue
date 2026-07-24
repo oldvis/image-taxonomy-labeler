@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import type { PropType } from 'vue'
+import { isHttps, isLocalhost } from '@image-taxonomy-labeler/shared/services/url'
 import { useImage } from '@vueuse/core'
-import { isHttps, isLocalhost } from './utils'
+import { computed, toRefs } from 'vue'
 
 const props = defineProps({
   /** Render the given part of the visualization metadata. */

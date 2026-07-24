@@ -1,11 +1,11 @@
 import type { Visualization } from '@image-taxonomy-labeler/shared/plugins/visualization'
 import type { IFuseOptions } from 'fuse.js'
+import { useLabelTask as useClassification } from '@image-taxonomy-labeler/ui/label-tasks/classification/useLabelTask'
+import { useLabelTask as useTaxonomization } from '@image-taxonomy-labeler/ui/label-tasks/taxonomization/useLabelTask'
 import Fuse from 'fuse.js'
 import { isEqual } from 'lodash'
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { v4 as uuidv4 } from 'uuid'
-import { useLabelTask as useClassification } from '~/builtins/label-tasks/classification/useLabelTask'
-import { useLabelTask as useTaxonomization } from '~/builtins/label-tasks/taxonomization/useLabelTask'
 
 export enum SelectorType {
   /** The type of selectors that follow Fuse.js options schema. */

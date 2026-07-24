@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isHttps, isLocalhost } from '../src/builtins/data-display/utils'
+import { isHttps, isLocalhost } from '../src/services/url'
 
 describe('isLocalhost', () => {
   it('accepts localhost and 127.0.0.1', () => {

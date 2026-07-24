@@ -1,5 +1,5 @@
+import { useLabelTask as _useLabelTask } from '@image-taxonomy-labeler/ui/label-tasks/taxonomization/useLabelTask'
 import { useForest } from './useForest'
-import { useLabelTask as _useLabelTask } from './useLabelTask'
 
 /**
  * Adapt `useLabelTask` in `./useLabelTask`.

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { TreeNode } from '~/builtins/label-tasks/taxonomization/useLabelTask'
+import type { TreeNode } from '@image-taxonomy-labeler/ui/label-tasks/taxonomization/useLabelTask'
 import { ElCheckbox, ElTreeSelect } from 'element-plus'
 import { storeToRefs } from 'pinia'
 import { useLabelTask } from '~/builtins/label-tasks/taxonomization/useLabelTaskWithForest'
