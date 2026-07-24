@@ -1,0 +1,1 @@
+import{n as e,r as t,t as n}from"./index-CncQmlp_.js";var r={},i={class:`m-auto text-4xl`};function a(n,r){return t(),e(`div`,i,` 404 Not Found `)}var o=n(r,[[`render`,a]]);export{o as default};
