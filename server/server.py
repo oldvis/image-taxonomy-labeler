@@ -37,9 +37,7 @@ try:
 except FileNotFoundError as exc:
     raise SystemExit(str(exc)) from exc
 
-_MISSING_RESOURCE = (
-    "Server resource missing; run setup_samples.py / check static/"
-)
+_MISSING_RESOURCE = "Server resource missing; run setup_samples.py / check static/"
 
 
 @app.get("/uuids/{uuid}/image")

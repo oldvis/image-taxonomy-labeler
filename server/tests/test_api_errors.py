@@ -37,9 +37,7 @@ def test_captioning_missing_file_returns_503(client: TestClient, tmp_path: Path)
     assert r.status_code != 500
 
 
-def test_clustering_missing_embeddings_returns_503(
-    client: TestClient, tmp_path: Path
-):
+def test_clustering_missing_embeddings_returns_503(client: TestClient, tmp_path: Path):
     emb_path = tmp_path / "static" / "embeddings.jsonl"
     emb_path.unlink()
     load_uuid2embedding.cache_clear()
