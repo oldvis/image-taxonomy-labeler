@@ -2,6 +2,7 @@
 import type { Visualization } from '@image-taxonomy-labeler/shared/plugins/visualization'
 import type { PropType } from 'vue'
 import { isDark } from '@image-taxonomy-labeler/ui/composables/dark'
+import { onClickOutside } from '@vueuse/core'
 import { ElTooltip } from 'element-plus'
 import { toRefs } from 'vue'
 import VDatumTooltipBody from './VDatumTooltipBody.vue'
@@ -23,6 +24,11 @@ const props = defineProps({
     type: Object as PropType<HTMLElement>,
     required: true,
   },
+  /** When true, tooltip body includes taxonomy + Sure/Unsure controls. */
+  enableLabeling: {
+    type: Boolean as PropType<boolean>,
+    default: false,
+  },
 })
 const emit = defineEmits<{
   /** Emitted when the tooltip is closed. */
@@ -30,6 +36,24 @@ const emit = defineEmits<{
 }>()
 
 const { datum } = toRefs(props)
+const contentRoot = ref<HTMLElement>()
+const ignoreVirtualRef = toRef(props, 'virtualRef')
+
+/** Close on outside click, but keep open for cell re-anchor and teleported selects. */
+onClickOutside(
+  contentRoot,
+  () => {
+    if (props.visible) emit('update:visible', false)
+  },
+  {
+    ignore: [
+      ignoreVirtualRef,
+      '.el-popper',
+      '.el-select-dropdown',
+      '.el-tree-select__popper',
+    ],
+  },
+)
 </script>
 
 <template>
@@ -39,12 +63,16 @@ const { datum } = toRefs(props)
     :virtual-ref="virtualRef"
     placement="left"
     virtual-triggering
+    persistent
   >
     <template #content>
-      <VDatumTooltipBody
-        :datum="datum"
-        @update:visible="emit('update:visible', $event)"
-      />
+      <div ref="contentRoot">
+        <VDatumTooltipBody
+          :datum="datum"
+          :enable-labeling="enableLabeling"
+          @update:visible="emit('update:visible', $event)"
+        />
+      </div>
     </template>
   </ElTooltip>
 </template>

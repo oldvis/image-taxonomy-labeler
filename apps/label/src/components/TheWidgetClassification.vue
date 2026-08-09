@@ -29,24 +29,22 @@ const clickCategory = (uuid: string, category: string): void => {
 </script>
 
 <template>
-  <div class="flex flex-row gap-2">
+  <div class="flex flex-row gap-1">
     <button
-      btn
-      bg="neutral-600 hover:neutral-700"
+      type="button"
+      :class="isClassified(uuid, 'Unsure') ? 'btn-neutral' : 'btn-secondary'"
       title="Not sure if the annotation is accurate"
-      :ring="isClassified(uuid, 'Unsure') ? '2 black dark:white' : ''"
       @click="clickCategory(uuid, 'Unsure')"
     >
-      <div>Unsure</div>
+      Unsure
     </button>
     <button
-      btn
-      bg="blue-400 hover:blue-500"
+      type="button"
+      :class="isClassified(uuid, 'Sure') ? 'pill-on' : 'btn-secondary'"
       title="Sure that the annotation is accurate"
-      :ring="isClassified(uuid, 'Sure') ? '2 black dark:white' : ''"
       @click="clickCategory(uuid, 'Sure')"
     >
-      <div>Sure</div>
+      Sure
     </button>
   </div>
 </template>

@@ -35,17 +35,14 @@ const dragState = ref(null as null | {
 
 const isInMergeZone = ref(false)
 const checkInMergeZone = (e: DragEvent) => {
-  // The dropped node.
-  const target = e.target as HTMLElement
+  const target = e.target
+  if (!(target instanceof Element)) return false
 
-  // The children zone div of the dropped node.
-  const elementMergeZone = Array
-    .from(target.getElementsByTagName('div'))
-    .filter((d) => d.textContent?.trim() === 'merge')[0]
+  // Prefer the tree-node content root so hovering the merge chip itself still works.
+  const content = target.closest('.el-tree-node__content') ?? target
+  const elementMergeZone = content.querySelector('[data-merge-zone]')
+  if (elementMergeZone === null) return false
 
-  if (elementMergeZone === undefined) return false
-
-  // Check if the mouse is inside the children zone.
   const { clientX, clientY } = e
   const rect = elementMergeZone.getBoundingClientRect()
   return (
@@ -87,6 +84,7 @@ const onNodeDragEnd = (
 <template>
   <ElTree
     :data="forest"
+    empty-text="No groups"
     :props="{
       label: (data) => `${data.name} (${data.value})`,
     }"
@@ -105,3 +103,21 @@ const onNodeDragEnd = (
     </template>
   </ElTree>
 </template>
+
+<style scoped>
+:deep(.el-tree__empty-block) {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+:deep(.el-tree__empty-text) {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #6b7280;
+}
+:global(html.dark) :deep(.el-tree__empty-text),
+:global(.dark) :deep(.el-tree__empty-text) {
+  color: #9ca3af;
+}
+</style>

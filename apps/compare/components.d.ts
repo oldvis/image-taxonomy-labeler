@@ -29,6 +29,7 @@ declare module 'vue' {
     VInput: typeof import('./src/components/VInput.vue')['default']
     VMessage: typeof import('./src/components/VMessage.vue')['default']
     VMessages: typeof import('./src/components/VMessages.vue')['default']
+    VPagination: typeof import('./../../packages/ui/src/components/VPagination.vue')['default']
     VSelector: typeof import('./src/components/VSelector.vue')['default']
     VTextColumns: typeof import('./src/components/VIndentedTree/VTextColumns.vue')['default']
     VToggleLayout: typeof import('./../../packages/ui/src/components/VToggleLayout.vue')['default']

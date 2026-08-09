@@ -49,6 +49,14 @@ watch(show, (d) => {
     >
       <div class="i-fa6-solid:triangle-exclamation" />
     </div>
+    <div
+      v-if="message.type === MessageType.Info"
+      class="inline-flex items-center justify-center p-2 w-8 h-8 rounded"
+      bg="sky-100 dark:sky-800"
+      text="sky-600 dark:sky-200"
+    >
+      <div class="i-fa6-solid:circle-info" />
+    </div>
     <div class="text-sm">
       {{ message.content }}
     </div>

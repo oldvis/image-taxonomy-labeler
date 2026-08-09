@@ -11,16 +11,16 @@ const { addErrorMessage, addSuccessMessage } = useMessageStore()
 const userName = ref('' as string | null)
 const onClickSignIn = () => {
   if (!userName.value) {
-    addErrorMessage('Login Failed')
+    addErrorMessage('Login failed')
     return
   }
   signIn(userName.value)
   if (isSignedIn.value) {
-    addSuccessMessage('Login Succeeded')
+    addSuccessMessage('Login succeeded')
     dialog.value = false
   }
   else {
-    addErrorMessage('Login Failed')
+    addErrorMessage('Login failed')
   }
 }
 onMounted(() => {
@@ -33,68 +33,81 @@ onMounted(() => {
     <template #activator>
       <button
         v-if="!isSignedIn"
-        icon-btn
-        class="border-x px-2 mx-2"
-        @click="dialog = !dialog"
+        type="button"
+        btn-secondary
+        class="flex gap-1 items-center"
+        title="Set a local annotator name for new labels"
+        @click="dialog = true"
       >
-        Sign in
+        <div class="i-fa6-regular:user my-auto" />
+        <span>Set annotator name</span>
       </button>
       <div
         v-else
-        class="border-x px-2 mx-2 my-auto"
+        class="flex gap-1 items-center"
       >
-        Hi, {{ userName }}
         <button
-          icon-btn
-          class="pl-2"
+          type="button"
+          btn-secondary
+          class="flex gap-1 items-center"
+          title="Change annotator name"
+          @click="dialog = true"
+        >
+          <div class="i-fa6-regular:user my-auto" />
+          <span>Hi, {{ userName }}</span>
+        </button>
+        <button
+          type="button"
+          btn-ghost
+          title="Clear annotator name"
           @click="signOut"
         >
-          Sign out
+          Clear
         </button>
       </div>
     </template>
     <template #default>
-      <div
-        class="rounded shadow max-w-md p-4"
-        bg="white dark:gray-700"
-      >
-        <div class="flex">
-          <div class="text-xl font-bold">
-            Sign in
-          </div>
+      <div class="dialog-panel">
+        <div class="status-strip border-b border-gray-200 dark:border-gray-700">
+          <span class="font-semibold text-sm">Set annotator name</span>
+          <div class="grow" />
           <button
+            type="button"
             icon-btn
-            class="ml-auto"
             title="Close"
             @click="dialog = false"
           >
             <div class="i-fa6-solid:xmark" />
           </button>
         </div>
-        <div class="p-4">
-          <div class="space-y-6">
-            <div>
-              <label
-                for="user"
-                class="block mb-2"
-              >
-                Name
-              </label>
-              <input
-                id="user"
-                v-model="userName"
-                placeholder="Name"
-                required
-                class="rounded text-sm p-2.5 dark:placeholder-gray-400 "
-                bg="gray-50 dark:gray-600"
-                border="~ gray-300 dark:gray-500"
-              >
-            </div>
+        <div class="dialog-body">
+          <label
+            for="user"
+            class="text-sm text-gray-700 dark:text-gray-200"
+          >
+            Name
+          </label>
+          <input
+            id="user"
+            v-model="userName"
+            dialog-field
+            placeholder="Name"
+            required
+          >
+          <div class="flex gap-1 justify-end">
             <button
+              type="button"
+              btn-secondary
+              @click="dialog = false"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
               btn
               @click="onClickSignIn"
             >
-              Login
+              Save
             </button>
           </div>
         </div>

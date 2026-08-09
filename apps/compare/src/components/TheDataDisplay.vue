@@ -27,7 +27,7 @@ const layout = ref<'single' | 'columns' | 'grid'>('single')
 const pageSize = computed(() => {
   if (layout.value === 'single') return 1
   if (layout.value === 'columns') return 25
-  if (layout.value === 'grid') return 288
+  if (layout.value === 'grid') return 300
   return 1
 })
 const VBody = computed(() => {
@@ -69,16 +69,16 @@ const shown = computed(() => (
       class="overflow-auto scroll-smooth flex-1"
     >
       <div
-        class="flex"
+        class="flex min-h-0"
         :style="`height: calc(100% - ${paginationHeight}px)`"
       >
         <VBody
-          class="flex-1"
+          class="min-h-0 flex-1"
           :data-objects="shown"
         />
       </div>
       <div ref="pagination">
-        <div class="gap-1 flex border-t">
+        <div class="gap-1 flex items-center border-t border-gray-200 px-2 py-1.5 dark:border-gray-700">
           <VPagination
             v-model="currentPage"
             :page-count="Math.ceil(matched.length / pageSize)"
@@ -88,9 +88,9 @@ const shown = computed(() => (
     </div>
     <div
       v-else
-      class="m-auto text-xl"
+      class="m-auto text-sm text-gray-500 p-3 dark:text-gray-400"
     >
-      No Entries Matched
+      No entries matched
     </div>
   </div>
 </template>

@@ -41,16 +41,15 @@ const onClickCopy = () => {
       </div>
       <b>{{ datum.displayName }}</b>
     </div>
-    <div class="flex pt-1 gap-1">
-      <div class="basis-4/10 flex">
+    <div class="flex items-start pt-1 gap-1">
+      <div class="basis-4/10 min-w-0">
         <VImage
-          class="flex-1"
           :url="datum.downloadUrl ?? ''"
           :uuid="datum.uuid"
         />
       </div>
       <div
-        class="basis-6/10"
+        class="basis-6/10 min-w-0"
         flex="~ col"
       >
         <div>

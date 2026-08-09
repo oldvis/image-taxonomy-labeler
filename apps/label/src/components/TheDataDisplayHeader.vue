@@ -29,30 +29,30 @@ const layout = defineModel({
 
 <template>
   <div view-header>
-    <div class="i-fa6-solid:table my-auto" />
-    <div class="font-bold">
-      Entries
-    </div>
+    <div class="i-fa6-solid:images text-gray-500 shrink-0" />
+    <span class="strip-label">Entries</span>
     <VToggleLayout v-model:layout="layout" />
     <div class="grow" />
-    <div class="flex">
-      <div class="flex border-l px-1">
-        <div class="font-bold">
-          {{ nInPageLabeled }}/{{ nInPage }}&nbsp;
-        </div>
-        in page grouped
-      </div>
-      <div
-        v-if="nMatched !== null"
-        class="flex border-l px-1"
-      >
-        <b>{{ nMatched }}&nbsp;</b>
-        matched
-      </div>
-      <div class="flex border-l px-1">
-        <b>{{ nTotal }}&nbsp;</b>
-        in workspace
-      </div>
+    <div class="strip-meta flex flex-wrap items-center gap-x-1.5 gap-y-1">
+      <span>
+        <span class="strip-meta-em">{{ nInPageLabeled }}</span>/{{ nInPage }} in page grouped
+      </span>
+      <template v-if="nMatched !== null">
+        <span
+          class="strip-sep"
+          aria-hidden="true"
+        >·</span>
+        <span>
+          <span class="strip-meta-em">{{ nMatched }}</span> matched
+        </span>
+      </template>
+      <span
+        class="strip-sep"
+        aria-hidden="true"
+      >·</span>
+      <span>
+        <span class="strip-meta-em">{{ nTotal }}</span> in workspace
+      </span>
     </div>
   </div>
 </template>

@@ -123,9 +123,12 @@ const onNodeRemove = (node: TreeNode) => {
       view-header
       class="items-center"
     >
-      <div class="i-fa6-solid:info" />
-      <b>Groups</b>
+      <div class="flex shrink-0 gap-1.5 items-center">
+        <div class="i-fa6-solid:info text-gray-500 shrink-0" />
+        <span class="strip-label">Groups</span>
+      </div>
       <button
+        type="button"
         icon-btn
         class="i-fa6-solid:code-fork"
         :disabled="isCategoriesEmpty || isEditing"
@@ -133,6 +136,7 @@ const onNodeRemove = (node: TreeNode) => {
         @click="onNodeDivide()"
       />
       <button
+        type="button"
         icon-btn
         class="i-fa6-solid:plus"
         :disabled="isEditing"
@@ -140,6 +144,7 @@ const onNodeRemove = (node: TreeNode) => {
         @click="onNodeAppend()"
       />
       <button
+        type="button"
         icon-btn
         class="i-fa6-solid:recycle"
         :disabled="isEditing"
@@ -147,20 +152,25 @@ const onNodeRemove = (node: TreeNode) => {
         @click="onGroupUngrouped()"
       />
       <div class="grow" />
-      <div class="flex">
-        <div class="border-l px-1">
-          #roots:
-          <b>{{ forest.length }}</b>
-        </div>
-        <div class="border-l px-1">
-          #nodes:
-          <b>{{ categories.length }}</b>
-        </div>
+      <div class="strip-meta flex flex-wrap items-center gap-x-1.5 gap-y-1">
+        <span>
+          <span class="strip-meta-em">{{ forest.length }}</span>
+          {{ forest.length === 1 ? 'root' : 'roots' }}
+        </span>
+        <span
+          class="strip-sep"
+          aria-hidden="true"
+        >·</span>
+        <span>
+          <span class="strip-meta-em">{{ categories.length }}</span>
+          {{ categories.length === 1 ? 'node' : 'nodes' }}
+        </span>
       </div>
     </div>
-    <div class="text-xl overflow-auto grow">
+    <div class="overflow-auto grow min-h-0">
       <VTreeView
         :forest="forest"
+        class="h-full"
         @node-drop="onNodeDrop"
       >
         <template #default="{ node, dragState }">

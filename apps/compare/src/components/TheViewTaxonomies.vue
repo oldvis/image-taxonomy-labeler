@@ -249,9 +249,9 @@ const barWidth = 30
     </div>
     <div
       v-else
-      class="m-auto text-xl"
+      class="m-auto text-sm text-gray-500 p-3 dark:text-gray-400"
     >
-      Please Upload Annotations
+      Please upload annotations
     </div>
   </div>
 </template>

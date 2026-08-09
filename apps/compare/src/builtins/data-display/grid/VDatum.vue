@@ -14,15 +14,18 @@ defineProps({
 
 <template>
   <div
-    class="text-sm cursor-pointer"
+    class="relative h-full min-h-0 min-w-0 overflow-hidden text-sm cursor-pointer"
+    title="Click image to view metadata"
     bg="slate-100 dark:slate-900"
     border="~ gray-200"
   >
-    <slot />
     <VImage
       :url="datum.uuid === undefined ? '' : getThumbnailUrl(datum.uuid)"
       :uuid="datum.uuid"
-      style="width: 100%; height: 100%;"
+      class="absolute inset-0 h-full w-full"
     />
+    <div class="absolute inset-x-0 top-0 z-1 max-h-full overflow-auto">
+      <slot />
+    </div>
   </div>
 </template>

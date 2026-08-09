@@ -11,6 +11,11 @@ const props = defineProps({
     type: Object as PropType<Visualization>,
     required: true,
   },
+  /** When true, include taxonomy + Sure/Unsure controls. */
+  enableLabeling: {
+    type: Boolean as PropType<boolean>,
+    default: false,
+  },
 })
 const emit = defineEmits<{
   /** Emitted when the tooltip is closed. */
@@ -67,6 +72,17 @@ const onClickCopy = () => {
         class="i-fa6-solid:xmark"
         @click="emit('update:visible', false)"
       />
+    </div>
+    <div
+      v-if="enableLabeling"
+      class="flex flex-col gap-1 my-1"
+      style="max-width: 400px;"
+    >
+      <TheWidgetTaxonomization
+        :uuid="datum.uuid"
+        :teleport-dropdown="false"
+      />
+      <TheWidgetClassification :uuid="datum.uuid" />
     </div>
     <div class="flex gap-1">
       <button

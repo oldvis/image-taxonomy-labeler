@@ -68,9 +68,9 @@ const shown = computed(() => (
     </div>
     <div
       v-else
-      class="m-auto text-xl"
+      class="m-auto text-sm text-gray-500 p-3 dark:text-gray-400"
     >
-      No Entries Matched
+      No entries matched
     </div>
   </div>
 </template>

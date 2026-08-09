@@ -21,6 +21,12 @@ watch(nDataObjects, () => {
   activeTarget.value = undefined
   activeDatum.value = undefined
 })
+
+const openTooltip = (el: HTMLElement, d: Visualization) => {
+  tooltipVisible.value = true
+  activeTarget.value = el
+  activeDatum.value = d
+}
 </script>
 
 <template>
@@ -30,11 +36,7 @@ watch(nDataObjects, () => {
       :key="d.uuid"
       :datum="d"
       class="mb-1"
-      @contextmenu.stop.prevent="(e: MouseEvent) => {
-        tooltipVisible = true
-        activeTarget = e.currentTarget as HTMLElement
-        activeDatum = d
-      }"
+      @open-metadata="openTooltip($event, d)"
     />
     <VDatumTooltip
       v-if="activeDatum !== undefined && activeTarget !== undefined"

@@ -22,7 +22,7 @@ const text = computed(() => {
     return `search: '${(selector.value as Selector<SelectorType.Fuse>).query.pattern}'`
   }
   if (selector.value.type === SelectorType.Unlabeled) {
-    return 'Unlabeled'
+    return 'Unmarked'
   }
   if (selector.value.type === SelectorType.Labeled) {
     return 'Labeled'
@@ -38,9 +38,10 @@ const text = computed(() => {
 </script>
 
 <template>
-  <div class="border flex gap-1 px-1">
+  <div class="chip">
     {{ text }}
     <button
+      type="button"
       icon-btn
       title="Remove"
       @click="emit('removeSelector', selector)"

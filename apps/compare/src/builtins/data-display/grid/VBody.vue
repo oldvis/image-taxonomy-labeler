@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Visualization } from '@image-taxonomy-labeler/shared/plugins/visualization'
 import { assignGrid } from '@image-taxonomy-labeler/shared/services/layout'
+import { USE_ALGORITHM_SERVICE } from '@image-taxonomy-labeler/shared/services/params'
 import { watchDebounced } from '@vueuse/core'
 import VDatumTooltip from '../VDatumTooltip.vue'
 import VDatum from './VDatum.vue'
@@ -35,6 +36,8 @@ const shape = computed(() => {
 })
 
 const uuid2cell = ref<Record<string, [number, number]>>()
+/** True when dense layout cannot run without the local algorithm server. */
+const needsLocalServer = ref(!USE_ALGORITHM_SERVICE)
 let assignGen = 0
 
 const updateAssignment = async () => {
@@ -43,18 +46,31 @@ const updateAssignment = async () => {
   const uuids = dataObjects.value.map((d) => d.uuid)
   if (uuids.length === 0) {
     uuid2cell.value = {}
+    needsLocalServer.value = false
     return
   }
   if (uuids.length === 1) {
     uuid2cell.value = { [uuids[0]]: [0, 0] }
+    needsLocalServer.value = false
     return
   }
-  const { nRows, nCols } = shape.value
-  const assignment = await assignGrid(uuids, nRows, nCols)
-  if (gen !== assignGen) return
-  uuid2cell.value = Object.fromEntries(
-    assignment.map((d, i) => [uuids[i], d]),
-  )
+  if (!USE_ALGORITHM_SERVICE) {
+    needsLocalServer.value = true
+    return
+  }
+  try {
+    const { nRows, nCols } = shape.value
+    const assignment = await assignGrid(uuids, nRows, nCols)
+    if (gen !== assignGen) return
+    uuid2cell.value = Object.fromEntries(
+      assignment.map((d, i) => [uuids[i], d]),
+    )
+    needsLocalServer.value = false
+  }
+  catch {
+    if (gen !== assignGen) return
+    needsLocalServer.value = true
+  }
 }
 
 watchDebounced(dataObjects, () => {
@@ -79,10 +95,10 @@ watch(nDataObjects, () => {
 </script>
 
 <template>
-  <div class="flex">
+  <div class="flex h-full min-h-0 w-full">
     <div
       v-if="uuid2cell !== undefined"
-      class="grid gap-0.5 p-0.5 flex-1"
+      class="grid h-full min-h-0 flex-1 gap-0.5 p-0.5"
       :style="{
         'grid-template-columns': `repeat(${shape.nCols},minmax(0,1fr))`,
         'grid-template-rows': `repeat(${shape.nRows},minmax(0,1fr))`,
@@ -99,15 +115,15 @@ watch(nDataObjects, () => {
             'grid-column-start': uuid2cell[d.uuid][1] + 1,
             'grid-column-end': uuid2cell[d.uuid][1] + 2,
           }"
-          @contextmenu.stop.prevent="(e: MouseEvent) => {
+          @click="(e: MouseEvent) => {
             tooltipVisible = true
             activeTarget = e.currentTarget as HTMLElement
             activeDatum = d
           }"
         >
           <div
-            flex="~ col"
-            class="my-2 gap-2"
+            class="flex flex-col gap-0.5 p-0.5 bg-white/80 dark:bg-gray-900/80"
+            @click.stop
           >
             <TheWidgetAnnotationComparator :uuid="d.uuid" />
           </div>
@@ -119,6 +135,12 @@ watch(nDataObjects, () => {
         :datum="activeDatum"
         :virtual-ref="activeTarget"
       />
+    </div>
+    <div
+      v-else-if="needsLocalServer"
+      class="m-auto text-sm text-gray-500 p-3 text-center dark:text-gray-400"
+    >
+      Dense layout is only available when the local resource server is connected.
     </div>
   </div>
 </template>

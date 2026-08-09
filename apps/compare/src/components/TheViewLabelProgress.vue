@@ -19,10 +19,10 @@ const { subjectUuids, dissensusUuids, consensusUuids, unsureUuids } = storeToRef
     <div class="flex gap-1 text-sm">
       <template
         v-for="(d, i) in [
-          { title: '#Labeled:', value: `${subjectUuids.length}` },
-          { title: '#Dissensus:', value: `${dissensusUuids.length}` },
-          { title: '#Consensus:', value: `${consensusUuids.length}` },
-          { title: '#Unsure:', value: `${unsureUuids.length}` },
+          { title: '#labeled:', value: `${subjectUuids.length}` },
+          { title: '#dissensus:', value: `${dissensusUuids.length}` },
+          { title: '#consensus:', value: `${consensusUuids.length}` },
+          { title: '#unsure:', value: `${unsureUuids.length}` },
         ]" :key="d.title"
       >
         <div v-if="i === 0" class="border-l my-1" />

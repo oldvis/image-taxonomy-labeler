@@ -17,8 +17,6 @@ const matched = computed(() => (
   selectorStore.applySelectors(visualizations.value)
 ))
 
-const content = ref<HTMLDivElement>()
-
 /** The number of shown visualizations. */
 const pageSize = ref(25)
 
@@ -45,16 +43,6 @@ const isAnnotated = (uuid: string): boolean => (
 const nInPageLabeled = computed(() => (
   shown.value.filter((d) => isAnnotated(d.uuid)).length
 ))
-
-const gotoUnlabeled = (): void => {
-  const index = matched.value.findIndex((d) => !isAnnotated(d.uuid))
-  if (index !== -1) {
-    currentPage.value = index / pageSize.value + 1
-    if (content.value !== undefined) {
-      content.value.scrollTop = 0
-    }
-  }
-}
 </script>
 
 <template>
@@ -67,7 +55,6 @@ const gotoUnlabeled = (): void => {
     />
     <div
       v-if="shown.length !== 0"
-      ref="content"
       flex="~ col"
       class="overflow-auto scroll-smooth flex-1"
     >
@@ -78,20 +65,13 @@ const gotoUnlabeled = (): void => {
           v-model="currentPage"
           :page-count="Math.ceil(matched.length / pageSize)"
         />
-        <button
-          btn
-          title="goto first unlabeled"
-          @click="gotoUnlabeled"
-        >
-          <div>goto first unlabeled</div>
-        </button>
       </div>
     </div>
     <div
       v-else
-      class="m-auto text-xl"
+      class="m-auto text-sm text-gray-500 p-3 dark:text-gray-400"
     >
-      No Entries Matched
+      No entries matched
     </div>
   </div>
 </template>

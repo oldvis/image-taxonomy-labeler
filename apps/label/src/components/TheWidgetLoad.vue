@@ -35,22 +35,24 @@ const onClickLoad100 = () => {
 </script>
 
 <template>
-  <div class="flex gap-2">
+  <div class="flex gap-1">
     <button
-      btn
+      type="button"
+      btn-secondary
       title="Load remaining images to the workspace"
       :disabled="uuidsAll.length === uuidsLoaded.length"
       @click="onClickLoadRemaining"
     >
-      load remaining ({{ uuidsAll.length - uuidsLoaded.length }})
+      Load remaining ({{ uuidsAll.length - uuidsLoaded.length }})
     </button>
     <button
-      btn
+      type="button"
+      btn-secondary
       title="Load 100 images to the workspace"
       :disabled="uuidsAll.length === uuidsLoaded.length"
       @click="onClickLoad100"
     >
-      load 100
+      Load 100
     </button>
   </div>
 </template>

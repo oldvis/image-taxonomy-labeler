@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Visualization } from '@image-taxonomy-labeler/shared/plugins/visualization'
 import { assignGrid } from '@image-taxonomy-labeler/shared/services/layout'
+import { USE_ALGORITHM_SERVICE } from '@image-taxonomy-labeler/shared/services/params'
 import { watchDebounced } from '@vueuse/core'
 import VDatumTooltip from '../VDatumTooltip.vue'
 import VDatum from './VDatum.vue'
@@ -27,7 +28,6 @@ const shape = computed(() => {
     }
     else if ((nCols >= 2) && (nRows * (nCols - 1) >= n)) {
       nCols -= 1
-      continue
     }
     break
   }
@@ -35,26 +35,45 @@ const shape = computed(() => {
 })
 
 const uuid2cell = ref<Record<string, [number, number]>>()
+/** True when dense layout cannot run without the local algorithm server. */
+const needsLocalServer = ref(!USE_ALGORITHM_SERVICE)
+const gridEl = ref<HTMLElement>()
 let assignGen = 0
 
 const updateAssignment = async () => {
   const gen = ++assignGen
-  uuid2cell.value = undefined
+  // Keep the previous grid mounted while reassigning so tooltip anchors
+  // (and nested tree-select poppers) are not destroyed mid-interaction.
   const uuids = dataObjects.value.map((d) => d.uuid)
   if (uuids.length === 0) {
     uuid2cell.value = {}
+    needsLocalServer.value = false
     return
   }
   if (uuids.length === 1) {
     uuid2cell.value = { [uuids[0]]: [0, 0] }
+    needsLocalServer.value = false
     return
   }
-  const { nRows, nCols } = shape.value
-  const assignment = await assignGrid(uuids, nRows, nCols)
-  if (gen !== assignGen) return
-  uuid2cell.value = Object.fromEntries(
-    assignment.map((d, i) => [uuids[i], d]),
-  )
+  if (!USE_ALGORITHM_SERVICE) {
+    uuid2cell.value = undefined
+    needsLocalServer.value = true
+    return
+  }
+  try {
+    const { nRows, nCols } = shape.value
+    const assignment = await assignGrid(uuids, nRows, nCols)
+    if (gen !== assignGen) return
+    uuid2cell.value = Object.fromEntries(
+      assignment.map((d, i) => [uuids[i], d]),
+    )
+    needsLocalServer.value = false
+  }
+  catch {
+    if (gen !== assignGen) return
+    uuid2cell.value = undefined
+    needsLocalServer.value = true
+  }
 }
 
 watchDebounced(dataObjects, () => {
@@ -70,19 +89,55 @@ onUnmounted(() => {
 const tooltipVisible = ref(false)
 const activeTarget = ref<HTMLElement>()
 const activeDatum = ref<Visualization>()
-const nDataObjects = computed(() => dataObjects.value.length)
-watch(nDataObjects, () => {
+
+const clearTooltip = () => {
   tooltipVisible.value = false
   activeTarget.value = undefined
   activeDatum.value = undefined
+}
+
+/** Re-bind tooltip to the current cell DOM for activeDatum.uuid. */
+const rebindTooltipAnchor = async () => {
+  if (!tooltipVisible.value || activeDatum.value === undefined) return
+  await nextTick()
+  const uuid = activeDatum.value.uuid
+  const stillShown = dataObjects.value.some((d) => d.uuid === uuid)
+  if (!stillShown) {
+    clearTooltip()
+    return
+  }
+  const el = gridEl.value?.querySelector(`[data-uuid="${uuid}"]`)
+  if (el instanceof HTMLElement) {
+    activeTarget.value = el
+    const next = dataObjects.value.find((d) => d.uuid === uuid)
+    if (next !== undefined) activeDatum.value = next
+  }
+  else {
+    clearTooltip()
+  }
+}
+
+watch(uuid2cell, () => {
+  void rebindTooltipAnchor()
 })
+
+watch(dataObjects, () => {
+  void rebindTooltipAnchor()
+})
+
+const openTooltip = (e: MouseEvent, d: Visualization) => {
+  tooltipVisible.value = true
+  activeTarget.value = e.currentTarget as HTMLElement
+  activeDatum.value = d
+}
 </script>
 
 <template>
-  <div class="flex">
+  <div class="flex h-full min-h-0 w-full">
     <div
       v-if="uuid2cell !== undefined"
-      class="grid gap-0.5 p-0.5 flex-1"
+      ref="gridEl"
+      class="grid h-full min-h-0 flex-1 gap-0.5 p-0.5"
       :style="{
         'grid-template-columns': `repeat(${shape.nCols},minmax(0,1fr))`,
         'grid-template-rows': `repeat(${shape.nRows},minmax(0,1fr))`,
@@ -93,33 +148,31 @@ watch(nDataObjects, () => {
           v-if="d.uuid in uuid2cell"
           :key="d.uuid"
           :datum="d"
+          :page-count="dataObjects.length"
+          :data-uuid="d.uuid"
           :style="{
             'grid-row-start': uuid2cell[d.uuid][0] + 1,
             'grid-row-end': uuid2cell[d.uuid][0] + 2,
             'grid-column-start': uuid2cell[d.uuid][1] + 1,
             'grid-column-end': uuid2cell[d.uuid][1] + 2,
           }"
-          @contextmenu.stop.prevent="(e: MouseEvent) => {
-            tooltipVisible = true
-            activeTarget = e.currentTarget as HTMLElement
-            activeDatum = d
-          }"
-        >
-          <div
-            flex="~ col"
-            class="my-2 gap-2"
-          >
-            <TheWidgetTaxonomization :uuid="d.uuid" />
-            <TheWidgetClassification :uuid="d.uuid" />
-          </div>
-        </VDatum>
+          @click.stop="openTooltip($event, d)"
+        />
       </template>
-      <VDatumTooltip
-        v-if="activeDatum !== undefined && activeTarget !== undefined"
-        v-model:visible="tooltipVisible"
-        :datum="activeDatum"
-        :virtual-ref="activeTarget"
-      />
     </div>
+    <div
+      v-else-if="needsLocalServer"
+      class="m-auto text-sm text-gray-500 p-3 text-center dark:text-gray-400"
+    >
+      Dense layout is only available when the local resource server is connected.
+    </div>
+    <!-- Outside the grid mount cycle so brief reassignment cannot drop the popper. -->
+    <VDatumTooltip
+      v-if="activeDatum !== undefined && activeTarget !== undefined"
+      v-model:visible="tooltipVisible"
+      :datum="activeDatum"
+      :virtual-ref="activeTarget"
+      enable-labeling
+    />
   </div>
 </template>

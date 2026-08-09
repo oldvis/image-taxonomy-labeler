@@ -1,23 +1,27 @@
 import { storeToRefs } from 'pinia'
-import { onMounted, watch } from 'vue'
 import { useStore as useMessageStore } from '~/stores/message'
 import { useStore as useUserStore } from '~/stores/user'
 
-const SIGN_IN_NOTICE = 'Please sign in to save your name in the exported annotations.'
+export const NAME_NOTICE = 'Set a name in the header so new annotations include your user id.'
 
 /**
- * Show/Hide sign in notice
- * when the component is mounted and when sign in status updates.
+ * Soft identity nudge via snackbar (not a permanent layout bar).
+ * Call once when the annotate surface is ready. Stays until dismissed or signed in.
  */
 export const useSignInNotice = () => {
-  const { addErrorMessage } = useMessageStore()
+  const messageStore = useMessageStore()
   const { isSignedIn } = storeToRefs(useUserStore())
 
-  const updateSignInNotice = () => {
-    if (isSignedIn.value) return
-    addErrorMessage(SIGN_IN_NOTICE, Number.POSITIVE_INFINITY)
+  const notifyIfUnsigned = (): void => {
+    messageStore.removeByContent(NAME_NOTICE)
+    if (!isSignedIn.value) {
+      messageStore.addInfoMessage(NAME_NOTICE, Number.POSITIVE_INFINITY)
+    }
   }
 
-  onMounted(updateSignInNotice)
-  watch(isSignedIn, updateSignInNotice)
+  watch(isSignedIn, (signedIn) => {
+    if (signedIn) messageStore.removeByContent(NAME_NOTICE)
+  })
+
+  return { notifyIfUnsigned }
 }

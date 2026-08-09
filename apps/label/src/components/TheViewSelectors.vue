@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { useStore } from '~/stores/selector'
+import { SelectorType, useStore } from '~/stores/selector'
 
 const store = useStore()
 const { selectors } = storeToRefs(store)
@@ -10,59 +10,56 @@ const {
   toggleSureSelector,
   toggleUnsureSelector,
 } = store
+
+const hasType = (type: SelectorType) => selectors.value.some((s) => s.type === type)
 </script>
 
 <template>
-  <div
-    class="flex gap-1 select-none"
-    border="~ gray-200"
-  >
-    <div class="p-1 flex gap-1 text-sm">
-      <div class="i-fa6-solid:filter my-auto" />
-      <div class="font-bold my-auto">
-        Selectors
-      </div>
+  <div class="status-strip border-b border-gray-200 dark:border-gray-700 select-none">
+    <div class="flex shrink-0 gap-1.5 items-center">
+      <div class="i-fa6-solid:filter text-gray-500 my-auto" />
+      <span class="strip-label">Selectors</span>
     </div>
-    <div class="flex overflow-auto">
+    <div class="flex items-center gap-1 overflow-x-auto overflow-y-hidden">
       <template
         v-for="(selector, i) in selectors"
-        :key="i"
+        :key="selector.uuid"
       >
-        <div v-if="i !== 0" class="my-auto">
-          ∩
-        </div>
+        <span
+          v-if="i !== 0"
+          class="strip-sep"
+        >∩</span>
         <VSelector
           :selector="selector"
-          class="my-auto text-nowrap"
+          class="text-nowrap"
           @remove-selector="removeSelector(selector.uuid)"
         />
       </template>
     </div>
     <div class="grow" />
-    <button
-      btn
-      class="my-1 flex gap-1 items-center"
-      @click="toggleUnlabeledSelector"
-    >
-      <div class="i-fa6-solid:magnifying-glass" />
-      <div>Not Sure or Unsure</div>
-    </button>
-    <button
-      btn
-      class="my-1 flex gap-1 items-center"
-      @click="toggleSureSelector"
-    >
-      <div class="i-fa6-solid:magnifying-glass" />
-      <div>Sure</div>
-    </button>
-    <button
-      btn
-      class="my-1 flex gap-1 items-center"
-      @click="toggleUnsureSelector"
-    >
-      <div class="i-fa6-solid:magnifying-glass" />
-      <div>Unsure</div>
-    </button>
-    <TheWidgetSearch m="r-1" class="shrink-0" />
+    <div class="flex shrink-0 flex-wrap gap-1 items-center">
+      <button
+        type="button"
+        :class="hasType(SelectorType.Unlabeled) ? 'pill-on' : 'pill'"
+        @click="toggleUnlabeledSelector"
+      >
+        Unmarked
+      </button>
+      <button
+        type="button"
+        :class="hasType(SelectorType.Sure) ? 'pill-on' : 'pill'"
+        @click="toggleSureSelector"
+      >
+        Sure
+      </button>
+      <button
+        type="button"
+        :class="hasType(SelectorType.Unsure) ? 'pill-on' : 'pill'"
+        @click="toggleUnsureSelector"
+      >
+        Unsure
+      </button>
+      <TheWidgetSearch class="shrink-0" />
+    </div>
   </div>
 </template>

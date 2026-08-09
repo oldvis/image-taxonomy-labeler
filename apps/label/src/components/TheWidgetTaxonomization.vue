@@ -9,11 +9,19 @@ import { useStore as useWorkspaceStore } from '~/stores/workspace'
 import 'element-plus/es/components/tree-select/style/css'
 import 'element-plus/es/components/checkbox/style/css'
 
-const { uuid } = defineProps({
+const { uuid, teleportDropdown = true } = defineProps({
   /** The UUID of the visualization. */
   uuid: {
     type: String as PropType<string>,
     required: true,
+  },
+  /**
+   * When false, keep the tree dropdown in-DOM (needed inside tooltips so
+   * grid remounts do not orphan a body-teleported popper at 0,0).
+   */
+  teleportDropdown: {
+    type: Boolean as PropType<boolean>,
+    default: true,
   },
 })
 
@@ -59,6 +67,7 @@ const handleSelectRemoveTag = (name: string) => unassignTaxon(uuid, name)
       check-strictly
       default-expand-all
       multiple
+      :teleported="teleportDropdown"
       @remove-tag="handleSelectRemoveTag"
       @node-click="handleTreeCheck"
     >

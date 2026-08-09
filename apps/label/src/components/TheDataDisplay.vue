@@ -29,7 +29,7 @@ const layout = ref<'columns' | 'single' | 'grid'>('columns')
 const pageSize = computed(() => {
   if (layout.value === 'single') return 1
   if (layout.value === 'columns') return 25
-  if (layout.value === 'grid') return 288
+  if (layout.value === 'grid') return 300
   return 1
 })
 const VBody = computed(() => {
@@ -57,6 +57,7 @@ const shown = computed(() => (
 
 const { isAnnotated: isClassified } = useClassification()
 const { isAnnotated: isTaxonomized } = useTaxonomization()
+/** Grouped/labeled for the Entries header: has Sure/Unsure or any taxonomy. */
 const isAnnotated = (uuid: string): boolean => (
   isClassified(uuid) || isTaxonomized(uuid)
 )
@@ -65,13 +66,25 @@ const nInPageLabeled = computed(() => (
   shown.value.filter((d) => isAnnotated(d.uuid)).length
 ))
 
-const gotoUnlabeled = (): void => {
-  const index = matched.value.findIndex((d) => !isAnnotated(d.uuid))
-  if (index !== -1) {
-    currentPage.value = index / pageSize.value + 1
-    if (content.value !== undefined) {
-      content.value.scrollTop = 0
-    }
+/**
+ * Jump target for "Go to first unmarked".
+ *
+ * Use classification only (Sure/Unsure), not taxonomy. Load always assigns a
+ * batch taxon (`new batch`), so requiring "no taxonomy" would disable this
+ * control for every loaded image. Aligns with Progress "unmarked".
+ */
+const firstUnmarkedPage = computed((): number | null => {
+  const index = matched.value.findIndex((d) => !isClassified(d.uuid))
+  if (index === -1) return null
+  return Math.floor(index / pageSize.value) + 1
+})
+
+const gotoFirstUnmarked = (): void => {
+  const page = firstUnmarkedPage.value
+  if (page === null) return
+  currentPage.value = page
+  if (content.value !== undefined) {
+    content.value.scrollTop = 0
   }
 }
 </script>
@@ -92,36 +105,37 @@ const gotoUnlabeled = (): void => {
       class="overflow-auto scroll-smooth flex-1"
     >
       <div
-        class="flex"
+        class="flex min-h-0"
         :style="`height: calc(100% - ${paginationHeight}px)`"
       >
         <VBody
-          class="flex-1"
+          class="min-h-0 flex-1"
           :data-objects="shown"
         />
       </div>
       <div ref="pagination">
-        <div class="gap-1 flex border-t">
+        <div class="flex items-center gap-1 border-t border-gray-200 px-2 py-1.5 dark:border-gray-700">
           <VPagination
             v-model="currentPage"
             :page-count="Math.ceil(matched.length / pageSize)"
           />
           <button
-            btn
-            class="m-1"
-            title="goto first unlabeled"
-            @click="gotoUnlabeled"
+            type="button"
+            btn-secondary
+            title="Go to first unmarked (no Sure/Unsure)"
+            :disabled="firstUnmarkedPage === null"
+            @click="gotoFirstUnmarked"
           >
-            <div>goto first unlabeled</div>
+            Go to first unmarked
           </button>
         </div>
       </div>
     </div>
     <div
       v-else
-      class="m-auto text-xl"
+      class="m-auto text-sm text-gray-500 p-3 dark:text-gray-400"
     >
-      No Entries Matched
+      No entries matched
     </div>
   </div>
 </template>

@@ -43,6 +43,19 @@ const emit = defineEmits<{
   (e: 'nodeRemove', node: TreeNode): void
 }>()
 
+/** Must match the MIME set by Entries image dragstart (VImage). */
+const IMAGE_DRAG_MIME = 'application/x-oldvis-image'
+
+const isImageDrag = (e: DragEvent): boolean => (
+  Array.from(e.dataTransfer?.types ?? []).includes(IMAGE_DRAG_MIME)
+)
+
+const getImageDragUuid = (e: DragEvent): string | undefined => (
+  e.dataTransfer?.getData(IMAGE_DRAG_MIME)
+  || e.dataTransfer?.getData('text/plain')
+  || undefined
+)
+
 const { isCategorySelected } = useSelectorStore()
 const { annotationsByValue, annotationsByUuid, categories } = useLabelTask()
 
@@ -68,10 +81,18 @@ const useThumbnail = (uuids: Ref<string[]>) => {
   const url = computed(() => (
     centerUuid.value === null ? undefined : getThumbnailUrl(centerUuid.value)
   ))
-  return { url }
+  return { url, centerUuid }
 }
 
 const { url } = useThumbnail(subjects)
+
+const failed = ref(false)
+watch(url, () => {
+  failed.value = false
+})
+const onThumbnailError = (): void => {
+  failed.value = true
+}
 
 const container = ref<HTMLDivElement>()
 const input = ref<HTMLInputElement>()
@@ -106,39 +127,81 @@ const isDraggingImageOver = ref(false)
 /** Whether the user is dragging an image over the multi-label zone of this node. */
 const isInMultiLabelZone = ref(false)
 
+const onImageDragOver = (e: DragEvent): void => {
+  if (!isImageDrag(e)) return
+  e.preventDefault()
+  isDraggingImageOver.value = true
+  // Hovering the main row (not the multi chip) is single-label replace.
+  if (!(e.target instanceof Element) || e.target.closest('[data-multi-label-zone]') === null) {
+    isInMultiLabelZone.value = false
+  }
+}
+
+const onImageDragLeave = (e: DragEvent): void => {
+  // Ignore leave events that are only moving between children of this row.
+  const related = e.relatedTarget
+  if (related instanceof Node && container.value?.contains(related)) return
+  isDraggingImageOver.value = false
+  isInMultiLabelZone.value = false
+}
+
+const onMultiLabelDragOver = (e: DragEvent): void => {
+  if (!isImageDrag(e)) return
+  e.preventDefault()
+  e.stopPropagation()
+  isDraggingImageOver.value = true
+  isInMultiLabelZone.value = true
+}
+
+const onMultiLabelDragLeave = (e: DragEvent): void => {
+  const related = e.relatedTarget
+  if (related instanceof Node && (e.currentTarget as Node | null)?.contains?.(related)) return
+  isInMultiLabelZone.value = false
+}
+
 /**
- * When an image is dropped.
- * Note that when a node is dropped, the `@drop` event is not triggered.
+ * Image → leaf drop:
+ * - multi-label zone: ADD this node's label to the dragged image
+ * - elsewhere on the leaf: REPLACE the image's leaf labels with this node's label
+ * Tree-node move/merge is handled by ElTree (dragend), not here.
  */
 const onDrop = (e: DragEvent) => {
-  isDraggingImageOver.value = false
+  if (!isImageDrag(e)) return
+  e.preventDefault()
 
-  // Do not allow image dropping on none-leaf nodes.
   const { node } = toRefs(props)
-  if (!node.value.isLeaf) return
-
-  const uuid = e.dataTransfer?.getData('text/plain')
-  if (uuid === undefined) return
-
-  if (isInMultiLabelZone.value === true) {
-    // Drop as multi-label classification.
-    assignTaxon(uuid, data.value.name)
+  if (!node.value.isLeaf) {
+    isDraggingImageOver.value = false
+    isInMultiLabelZone.value = false
+    return
   }
-  else {
-    // Drop as single-label classification.
 
-    // Unassign the other labels
-    const leafCategories = annotationsByUuid.value[uuid]
-      .map((d) => d.value)
-      .filter((name) => {
-        const match = categories.value.find((d) => d.name === name)
-        if (match === undefined) return false
-        return match.children.length === 0
-      })
-    leafCategories.forEach((name) => unassignTaxon(uuid, name))
+  const uuid = getImageDragUuid(e)
+  // Prefer the drop target over hover state — dragleave often clears the flag first.
+  const dropAsMultiLabel = (
+    (e.target instanceof Element && e.target.closest('[data-multi-label-zone]') !== null)
+    || isInMultiLabelZone.value
+  )
+  isDraggingImageOver.value = false
+  isInMultiLabelZone.value = false
+  if (uuid == null || uuid === '') return
 
+  if (dropAsMultiLabel) {
+    // ADD: keep existing labels, attach this taxon too.
     assignTaxon(uuid, data.value.name)
+    return
   }
+
+  // REPLACE: clear other leaf taxa, then assign this taxon.
+  const leafCategories = (annotationsByUuid.value[uuid] ?? [])
+    .map((d) => d.value)
+    .filter((name) => {
+      const match = categories.value.find((d) => d.name === name)
+      if (match === undefined) return false
+      return match.children.length === 0
+    })
+  leafCategories.forEach((name) => unassignTaxon(uuid, name))
+  assignTaxon(uuid, data.value.name)
 }
 </script>
 
@@ -149,14 +212,24 @@ const onDrop = (e: DragEvent) => {
     :class="{ 'bg-gray-100': isDraggingOver || (isDraggingImageOver && node.isLeaf) }"
     @click.self="emit('nodeFilter', node.data as TreeNode)"
     @drop="onDrop"
-    @dragover="isDraggingImageOver = true"
-    @dragleave="isDraggingImageOver = false"
+    @dragover="onImageDragOver"
+    @dragleave="onImageDragLeave"
   >
+    <!-- Thumbnail is chrome for the row: drag here = node move/merge (same as the rest
+         of the node). Image labeling drag starts from Entries only. -->
     <img
-      v-if="USE_ALGORITHM_SERVICE && (subjects.length !== 0)"
+      v-if="USE_ALGORITHM_SERVICE && subjects.length !== 0 && url && !failed"
       :src="url"
-      class="h-6 w-6 object-contain"
+      class="pointer-events-none h-6 w-6 object-contain"
+      draggable="false"
+      alt=""
+      @error="onThumbnailError"
     >
+    <div
+      v-else-if="USE_ALGORITHM_SERVICE && subjects.length !== 0"
+      class="i-fa6-solid:image shrink-0 text-sm text-gray-400 dark:text-gray-500"
+      aria-hidden="true"
+    />
     <div
       v-if="!isEditable"
       class="pointer-events-none"
@@ -175,22 +248,26 @@ const onDrop = (e: DragEvent) => {
     <div
       v-if="node.isLeaf"
       v-show="isDraggingOver"
+      data-merge-zone
       class="border px-1 h-6 flex items-center text-gray"
       :class="{ 'border-black border-width-2': isInMergeZone }"
     >
       merge
     </div>
 
-    <!-- Allow drop image to assign label only for leaf nodes. -->
+    <!-- Image drop: ADD this taxon's label (multi) vs REPLACE leaf labels (rest of row).
+         pointer-events-none while hidden so it cannot steal node-drag hit-testing. -->
     <div
       v-if="node.isLeaf"
+      data-multi-label-zone
       class="border px-1 h-6 flex items-center text-gray"
       :class="{
         'border-black border-width-2': isInMultiLabelZone,
-        'opacity-0': !isDraggingImageOver,
+        'opacity-0 pointer-events-none': !isDraggingImageOver,
       }"
-      @dragover="isInMultiLabelZone = true"
-      @dragleave="isInMultiLabelZone = false"
+      @dragover="onMultiLabelDragOver"
+      @dragleave="onMultiLabelDragLeave"
+      @drop="onDrop"
     >
       multi-label
     </div>
