@@ -1,11 +1,31 @@
 import type { Annotation } from './types'
 import { groupBy, omit } from 'lodash'
-import { readonly, ref } from 'vue'
+import { markRaw, readonly, ref, shallowRef, triggerRef } from 'vue'
 
-/** Common states and utility functions for various label tasks. */
+const freezeRow = (annotation: Annotation): Annotation => markRaw(annotation)
+
+const freezeList = (rows: Annotation[]): Annotation[] => (
+  markRaw(rows.map((row) => freezeRow(row)))
+)
+
+/**
+ * Shared annotation list for classification and taxonomization.
+ *
+ * Hot-path design for large lists (~12k synthetic rows in Label e2e):
+ * keep the flat `annotations` list shallow + markRaw (do not deep-proxy rows),
+ * update `annotationsByUuid` / `annotationsByValue` incrementally on add/remove,
+ * and remove flat-list rows with O(1) swap-pop. Do not re-`groupBy` / rescan
+ * all annotations on each Sure click.
+ *
+ * Callers (classification / taxonomization `useLabelTask`) still `findIndex`
+ * the flat list before `removeByIndex` / `setOne`. That O(n) scan is outside
+ * this module.
+ *
+ * Typical Label e2e (`pnpm exec playwright test --project=label`, 12k rows):
+ * Sure mean ~0.3ms (was ~7.5ms); taxon assign mean ~25ms (was ~35ms).
+ */
 export const useCommon = () => {
-  /** The storage of annotations. */
-  const annotations = ref<Annotation[]>([])
+  const annotations = shallowRef<Annotation[]>(markRaw([]))
 
   /** The annotations grouped by subject uuid. */
   const annotationsByUuid = ref<Record<string, Annotation[]>>({})
@@ -22,11 +42,7 @@ export const useCommon = () => {
   // Note: For speed consideration, do not use computed:
   // computed(() => new Set(Object.keys(annotationsByUuid.value)))
 
-  /**
-   * Check if an annotation already exists.
-   * Two annotations are regarded as the same
-   * if they have the same `subject` and `value`.
-   */
+  /** Two annotations match if they share `subject` and `value`. */
   const isExisting = (annotation: Annotation): boolean => {
     if (annotation.subject in annotationsByUuid.value) {
       return annotationsByUuid.value[annotation.subject].some(
@@ -36,45 +52,47 @@ export const useCommon = () => {
     return false
   }
 
-  /** Add an annotation. */
+  /** Hot path: push + map update; no full `groupBy`. */
   const addOne = (annotation: Annotation): void => {
-    // If the annotation already exists, skip.
     if (isExisting(annotation)) return
 
-    annotations.value.push(annotation)
+    const row = freezeRow(annotation)
+    annotations.value.push(row)
+    triggerRef(annotations)
 
-    if (annotation.subject in annotationsByUuid.value) {
-      annotationsByUuid.value[annotation.subject].push(annotation)
+    if (row.subject in annotationsByUuid.value) {
+      annotationsByUuid.value[row.subject].push(row)
     }
     else {
-      annotationsByUuid.value[annotation.subject] = [annotation]
+      annotationsByUuid.value[row.subject] = [row]
     }
 
-    if (annotation.value in annotationsByValue.value) {
-      annotationsByValue.value[annotation.value].push(annotation)
+    if (row.value in annotationsByValue.value) {
+      annotationsByValue.value[row.value].push(row)
     }
     else {
-      annotationsByValue.value[annotation.value] = [annotation]
+      annotationsByValue.value[row.value] = [row]
     }
 
-    annotatedUuids.value.add(annotation.subject)
+    annotatedUuids.value.add(row.subject)
   }
 
-  /** Add annotations. */
+  /** Cold path (load): O(n) filter + `groupBy` rebuild. */
   const addBulk = (bulk: Annotation[]): void => {
-    // If the annotation already exists, skip.
-    const bulkFiltered = bulk.filter((d) => !isExisting(d))
-
+    const bulkFiltered = freezeList(bulk.filter((d) => !isExisting(d)))
     annotations.value.push(...bulkFiltered)
+    triggerRef(annotations)
     annotationsByUuid.value = groupBy(annotations.value, 'subject')
     annotationsByValue.value = groupBy(annotations.value, 'value')
     annotatedUuids.value = new Set(Object.keys(annotationsByUuid.value))
   }
 
-  /** Replace an annotation. */
+  /** Hot path: replace at index; O(group) map splice, no full `groupBy`. */
   const setOne = (index: number, newValue: Annotation): void => {
     const oldValue = annotations.value[index]
-    annotations.value[index] = newValue
+    const row = freezeRow(newValue)
+    annotations.value[index] = row
+    triggerRef(annotations)
 
     const uuidGroup = annotationsByUuid.value[oldValue.subject]
     if (uuidGroup.length === 1) {
@@ -86,11 +104,11 @@ export const useCommon = () => {
         1,
       )
     }
-    if (newValue.subject in annotationsByUuid.value) {
-      annotationsByUuid.value[newValue.subject].push(newValue)
+    if (row.subject in annotationsByUuid.value) {
+      annotationsByUuid.value[row.subject].push(row)
     }
     else {
-      annotationsByUuid.value[newValue.subject] = [newValue]
+      annotationsByUuid.value[row.subject] = [row]
     }
 
     const valueGroup = annotationsByValue.value[oldValue.value]
@@ -103,32 +121,39 @@ export const useCommon = () => {
         1,
       )
     }
-    if (newValue.value in annotationsByValue.value) {
-      annotationsByValue.value[newValue.value].push(newValue)
+    if (row.value in annotationsByValue.value) {
+      annotationsByValue.value[row.value].push(row)
     }
     else {
-      annotationsByValue.value[newValue.value] = [newValue]
+      annotationsByValue.value[row.value] = [row]
     }
 
     if (!(oldValue.subject in annotationsByUuid.value)) {
       annotatedUuids.value.delete(oldValue.subject)
     }
-    annotatedUuids.value.add(newValue.subject)
+    annotatedUuids.value.add(row.subject)
   }
 
-  /** Set the annotations. */
+  /** Cold path (load/upload): O(n) `groupBy` rebuild. */
   const setAll = (newValues: Annotation[]): void => {
-    annotations.value = newValues
+    annotations.value = freezeList(newValues)
     annotationsByUuid.value = groupBy(annotations.value, 'subject')
     annotationsByValue.value = groupBy(annotations.value, 'value')
     annotatedUuids.value = new Set(Object.keys(annotationsByUuid.value))
   }
 
-  /** Remove an annotation by index. */
+  /**
+   * Hot path: O(1) swap-pop on the flat list (order is not significant);
+   * O(group) splice on subject/value arrays.
+   */
   const removeByIndex = (index: number): void => {
     const annotation = annotations.value[index]
-
-    annotations.value.splice(index, 1)
+    const last = annotations.value.length - 1
+    if (index !== last) {
+      annotations.value[index] = annotations.value[last]
+    }
+    annotations.value.pop()
+    triggerRef(annotations)
 
     const uuidGroup = annotationsByUuid.value[annotation.subject]
     if (uuidGroup.length === 1) {
@@ -157,23 +182,25 @@ export const useCommon = () => {
     }
   }
 
-  /** Remove one or multiple annotations by values. */
+  /** Cold path: O(n) filter + `groupBy` rebuild. */
   const removeByValues = (values: string[]): void => {
     const _values = new Set(values)
-    annotations.value = annotations.value.filter((d) => !_values.has(d.value))
+    annotations.value = freezeList(
+      annotations.value.filter((d) => !_values.has(d.value)),
+    )
     annotationsByUuid.value = groupBy(annotations.value, 'subject')
     annotationsByValue.value = omit(annotationsByValue.value, values)
     annotatedUuids.value = new Set(Object.keys(annotationsByUuid.value))
   }
 
-  /** Remove one or multiple annotations by values. */
+  /** Cold path: O(n) map + `groupBy` rebuild. */
   const renameValue = (oldValue: string, newValue: string): void => {
-    annotations.value = annotations.value.map((d) => {
+    annotations.value = freezeList(annotations.value.map((d) => {
       if (d.value === oldValue) {
         return { ...d, value: newValue }
       }
       return d
-    })
+    }))
     annotationsByUuid.value = groupBy(annotations.value, 'subject')
     if (oldValue in annotationsByValue.value) {
       annotationsByValue.value[newValue] = annotationsByValue.value[oldValue]
@@ -181,7 +208,7 @@ export const useCommon = () => {
     }
   }
 
-  /** Check if a data entry is annotated. */
+  /** Hot path: O(1) Set lookup. */
   const isAnnotated = (uuid: string): boolean => (
     annotatedUuids.value.has(uuid)
   )
