@@ -8,3 +8,5 @@ dist
 .env.*
 !.env.example
 .superpowers/
+playwright-report/
+test-results/

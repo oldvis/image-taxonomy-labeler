@@ -60,6 +60,17 @@ Pull requests run `.github/workflows/ci.yml`:
 
 Please run the same checks locally before opening a PR.
 
+## Latency e2e (Playwright)
+
+Not part of CI. From the repo root:
+
+```bash
+pnpm exec playwright install chromium   # once
+pnpm test:e2e
+```
+
+See [e2e/README.md](./e2e/README.md) for what is measured (Label Sure / taxon assign at 250ms; Compare hover last-bar / paint at 1000ms).
+
 ## Thanks
 
 Thank you again for being interested in this project! You are awesome!

@@ -57,6 +57,7 @@ const handleSelectRemoveTag = (name: string) => unassignTaxon(uuid, name)
       multiple: Activate multiple-select.
     -->
     <ElTreeSelect
+      data-testid="taxon-select"
       :model-value="selected"
       :data="forest"
       :props="{ label: 'name' }"
