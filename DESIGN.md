@@ -115,6 +115,10 @@ Shell grammar for labeling apps:
 
 Classify entry layout: **image left (~3/5), metadata + label controls right (~2/5)** inside one **Entries** workbench. Segment: **Entries** (~7/10 canvas) | **Objects** (~3/10 instance list). Do not move classification buttons under the image. Chrome label for the item queue is always **Entries** (not Subject / data object). **Entries** headers use the same images icon in every app.
 
+**Taxonomy Label dense/grid:** Cells are images only — no per-cell taxon select or Sure/Unsure. Encode confidence as an **inset ring above the image** (full-bleed thumbs hide a cell-root border): unlabeled 1px `gray-200` / `gray-700`; Unsure 3px `#6b7280`; Sure 3px `#0284c7`. Left-click opens one tooltip (metadata + taxonomization + Sure/Unsure + utilities). It stays open while labeling; X or a true outside click closes it; teleported tree-select poppers must not count as outside; clicking another cell re-anchors. Columns / single keep labeling in-pane; their image click is metadata-only. Compare dense overlay is unchanged.
+
+When the current dense page has **≤ 25** images, load `downloadUrl` so enlarged cells stay sharp; when crowded, keep `/thumbnail`. Switch on page count, not measured cell size. Columns / single already use full images.
+
 **Objects cards (Segment):** Inspector hierarchy — **mark class**(es) as `■ Class · ■ Class` (Draw palette; `+N` only after 3 unique types) when marks exist; muted `Shape {geometry}` line for the region shape (Rect/Point/Polygon); `Last modified by {name}`; Details / Repeat / Marks on the full card with compact `h-6` section headers (small chevrons / +); mark editors as flat field rows. Do not collapse unselected objects to a single row.
 
 **Progress stats:** Coverage group first (`labeled n / total · unlabeled n` plus `skipped` when the app has it), then `|`, then confidence tags (`unsure · confident`). Middots stay inside a group; `|` separates axes. Example (with Skipped): `labeled 13 / 485 · unlabeled 472 · skipped 0 | unsure 2 · confident 5`. Details (Classify) sits after the tag group without a middot. In Segment, Unsure/Confident **buttons** stay single-word sentence-case labels; the Progress strip uses the lowercase forms. Unsure/Confident counts multilabel image tags that include those values (not a partition of total).
@@ -122,6 +126,8 @@ Classify entry layout: **image left (~3/5), metadata + label controls right (~2/
 Spacing is tight (`xs`/`sm`); prefer one workbench plane over nested heavy cards. Panels may use a light border + small radius; avoid multi-layer shadows.
 
 **Empty states:** Workbench empties use muted chrome type — `m-auto text-sm text-gray-500 p-3 dark:text-gray-400`. Do not use `text-xl` or other loud placeholder headlines. Shared Entries copy: **No entries matched**. Taxonomy Groups / tree empty: **No groups**. Keep loading / searching messages on the same quiet ladder.
+
+**Failed images:** Never leave the browser broken-image glyph. Groups tree thumbnails swap to a muted `i-fa6-solid:image` (`text-gray-400 dark:text-gray-500`) in the same 24px slot; groups with no subjects still show no thumbnail. Shared `VImage` (Entries) keeps the spinner while loading; on error, hide `<img>` and show quiet sentence-case copy — local URLs ask to launch the resource server, remote URLs point at **URL**. HTTPS-blocked stays its own message. No retry chrome, toasts, or a second `VSafeImage` component.
 
 **Command bars:** Nav, Selectors, Entries header, image footer, and Progress share one geometry (`min-h-10`, `py-1.5`). Chrome controls inside them share `h-6` so vertical padding matches (never flush). Do not mix strip paddings. **Adjacent chrome controls in a cluster** (pills, Previous/Next, Download/Upload) use `gap-1`; reserve strip `gap-x-2` for spacing between strip regions (label · stats · actions), not between sibling buttons.
 

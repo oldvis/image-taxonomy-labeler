@@ -95,8 +95,9 @@ The following features are implemented in `./src/builtins/label-tasks/taxonomiza
         - semantics: assign an image $d$ to a taxon $c$
         - topology: no change
         - image label: assign a label category $c$ to the image $d$
-        - interaction: right click the image and assign the label by clicking the checkbox in the menu
-        - interaction: drag the selected images and drop them into a node in the taxonomy tree
+        - interaction (dense/grid): left-click the image; assign from the tooltip (taxonomy + Sure/Unsure)
+        - interaction (columns / single): assign from the controls beside the image; image click opens metadata only
+        - interaction: drag an image from Entries and drop it onto a node in the taxonomy tree
     - **Unassign** a taxon to an image
         - semantics: unassign an image $d$ to a taxon $c$
         - topology: no change
@@ -105,7 +106,8 @@ The following features are implemented in `./src/builtins/label-tasks/taxonomiza
             - unassign $d$ from the descendent nodes of $c$
             - for each ancestor $c'$ from parent to root
                 - if $d$ is not readily assigned to at least one child of $c'$ that is not to be unassign, unassign $d$ from $c'$
-        - interaction: right click the image and unassign the label by clicking the checkbox in the menu
+        - interaction (dense/grid): left-click the image and change taxonomy in the tooltip
+        - interaction (columns / single): unassign from the taxonomy control beside the image
 - Others
     - **Filter** images by a taxon
         - semantics: show the images belonging to a taxon $c$

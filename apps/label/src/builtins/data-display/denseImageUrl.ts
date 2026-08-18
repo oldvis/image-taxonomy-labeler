@@ -1,9 +1,16 @@
 import { getThumbnailUrl } from '@image-taxonomy-labeler/shared/services/image'
 
-/** Max images on the dense page before falling back to thumbnails. */
+/**
+ * Dense-grid cells grow to fill the page. With few images they are large, so
+ * a thumbnail looks blurry — load the full file (`downloadUrl`) instead.
+ * With more images than this, cells are small enough that `/thumbnail` is
+ * sharp and cheaper. Uses the number of images on the page, not cell pixels.
+ *
+ * Label dense-grid only. Columns and single-object already load `downloadUrl`.
+ */
 export const DENSE_FULL_IMAGE_MAX = 25
 
-/** Pick dense-grid image URL: full when the page is small, thumbnail when crowded. */
+/** Full image if `pageCount` is at most `DENSE_FULL_IMAGE_MAX`, else thumbnail. */
 export const denseImageUrl = ({
   uuid,
   downloadUrl,
