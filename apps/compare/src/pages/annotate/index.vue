@@ -7,18 +7,18 @@ const { displayMode } = storeToRefs(useStore())
 
 <template>
   <div
-    class="grow overflow-auto m-1 gap-1"
+    class="grow min-h-0 overflow-auto"
     flex="~ col"
   >
-    <TheViewSelectors />
+    <TheViewSelectors class="shrink-0" />
     <TheViewTaxonomies
       v-show="displayMode === DisplayMode.Trees"
-      class="grow"
+      class="grow min-h-0 m-2"
     />
     <TheDataDisplay
       v-show="displayMode === DisplayMode.Images"
-      class="grow"
+      class="grow min-h-0 m-2"
     />
-    <TheViewLabelProgress />
+    <TheViewLabelProgress class="shrink-0" />
   </div>
 </template>

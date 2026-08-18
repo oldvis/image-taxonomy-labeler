@@ -75,13 +75,14 @@ const upload = async () => {
 </script>
 
 <template>
-  <div class="flex gap-1 my-1">
+  <div class="flex gap-1">
     <button
-      btn
+      type="button"
+      btn-secondary
       title="Upload a JSON file to restore the labeling progress"
       @click="upload"
     >
-      upload
+      Upload
     </button>
   </div>
 </template>

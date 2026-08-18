@@ -35,9 +35,10 @@ const text = computed(() => {
 </script>
 
 <template>
-  <div class="border flex gap-1 px-1">
+  <div class="chip">
     {{ text }}
     <button
+      type="button"
       icon-btn
       title="Remove"
       @click="emit('removeSelector', selector)"

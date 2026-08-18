@@ -19,25 +19,22 @@ defineProps({
 
 <template>
   <div view-header>
-    <div class="i-fa6-solid:table my-auto" />
-    <div class="font-bold">
-      Entries
-    </div>
+    <div class="i-fa6-solid:images text-gray-500 shrink-0" />
+    <span class="strip-label">Entries</span>
     <div class="grow" />
-    <div
-      v-if="nMatched !== null"
-      class="text-sm my-auto flex pr-4"
-    >
-      #matched:&nbsp;
-      <div class="font-bold">
-        {{ nMatched }}
-      </div>
-    </div>
-    <div class="text-sm my-auto flex pr-4">
-      #entries:&nbsp;
-      <div class="font-bold">
-        {{ nTotal }}
-      </div>
+    <div class="strip-meta flex flex-wrap items-center gap-x-1.5 gap-y-1">
+      <template v-if="nMatched !== null">
+        <span>
+          <span class="strip-meta-em">{{ nMatched }}</span> matched
+        </span>
+        <span
+          class="strip-sep"
+          aria-hidden="true"
+        >·</span>
+      </template>
+      <span>
+        <span class="strip-meta-em">{{ nTotal }}</span> in workspace
+      </span>
     </div>
   </div>
 </template>

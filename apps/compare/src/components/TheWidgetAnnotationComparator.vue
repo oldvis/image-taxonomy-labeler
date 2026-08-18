@@ -51,11 +51,11 @@ const sortByDepthFirstTraversal = (taxa: string[]) => (
 </script>
 
 <template>
-  <div class="border bg-white dark:bg-hex-121212 p-1">
+  <div class="border border-gray-200 bg-white p-1 dark:border-gray-700 dark:bg-hex-121212">
     <div
       v-for="(username, i) in usernames"
       :key="i"
-      :class="{ 'border-t': i !== 0 }"
+      :class="{ 'border-t border-gray-200 dark:border-gray-700': i !== 0 }"
     >
       <p class="text-gray-400">
         {{ username }}

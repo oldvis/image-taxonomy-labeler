@@ -6,34 +6,36 @@ const { subjectUuids, dissensusUuids, consensusUuids, unsureUuids } = storeToRef
 </script>
 
 <template>
-  <div
-    class="flex gap-1 px-1 select-none"
-    border="~ gray-200"
-  >
-    <div class="flex gap-1 text-sm">
-      <div class="i-fa6-solid:list-check my-auto" />
-      <div class="font-bold my-auto">
-        Progress
-      </div>
+  <div class="status-strip border-t border-gray-200 dark:border-gray-700 select-none">
+    <div class="flex shrink-0 gap-1.5 items-center">
+      <div class="i-fa6-solid:list-check text-gray-500 my-auto" />
+      <span class="strip-label">Progress</span>
     </div>
-    <div class="flex gap-1 text-sm">
-      <template
-        v-for="(d, i) in [
-          { title: '#labeled:', value: `${subjectUuids.length}` },
-          { title: '#dissensus:', value: `${dissensusUuids.length}` },
-          { title: '#consensus:', value: `${consensusUuids.length}` },
-          { title: '#unsure:', value: `${unsureUuids.length}` },
-        ]" :key="d.title"
-      >
-        <div v-if="i === 0" class="border-l my-1" />
-        <div class="flex gap-1 my-auto grow">
-          {{ d.title }}
-          <div class="font-bold">
-            {{ d.value }}
-          </div>
-        </div>
-        <div class="border-l my-1" />
-      </template>
+    <div class="strip-meta flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1">
+      <span>
+        labeled <span class="strip-meta-em">{{ subjectUuids.length }}</span>
+      </span>
+      <span
+        class="strip-sep"
+        aria-hidden="true"
+      >·</span>
+      <span>
+        dissensus <span class="strip-meta-em">{{ dissensusUuids.length }}</span>
+      </span>
+      <span
+        class="strip-sep"
+        aria-hidden="true"
+      >·</span>
+      <span>
+        consensus <span class="strip-meta-em">{{ consensusUuids.length }}</span>
+      </span>
+      <span
+        class="strip-sep"
+        aria-hidden="true"
+      >·</span>
+      <span>
+        unsure <span class="strip-meta-em">{{ unsureUuids.length }}</span>
+      </span>
     </div>
     <div class="grow" />
     <TheViewLabelProgressButtons />

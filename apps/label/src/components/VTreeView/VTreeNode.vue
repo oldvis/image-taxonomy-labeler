@@ -249,7 +249,7 @@ const onDrop = (e: DragEvent) => {
       v-if="node.isLeaf"
       v-show="isDraggingOver"
       data-merge-zone
-      class="border px-1 h-6 flex items-center text-gray"
+      class="flex h-6 items-center border border-gray-200 px-1 text-gray dark:border-gray-700"
       :class="{ 'border-black border-width-2': isInMergeZone }"
     >
       merge
@@ -260,7 +260,7 @@ const onDrop = (e: DragEvent) => {
     <div
       v-if="node.isLeaf"
       data-multi-label-zone
-      class="border px-1 h-6 flex items-center text-gray"
+      class="flex h-6 items-center border border-gray-200 px-1 text-gray dark:border-gray-700"
       :class="{
         'border-black border-width-2': isInMultiLabelZone,
         'opacity-0 pointer-events-none': !isDraggingImageOver,

@@ -133,18 +133,34 @@ const barWidth = 30
 <template>
   <!-- Viewing taxonomies using VIndentedTree component. -->
   <div view-container>
-    <div
-      view-header
-      class="items-center"
-    >
-      <div class="i-fa6-solid:info" />
-      <b>Taxonomies</b>
+    <div view-header>
+      <div class="i-fa6-solid:sitemap text-gray-500 shrink-0" />
+      <span class="strip-label">Taxonomies</span>
+      <div class="grow" />
+      <div
+        v-if="profiles.length !== 0"
+        class="strip-meta flex flex-wrap items-center gap-x-1.5"
+      >
+        <span>Merged</span>
+        <span
+          class="strip-sep"
+          aria-hidden="true"
+        >·</span>
+        <span>
+          <span class="strip-meta-em">{{ profiles.length }}</span> profiles
+        </span>
+      </div>
     </div>
     <div
       v-if="profiles.length !== 0"
-      class="text-xl overflow-auto flex gap-2 px-1"
+      class="min-h-0 flex-1 overflow-auto"
     >
       <!--
+        Scroll the row, not the columns. Stretching inside overflow-auto
+        only matches the panel viewport, so borders would stop when scrolling.
+      -->
+      <div class="flex items-stretch gap-2 px-1">
+        <!--
         For each taxon,
         - the text columns show
           1. the number of images assigned to the taxon
@@ -155,97 +171,98 @@ const barWidth = 30
           2. a bar encoding the number of images that overlaps with the images assigned to hovered taxon
           3. (for the merged tree) a bar encoding the number of images with different annotations
       -->
-      <TheViewTaxonomiesIndentedTree
-        class="h-fit grow basis-25%"
-        :forest="mergedForest"
-        label="Merged"
-        :tree-text-class-map="(d) => (
-          intersection(getSubjectsUnion(d.data.name), hoveredSubjects).length > 0
-            ? 'fill-#4682B4'
-            : 'dark:fill-gray-300'
-        )"
-        :text-columns="[{
-          value: (d) => getSubjectsUnion(d.name).length.toString(),
-          x: textColumnNumberStart,
-          textAnchor: 'end',
-          class: 'dark:fill-gray-300',
-        }, {
-          value: (d: TreeNodeWithUsers) => (d.usernames.length === profiles.length)
-            ? ''
-            : d.usernames.join(', '),
-          x: textColumnDiffStart,
-          textAnchor: 'start',
-          class: 'fill-#c65319',
-        }]"
-        :bar-columns="[{
-          value: (d) => getSubjectsUnion(d.name).length,
-          x: barColumnStart,
-          class: 'dark:fill-gray-300',
-          domain: [0, getSubjectsUnion('root').length],
-          barWidth,
-        }, {
-          value: (d) => (
-            getSubjectsUnion(d.name).length
-            - getSubjectsIntersection(d.name).length
-          ),
-          x: barColumnStart,
-          class: 'fill-#c65319',
-          domain: [0, getSubjectsUnion('root').length],
-          barWidth,
-        }, {
-          value: (d) => intersection(getSubjectsUnion(d.name), hoveredSubjects).length,
-          x: barColumnStart,
-          class: 'fill-#4682B4',
-          domain: [0, getSubjectsUnion('root').length],
-          barWidth,
-        }]"
-        :show-toolbar="false"
-        @hover-node="onNodeHover"
-        @leave-node="hoveredSubjects = []"
-        @click-node="onNodeClick"
-      />
-      <TheViewTaxonomiesIndentedTree
-        v-for="(profile, i) in profiles"
-        :key="i"
-        class="h-fit border-l pl-1 basis-23%"
-        :forest="profile.forest"
-        :label="profile.username"
-        :tree-text-class-map="(d) => (
-          intersection(getSubjects(profile.username, d.data.name), hoveredSubjects).length > 0
-            ? 'fill-#4682B4'
-            : 'dark:fill-gray-300'
-        )"
-        :text-columns="[{
-          value: (d) => getSubjects(profile.username, d.name).length.toString(),
-          x: textColumnNumberStart,
-          textAnchor: 'end',
-          class: 'dark:fill-gray-300',
-        }]"
-        :bar-columns="[{
-          value: (d) => getSubjects(profile.username, d.name).length,
-          x: barColumnStart,
-          class: 'dark:fill-gray-300',
-          domain: [0, getSubjectsUnion('root').length],
-          barWidth,
-        }, {
-          value: (d) => (
-            intersection(
-              getSubjects(profile.username, d.name),
-              hoveredSubjects,
-            ).length
-          ),
-          x: barColumnStart,
-          class: 'fill-#4682B4',
-          domain: [0, getSubjectsUnion('root').length],
-          barWidth,
-        }]"
-        :show-toolbar="true"
-        @hover-node="onNodeHover"
-        @leave-node="hoveredSubjects = []"
-        @click-node="onNodeClick"
-        @update:label="updateUsername(i, $event)"
-        @remove="removeProfile(i)"
-      />
+        <TheViewTaxonomiesIndentedTree
+          class="grow basis-25%"
+          :forest="mergedForest"
+          label="Merged"
+          :tree-text-class-map="(d) => (
+            intersection(getSubjectsUnion(d.data.name), hoveredSubjects).length > 0
+              ? 'fill-#4682B4'
+              : 'dark:fill-gray-300'
+          )"
+          :text-columns="[{
+            value: (d) => getSubjectsUnion(d.name).length.toString(),
+            x: textColumnNumberStart,
+            textAnchor: 'end',
+            class: 'dark:fill-gray-300',
+          }, {
+            value: (d: TreeNodeWithUsers) => (d.usernames.length === profiles.length)
+              ? ''
+              : d.usernames.join(', '),
+            x: textColumnDiffStart,
+            textAnchor: 'start',
+            class: 'fill-#c65319',
+          }]"
+          :bar-columns="[{
+            value: (d) => getSubjectsUnion(d.name).length,
+            x: barColumnStart,
+            class: 'dark:fill-gray-300',
+            domain: [0, getSubjectsUnion('root').length],
+            barWidth,
+          }, {
+            value: (d) => (
+              getSubjectsUnion(d.name).length
+              - getSubjectsIntersection(d.name).length
+            ),
+            x: barColumnStart,
+            class: 'fill-#c65319',
+            domain: [0, getSubjectsUnion('root').length],
+            barWidth,
+          }, {
+            value: (d) => intersection(getSubjectsUnion(d.name), hoveredSubjects).length,
+            x: barColumnStart,
+            class: 'fill-#4682B4',
+            domain: [0, getSubjectsUnion('root').length],
+            barWidth,
+          }]"
+          :show-toolbar="false"
+          @hover-node="onNodeHover"
+          @leave-node="hoveredSubjects = []"
+          @click-node="onNodeClick"
+        />
+        <TheViewTaxonomiesIndentedTree
+          v-for="(profile, i) in profiles"
+          :key="i"
+          class="border-l border-gray-200 pl-1 basis-23% dark:border-gray-700"
+          :forest="profile.forest"
+          :label="profile.username"
+          :tree-text-class-map="(d) => (
+            intersection(getSubjects(profile.username, d.data.name), hoveredSubjects).length > 0
+              ? 'fill-#4682B4'
+              : 'dark:fill-gray-300'
+          )"
+          :text-columns="[{
+            value: (d) => getSubjects(profile.username, d.name).length.toString(),
+            x: textColumnNumberStart,
+            textAnchor: 'end',
+            class: 'dark:fill-gray-300',
+          }]"
+          :bar-columns="[{
+            value: (d) => getSubjects(profile.username, d.name).length,
+            x: barColumnStart,
+            class: 'dark:fill-gray-300',
+            domain: [0, getSubjectsUnion('root').length],
+            barWidth,
+          }, {
+            value: (d) => (
+              intersection(
+                getSubjects(profile.username, d.name),
+                hoveredSubjects,
+              ).length
+            ),
+            x: barColumnStart,
+            class: 'fill-#4682B4',
+            domain: [0, getSubjectsUnion('root').length],
+            barWidth,
+          }]"
+          :show-toolbar="true"
+          @hover-node="onNodeHover"
+          @leave-node="hoveredSubjects = []"
+          @click-node="onNodeClick"
+          @update:label="updateUsername(i, $event)"
+          @remove="removeProfile(i)"
+        />
+      </div>
     </div>
     <div
       v-else

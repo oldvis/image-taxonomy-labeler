@@ -24,10 +24,7 @@ const onImageClick = () => {
 
 <template>
   <div
-    class="p-1 text-sm gap-1"
-    bg="slate-100 dark:slate-900"
-    border="~ gray-200"
-    flex="~ col"
+    class="flex flex-col gap-1 border border-gray-200 bg-slate-100 p-1 text-sm dark:border-gray-700 dark:bg-slate-900"
   >
     <TheWidgetAnnotationComparator :uuid="datum.uuid" />
     <div

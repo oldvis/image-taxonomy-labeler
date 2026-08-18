@@ -105,8 +105,8 @@ const submit = (newValue: string, e: Event): void => {
 
 <template>
   <div class="flex flex-col">
-    <div class="flex items-center">
-      <div class="text-lg">
+    <div class="flex items-center gap-1 min-h-8">
+      <div class="text-sm font-semibold">
         <div
           v-if="!isEditable"
           class="pointer-events-none"
@@ -124,12 +124,14 @@ const submit = (newValue: string, e: Event): void => {
         <div class="grow" />
         <div class="flex gap-1">
           <button
+            type="button"
             icon-btn
             class="i-fa6-solid:pencil"
             title="Edit the label"
             @click="onClickEdit"
           />
           <button
+            type="button"
             icon-btn
             class="i-fa6-solid:trash"
             title="Remove the annotations"

@@ -31,9 +31,7 @@ const onClickCopy = () => {
 
 <template>
   <div
-    class="p-1 text-sm"
-    bg="slate-100 dark:slate-900"
-    border="~ gray-200"
+    class="border border-gray-200 bg-slate-100 p-1 text-sm dark:border-gray-700 dark:bg-slate-900"
   >
     <div class="flex">
       <div v-if="index !== null" class="text-gray">
@@ -117,7 +115,7 @@ const onClickCopy = () => {
         </div>
         <div
           v-if="showMetadata"
-          class="border"
+          class="border border-gray-200 dark:border-gray-700"
         >
           <VObjectInspector
             :data="datum"

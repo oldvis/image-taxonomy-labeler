@@ -14,10 +14,8 @@ defineProps({
 
 <template>
   <div
-    class="relative h-full min-h-0 min-w-0 overflow-hidden text-sm cursor-pointer"
+    class="relative h-full min-h-0 min-w-0 overflow-hidden border border-gray-200 bg-slate-100 text-sm cursor-pointer dark:border-gray-700 dark:bg-slate-900"
     title="Click image to view metadata"
-    bg="slate-100 dark:slate-900"
-    border="~ gray-200"
   >
     <VImage
       :url="datum.uuid === undefined ? '' : getThumbnailUrl(datum.uuid)"
