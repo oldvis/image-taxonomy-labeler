@@ -1,6 +1,6 @@
 # Latency e2e
 
-Playwright gesture-to-DOM timings for Taxonomy Label and Taxonomy Compare. This is a **baseline** before rewriting `useCommon` or Compare hover-highlight — not a full product e2e suite. It is **not** in GitHub Actions yet; run it locally.
+Playwright gesture-to-DOM timings for Taxonomy Label and Taxonomy Compare. Regression gates after the `useCommon` markRaw/swap-pop port and Compare hover-index rewrite — not a full product suite. **Not** in GitHub Actions; run locally.
 
 ```bash
 pnpm exec playwright install chromium   # once
@@ -22,18 +22,18 @@ Uses the **bundled** catalog (`packages/shared/assets/visualizations.json`, 1351
 
 Logs: `[e2e-label-latency:sure]` / `[e2e-label-latency:taxon]`.
 
-These paths go through `packages/ui` `useCommon` (`ref` + `splice` / `findIndex`).
+Hot path is `packages/ui` `useCommon`: `shallowRef` + `markRaw` rows, incremental maps, O(1) swap-pop remove (`triggerRef` so Label selectors still update). Callers still `findIndex` the flat list before `removeByIndex` — that scan is outside `useCommon`. Flat-list **order is not significant**. Typical means on this fixture: Sure ~0.3ms, taxon assign ~25ms (see comment on `useCommon`).
 
 ## Compare (`compare-hover-latency.spec.ts`)
 
 Injects two synthetic profiles (~12k taxonomization rows, overlapping taxa) into the Pinia `profiles` store. Hover **Map** on one tree; highlight bars grow on the others.
 
-Hover does **not** use `useCommon`. `onNodeHover` scans annotations, then each node runs `lodash.intersection` during render.
+Hover does **not** use `useCommon`. Cold: invert taxon → subjects into subject → taxa (`taxonSubjectIndex.ts`). Hot: unique subjects for the taxon, then fill overlap-count maps once; per-node class/bar is O(1). Do not `lodash.intersection` UUID arrays per node on hover (dissensus bars still intersect per-user lists). Typical last-bar ~3ms, paint ~14ms (see `onNodeHover`).
 
 | Log tag | Meaning | Scored |
 | --- | --- | --- |
 | `first-bar` | Hover → first highlight `<rect>` `width > 0` **written**. DOM only; the screen has not updated. | No (log only) |
-| `last-bar` | Hover → **last** highlight width written. Main-thread stall (overlap + patching every node). | 1000ms |
-| `paint` | Last write + layout of all positive highlight rects + **one** frame. All bars become visible together. | 1000ms |
+| `last-bar` | Hover → **last** highlight width written. Main-thread stall until Vue finishes patching. | 250ms |
+| `paint` | Last write + layout of all positive highlight rects + **one** frame. All bars become visible together. | 250ms |
 
 Do not treat `first-bar` as “time until highlight is visible.” That is `paint` (≈ `last-bar` + one frame). Details live on `CompareHoverLatencyMs` in `helpers/app.ts`.

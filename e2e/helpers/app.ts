@@ -9,7 +9,7 @@ const tinyPng = path.resolve(__dirname, '../fixtures/tiny.png')
 export const SYNTHETIC_N = 12_000
 export const OVERLAP_TAXA = 24
 export const LABEL_MAX_MS = 250
-export const COMPARE_MAX_MS = 1000
+export const COMPARE_MAX_MS = 250
 export const SAMPLES = 3
 export const CATALOG_SIZE = 13511
 
@@ -327,6 +327,60 @@ export async function injectCompareProfiles(page: Page): Promise<void> {
 }
 
 const HIGHLIGHT = '4682B4'
+
+export async function highlightBarWidth(
+  page: Page,
+  svgIndex: number,
+  taxon: string,
+): Promise<number> {
+  return page.evaluate(({ svgIndex, taxon, token }) => {
+    const svg = document.querySelectorAll('svg')[svgIndex]
+    if (svg === undefined) return 0
+    const row = [...svg.querySelectorAll('g')].find((group) => (
+      [...group.querySelectorAll(':scope > text')]
+        .some((node) => (node.textContent ?? '').trim() === taxon)
+    ))
+    const bar = [...(row?.querySelectorAll('rect') ?? [])]
+      .find((rect) => (rect.getAttribute('class') ?? '').includes(token))
+    return Number(bar?.getAttribute('width') ?? 0)
+  }, { svgIndex, taxon, token: HIGHLIGHT })
+}
+
+export async function hoverCompareTaxon(
+  page: Page,
+  svgIndex: number,
+  taxon: string,
+): Promise<void> {
+  const trees = page.locator('svg')
+  await expect(trees).toHaveCount(3, { timeout: 30_000 })
+  const source = trees.nth(svgIndex).locator('text').filter({ hasText: new RegExp(`^${taxon}$`) }).first()
+  await source.waitFor({ state: 'visible' })
+  await source.evaluate((el) => {
+    el.dispatchEvent(new MouseEvent('mouseover', {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+    }))
+  })
+}
+
+export async function leaveCompareTaxon(
+  page: Page,
+  svgIndex: number,
+  taxon: string,
+): Promise<void> {
+  const trees = page.locator('svg')
+  await expect(trees).toHaveCount(3, { timeout: 30_000 })
+  const source = trees.nth(svgIndex).locator('text').filter({ hasText: new RegExp(`^${taxon}$`) }).first()
+  await source.waitFor({ state: 'visible' })
+  await source.evaluate((el) => {
+    el.parentElement?.dispatchEvent(new MouseEvent('mouseleave', {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+    }))
+  })
+}
 
 /**
  * Hover → highlight timings. These are *not* three sequential paint passes.

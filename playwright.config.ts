@@ -38,7 +38,7 @@ export default defineConfig({
     },
     {
       name: 'compare',
-      testMatch: '**/compare-hover-latency.spec.ts',
+      testMatch: '**/compare-*.spec.ts',
       use: {
         ...devices['Desktop Chrome'],
         baseURL: 'http://127.0.0.1:3334',

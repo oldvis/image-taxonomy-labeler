@@ -69,7 +69,7 @@ pnpm exec playwright install chromium   # once
 pnpm test:e2e
 ```
 
-See [e2e/README.md](./e2e/README.md) for what is measured (Label Sure / taxon assign at 250ms; Compare hover last-bar / paint at 1000ms).
+See [e2e/README.md](./e2e/README.md) for what is measured (Label Sure / taxon assign and Compare hover last-bar / paint at 250ms).
 
 ## Thanks
 
