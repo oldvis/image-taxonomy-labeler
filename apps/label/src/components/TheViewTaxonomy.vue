@@ -154,7 +154,7 @@ const onNodeRemove = (node: TreeNode) => {
       <div class="grow" />
       <div class="strip-meta flex flex-wrap items-center gap-x-1.5 gap-y-1">
         <span>
-          <span class="strip-meta-em">{{ forest.length }}</span>
+          <span class="strip-strong">{{ forest.length }}</span>
           {{ forest.length === 1 ? 'root' : 'roots' }}
         </span>
         <span
@@ -162,7 +162,7 @@ const onNodeRemove = (node: TreeNode) => {
           aria-hidden="true"
         >·</span>
         <span>
-          <span class="strip-meta-em">{{ categories.length }}</span>
+          <span class="strip-strong">{{ categories.length }}</span>
           {{ categories.length === 1 ? 'node' : 'nodes' }}
         </span>
       </div>

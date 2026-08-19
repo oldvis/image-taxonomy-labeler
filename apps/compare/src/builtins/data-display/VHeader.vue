@@ -25,7 +25,7 @@ defineProps({
     <div class="strip-meta flex flex-wrap items-center gap-x-1.5 gap-y-1">
       <template v-if="nMatched !== null">
         <span>
-          <span class="strip-meta-em">{{ nMatched }}</span> matched
+          <span class="strip-strong">{{ nMatched }}</span> matched
         </span>
         <span
           class="strip-sep"
@@ -33,7 +33,7 @@ defineProps({
         >·</span>
       </template>
       <span>
-        <span class="strip-meta-em">{{ nTotal }}</span> in workspace
+        <span class="strip-strong">{{ nTotal }}</span> in workspace
       </span>
     </div>
   </div>

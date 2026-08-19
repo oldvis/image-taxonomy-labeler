@@ -15,7 +15,7 @@ const hasType = (type: SelectorType) => selectors.value.some((s) => s.type === t
 </script>
 
 <template>
-  <div class="status-strip border-b border-gray-200 dark:border-gray-700 select-none">
+  <div class="strip border-b border-gray-200 dark:border-gray-700 select-none">
     <div class="flex shrink-0 gap-1.5 items-center">
       <div class="i-fa6-solid:filter text-gray-500 my-auto" />
       <span class="strip-label">Selectors</span>

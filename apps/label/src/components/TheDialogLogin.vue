@@ -68,7 +68,7 @@ onMounted(() => {
     </template>
     <template #default>
       <div class="dialog-panel">
-        <div class="status-strip border-b border-gray-200 dark:border-gray-700">
+        <div class="strip border-b border-gray-200 dark:border-gray-700">
           <span class="font-semibold text-sm">Set annotator name</span>
           <div class="grow" />
           <button

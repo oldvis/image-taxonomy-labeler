@@ -21,7 +21,7 @@ onKeyStroke('Enter', () => {
     <input
       ref="target"
       v-model="input"
-      input-area
+      strip-input
       type="text"
       class="w-full text-sm pr-6"
       placeholder="Search"

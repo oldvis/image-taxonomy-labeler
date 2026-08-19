@@ -1,5 +1,5 @@
 <template>
-  <nav class="status-strip border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 select-none">
+  <nav class="strip border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 select-none">
     <div class="flex shrink-0 gap-1 items-center">
       <img
         class="h-5 w-5"

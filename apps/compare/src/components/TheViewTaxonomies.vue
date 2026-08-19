@@ -176,7 +176,7 @@ const barWidth = 30
           aria-hidden="true"
         >·</span>
         <span>
-          <span class="strip-meta-em">{{ profiles.length }}</span> profiles
+          <span class="strip-strong">{{ profiles.length }}</span> profiles
         </span>
       </div>
     </div>

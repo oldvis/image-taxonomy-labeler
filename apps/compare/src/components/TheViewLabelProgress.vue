@@ -6,35 +6,35 @@ const { subjectUuids, dissensusUuids, consensusUuids, unsureUuids } = storeToRef
 </script>
 
 <template>
-  <div class="status-strip border-t border-gray-200 dark:border-gray-700 select-none">
+  <div class="strip border-t border-gray-200 dark:border-gray-700 select-none">
     <div class="flex shrink-0 gap-1.5 items-center">
       <div class="i-fa6-solid:list-check text-gray-500 my-auto" />
       <span class="strip-label">Progress</span>
     </div>
     <div class="strip-meta flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1">
       <span>
-        labeled <span class="strip-meta-em">{{ subjectUuids.length }}</span>
+        labeled <span class="strip-strong">{{ subjectUuids.length }}</span>
       </span>
       <span
         class="strip-sep"
         aria-hidden="true"
       >·</span>
       <span>
-        dissensus <span class="strip-meta-em">{{ dissensusUuids.length }}</span>
+        dissensus <span class="strip-strong">{{ dissensusUuids.length }}</span>
       </span>
       <span
         class="strip-sep"
         aria-hidden="true"
       >·</span>
       <span>
-        consensus <span class="strip-meta-em">{{ consensusUuids.length }}</span>
+        consensus <span class="strip-strong">{{ consensusUuids.length }}</span>
       </span>
       <span
         class="strip-sep"
         aria-hidden="true"
       >·</span>
       <span>
-        unsure <span class="strip-meta-em">{{ unsureUuids.length }}</span>
+        unsure <span class="strip-strong">{{ unsureUuids.length }}</span>
       </span>
     </div>
     <div class="grow" />

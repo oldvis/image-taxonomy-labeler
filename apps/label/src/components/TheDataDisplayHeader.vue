@@ -35,7 +35,7 @@ const layout = defineModel({
     <div class="grow" />
     <div class="strip-meta flex flex-wrap items-center gap-x-1.5 gap-y-1">
       <span>
-        <span class="strip-meta-em">{{ nInPageLabeled }}</span>/{{ nInPage }} in page grouped
+        <span class="strip-strong">{{ nInPageLabeled }}</span>/{{ nInPage }} in page grouped
       </span>
       <template v-if="nMatched !== null">
         <span
@@ -43,7 +43,7 @@ const layout = defineModel({
           aria-hidden="true"
         >·</span>
         <span>
-          <span class="strip-meta-em">{{ nMatched }}</span> matched
+          <span class="strip-strong">{{ nMatched }}</span> matched
         </span>
       </template>
       <span
@@ -51,7 +51,7 @@ const layout = defineModel({
         aria-hidden="true"
       >·</span>
       <span>
-        <span class="strip-meta-em">{{ nTotal }}</span> in workspace
+        <span class="strip-strong">{{ nTotal }}</span> in workspace
       </span>
     </div>
   </div>
