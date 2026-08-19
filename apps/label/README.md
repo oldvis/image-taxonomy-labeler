@@ -8,6 +8,18 @@ The user can assign hierarchical classification labels, such as `vis -> bar char
 
 The code in this subdirectory is initialized with the [Vitesse-lite template](https://github.com/antfu/vitesse-lite).
 
+## Dense grid
+
+Switch to **Grid layout** for a compact thumbnail sheet. Sure / Unsure is encoded as an inset border (blue = Sure, gray = Unsure) so labels stay visible on full-bleed cells.
+
+![Dense grid with Sure/Unsure borders](./public/screenshot-dense.png)
+
+## Click-to-label tooltip
+
+In the dense grid, **left-click** a cell to open metadata plus taxonomy and Sure/Unsure controls. (Columns / single-object layouts keep those controls beside the image; image click opens metadata only.)
+
+![Dense grid with labeling tooltip open](./public/screenshot-tooltip.png)
+
 ## How to Use
 
 From the **repository root** (this app is part of the pnpm workspace):
@@ -169,6 +181,20 @@ type AnnotationProgress = [ClassificationTaskProgress, TaxonomizationTaskProgres
 - **Merge**, **move**, and **rename** the clusters to integrate machine-generated clusters with the existing taxonomy or generate new taxa.
 - **Label** the image in the remaining clusters with taxa in the existing taxonomy.
 - **Create**, **flatten**, and **remove** taxa and **unlabel** images when necessary.
+
+## For Developers
+
+From the repository root:
+
+| Command | Description |
+| --- | --- |
+| `pnpm --filter ./apps/label dev` | Start the local app (`http://localhost:3333`) |
+| `pnpm --filter ./apps/label test` | Run unit tests |
+| `pnpm --filter ./apps/label docs:screenshot` | Write `public/screenshot-raw.png`, hover/drag clips, `screenshot-dense.png`, and `screenshot-tooltip.png` |
+
+`docs:screenshot` is opt-in. It stubs grid assignment and serves plates from `server/static/images/` (the 400 VisTaxa sample; no image API required). It **never** overwrites `public/screenshot.png`. Interaction clips (`screenshot-hover.png`, `screenshot-drag-image-*.png`, `screenshot-drag-node-*.png`) are live Hover / Drag states for compositing callouts onto the annotated overview.
+
+Playwright browsers: `pnpm exec playwright install chromium` if needed.
 
 ## Notice
 
