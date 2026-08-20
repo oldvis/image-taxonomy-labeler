@@ -36,4 +36,17 @@ describe('useCommon', () => {
     expect(annotationsByValue.value.Sure).toBeUndefined()
     expect(isAnnotated('s1')).toBe(true)
   })
+
+  it('renameValue rebuilds value-index rows with the new value', () => {
+    const { addOne, renameValue, annotations, annotationsByValue } = useCommon()
+    addOne(row('a', 's1', 'leafA'))
+    addOne(row('b', 's2', 'leafA'))
+    addOne(row('c', 's3', 'leafB'))
+    renameValue('leafA', 'renamed')
+    expect(annotationsByValue.value.leafA).toBeUndefined()
+    expect(annotationsByValue.value.renamed?.map((d) => d.value)).toEqual(['renamed', 'renamed'])
+    expect(annotationsByValue.value.renamed?.map((d) => d.uuid)).toEqual(['a', 'b'])
+    expect(annotations.value.filter((d) => d.uuid === 'a' || d.uuid === 'b').every((d) => d.value === 'renamed')).toBe(true)
+    expect(annotationsByValue.value.leafB?.map((d) => d.uuid)).toEqual(['c'])
+  })
 })

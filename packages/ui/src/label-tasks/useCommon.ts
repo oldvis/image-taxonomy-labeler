@@ -202,10 +202,7 @@ export const useCommon = () => {
       return d
     }))
     annotationsByUuid.value = groupBy(annotations.value, 'subject')
-    if (oldValue in annotationsByValue.value) {
-      annotationsByValue.value[newValue] = annotationsByValue.value[oldValue]
-      delete annotationsByValue.value[oldValue]
-    }
+    annotationsByValue.value = groupBy(annotations.value, 'value')
   }
 
   /** Hot path: O(1) Set lookup. */
