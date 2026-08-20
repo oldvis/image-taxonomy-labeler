@@ -26,6 +26,7 @@ import {
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const publicDir = path.resolve(__dirname, '../public')
+fs.mkdirSync(path.join(publicDir, 'assets'), { recursive: true })
 const annotationsPath = path.resolve(__dirname, 'fixtures/readme-annotations.json')
 const overviewPath = path.join(publicDir, MAINTAINER_OVERVIEW)
 const COLUMNS_PAGE_SIZE = 25
@@ -193,8 +194,8 @@ test('capture Label README screenshots', async ({ page }) => {
   )
   await captureNodeDragClips(
     page,
-    'flow map',
     'route map',
+    'flow map',
     path.join(publicDir, SCREENSHOT_OUTPUTS.dragNodeMove),
     path.join(publicDir, SCREENSHOT_OUTPUTS.dragNodeMerge),
   )

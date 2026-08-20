@@ -59,17 +59,17 @@ describe('uuidFromImageApiUrl', () => {
 describe('screenshot output names', () => {
   it('writes raw, interaction clips, dense, tooltip and never the maintainer overview', () => {
     expect(Object.values(SCREENSHOT_OUTPUTS)).toEqual([
-      'screenshot-raw.png',
-      'screenshot-hover.png',
-      'screenshot-drag-image-single.png',
-      'screenshot-drag-image-multi.png',
-      'screenshot-drag-node-move.png',
-      'screenshot-drag-node-merge.png',
-      'screenshot-dense.png',
-      'screenshot-tooltip.png',
+      'assets/screenshot-raw.png',
+      'assets/screenshot-hover.png',
+      'assets/screenshot-drag-image-single.png',
+      'assets/screenshot-drag-image-multi.png',
+      'assets/screenshot-drag-node-move.png',
+      'assets/screenshot-drag-node-merge.png',
+      'assets/screenshot-dense.png',
+      'assets/screenshot-tooltip.png',
     ])
     expect(Object.values(SCREENSHOT_OUTPUTS)).not.toContain(MAINTAINER_OVERVIEW)
-    expect(MAINTAINER_OVERVIEW).toBe('screenshot.png')
+    expect(MAINTAINER_OVERVIEW).toBe('assets/screenshot.png')
   })
 })
 

@@ -221,7 +221,7 @@ const isRowOutlined = computed(() => (
 <template>
   <div
     ref="container"
-    class="flex grow gap-2 items-center px-0.5"
+    class="flex grow gap-2 items-center px-0.5 leading-none"
     data-tree-row
     :class="{
       'bg-gray-100': isDropTarget,

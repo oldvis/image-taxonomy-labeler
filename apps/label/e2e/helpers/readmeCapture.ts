@@ -5,21 +5,21 @@ import { fileURLToPath } from 'node:url'
 const helperDir = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(helperDir, '../../../..')
 
-export const MAINTAINER_OVERVIEW = 'screenshot.png'
+export const MAINTAINER_OVERVIEW = 'assets/screenshot.png'
 export const README_UNSURE_COUNT = 18
 
 export const SERVER_IMAGES_DIR = path.join(repoRoot, 'server/static/images')
 export const SERVER_THUMBNAILS_DIR = path.join(repoRoot, 'server/static/thumbnails')
 
 export const SCREENSHOT_OUTPUTS = {
-  raw: 'screenshot-raw.png',
-  hover: 'screenshot-hover.png',
-  dragImageSingle: 'screenshot-drag-image-single.png',
-  dragImageMulti: 'screenshot-drag-image-multi.png',
-  dragNodeMove: 'screenshot-drag-node-move.png',
-  dragNodeMerge: 'screenshot-drag-node-merge.png',
-  dense: 'screenshot-dense.png',
-  tooltip: 'screenshot-tooltip.png',
+  raw: 'assets/screenshot-raw.png',
+  hover: 'assets/screenshot-hover.png',
+  dragImageSingle: 'assets/screenshot-drag-image-single.png',
+  dragImageMulti: 'assets/screenshot-drag-image-multi.png',
+  dragNodeMove: 'assets/screenshot-drag-node-move.png',
+  dragNodeMerge: 'assets/screenshot-drag-node-merge.png',
+  dense: 'assets/screenshot-dense.png',
+  tooltip: 'assets/screenshot-tooltip.png',
 } as const
 
 export function rowMajorAssignGrid(

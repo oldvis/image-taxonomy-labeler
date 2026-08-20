@@ -177,6 +177,7 @@ describe('vTreeNode image drop / thumbnail', () => {
     expect(inner.classes()).toContain('outline-2')
     expect(inner.classes()).toContain('outline-black')
     expect(inner.classes()).toContain('px-0.5')
+    expect(inner.classes()).toContain('leading-none')
 
     const between = mount(VTreeNode, {
       props: {
