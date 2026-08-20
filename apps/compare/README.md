@@ -14,12 +14,12 @@ From the **repository root** (this app is part of the pnpm workspace):
 
 ```bash
 pnpm install
-pnpm --filter ./apps/compare dev
+pnpm start:compare
 ```
 
-If you see your browser automatically opening the page `http://localhost:3334/`, the client is successfully launched 🚀.
+That starts the shared backend (`http://localhost:5001`) and this app. If you see your browser automatically opening `http://localhost:3334/`, the client is successfully launched 🚀.
 
-(Label uses `3333`; compare uses `3334` so both can run at once.)
+(Label uses `3333`; compare uses `3334` so both can run at once.) If the API is already running, start only this client with `pnpm --filter ./apps/compare dev`.
 
 ### Environment
 

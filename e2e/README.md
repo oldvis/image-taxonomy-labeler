@@ -1,6 +1,6 @@
 # Latency e2e
 
-Playwright gesture-to-DOM timings for Taxonomy Label and Taxonomy Compare. Regression gates after the `useCommon` markRaw/swap-pop port and Compare hover-index rewrite — not a full product suite. **Not** in GitHub Actions; run locally.
+Playwright gesture-to-DOM timings for Taxonomy Label and Taxonomy Compare. Regression gates after the `useCommon` markRaw/swap-pop port and Compare hover-index rewrite — not a full product suite. **Not** in GitHub Actions; run locally. Label README screenshots are a different Playwright project (`pnpm --filter ./apps/label docs:screenshot`).
 
 ```bash
 pnpm exec playwright install chromium   # once

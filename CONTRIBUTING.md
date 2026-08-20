@@ -8,12 +8,12 @@ Thanks for being interested in contributing to this project!
 
 This repository is a pnpm workspace (`apps/*`, `packages/*`).
 
-**Frontend** (install once from the repo root):
+From the repo root (`pnpm start:*` starts the shared backend and one app):
 
 ```bash
 pnpm install
-pnpm --filter ./apps/label dev          # http://localhost:3333
-# or: pnpm --filter ./apps/compare dev  # http://localhost:3334
+pnpm start:label          # API http://localhost:5001 + label http://localhost:3333
+# or: pnpm start:compare  # API http://localhost:5001 + compare http://localhost:3334
 ```
 
 Requires Node.js 20.19+ or 22.12+ and pnpm 11 (see root `packageManager`).
@@ -22,15 +22,15 @@ Requires Node.js 20.19+ or 22.12+ and pnpm 11 (see root `packageManager`).
 `@image-taxonomy-labeler/ui` holds shared label-task helpers and lean presentational widgets.
 App chrome (toasts, search widget, screens) stays in each app.
 
-**Backend:**
+**Client only** (API already running): `pnpm --filter ./apps/label dev` or `pnpm --filter ./apps/compare dev`.
+
+**Backend only:**
 
 ```bash
 cd server
 uv sync
 uv run python server.py
 ```
-
-Or from the repo root: `pnpm run start:label` / `pnpm run start:compare`.
 
 ## Code Style
 
@@ -69,7 +69,7 @@ pnpm exec playwright install chromium   # once
 pnpm test:e2e
 ```
 
-See [e2e/README.md](./e2e/README.md) for what is measured (Label Sure / taxon assign and Compare hover last-bar / paint at 250ms).
+See [e2e/README.md](./e2e/README.md) for what is measured (Label Sure / taxon assign and Compare hover last-bar / paint at 250ms). Do not fold Label README screenshot capture into this config: that is `pnpm --filter ./apps/label docs:screenshot` (`apps/label/playwright.config.ts`, services on). See [apps/label/README.md](./apps/label/README.md).
 
 ## Thanks
 

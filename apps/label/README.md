@@ -14,12 +14,12 @@ From the **repository root** (this app is part of the pnpm workspace):
 
 ```bash
 pnpm install
-pnpm --filter ./apps/label dev
+pnpm start:label
 ```
 
-If you see your browser automatically opening the page `http://localhost:3333/`, the client is successfully launched 🚀.
+That starts the shared backend (`http://localhost:5001`) and this app. If you see your browser automatically opening `http://localhost:3333/`, the client is successfully launched 🚀.
 
-(Compare uses `3334` so both apps can run at once.)
+(Compare uses `3334` so both apps can run at once.) If the API is already running, start only this client with `pnpm --filter ./apps/label dev`.
 
 ### Environment
 
@@ -176,11 +176,12 @@ From the repository root:
 
 | Command | Description |
 | --- | --- |
-| `pnpm --filter ./apps/label dev` | Start the local app (`http://localhost:3333`) |
+| `pnpm start:label` | Backend + this app (`http://localhost:5001` / `3333`) |
+| `pnpm --filter ./apps/label dev` | Client only (`http://localhost:3333`), when the API is already running |
 | `pnpm --filter ./apps/label test` | Run unit tests |
 | `pnpm --filter ./apps/label docs:screenshot` | Write `public/assets/screenshot-raw.png`, hover/drag clips, `screenshot-dense.png`, and `screenshot-tooltip.png` |
 
-`docs:screenshot` is opt-in. It stubs grid assignment and serves plates from `server/static/images/` (the 400 VisTaxa sample; no image API required). It **never** overwrites `public/assets/screenshot.png`. Interaction clips (`screenshot-hover.png`, `screenshot-drag-image-*.png`, `screenshot-drag-node-*.png`) are live Hover / Drag states for compositing callouts onto the annotated overview.
+`docs:screenshot` is opt-in (`DOCS_SCREENSHOT=1` in `apps/label/playwright.config.ts`). It is **not** `pnpm test:e2e`: that root suite forces `VITE_USE_SERVICES=false`, which disables dense layout. This command boots Vite on `127.0.0.1:4173` with services **on**, stubs `assignGrid` / `findCenter`, and serves plates from `server/static/images/` (run `uv run python static/setup_samples.py` from `server/` first; no image API required). It **never** overwrites the annotated hero `public/screenshot.png`. Interaction clips (`screenshot-hover.png`, `screenshot-drag-image-*.png`, `screenshot-drag-node-*.png`) are live Hover / Drag states for compositing callouts onto that overview.
 
 Playwright browsers: `pnpm exec playwright install chromium` if needed.
 

@@ -14,7 +14,7 @@ This repository is structured as:
 - [`./scripts`](./scripts/): The scripts for one-time data preprocessing.
 - [`./server`](./server/): The server shared by the apps for serving image resource and computation services.
 
-Install frontend deps from the repo root: `pnpm install`, then `pnpm --filter ./apps/label dev` (or `./apps/compare`).
+From the repo root: `pnpm install`, then `pnpm start:label` (or `pnpm start:compare`).
 
 > [!WARNING]  
 > The following instructions for setting up the interfaces assume the annotated dataset is [oldvis/dataset](https://github.com/oldvis/dataset/blob/main/dataset/output/visualizations.json).
@@ -30,14 +30,13 @@ Install frontend deps from the repo root: `pnpm install`, then `pnpm --filter ./
 Use the startup script (assume [Node.js](https://nodejs.org/) and [Python](https://www.python.org/downloads/) are installed):
 
 ```bash
-pnpm run start:label
+pnpm start:label
 ```
-
 
 ### Manual Setup
 
 1. Setup the server resources and launch the server (see details at [./server/README.md](./server/README.md#getting-started)).
-2. Launch the `taxonomy labeling interface` (see details at [./apps/label/README.md](./apps/label/README.md#how-to-use)).
+2. Start only the client: `pnpm --filter ./apps/label dev` (environment flags: [./apps/label/README.md](./apps/label/README.md#how-to-use)).
 
 ## How to Use the Taxonomy Comparison Interface
 
@@ -46,13 +45,13 @@ pnpm run start:label
 Use the startup script (assume [Node.js](https://nodejs.org/) and [Python](https://www.python.org/downloads/) are installed):
 
 ```bash
-pnpm run start:compare
+pnpm start:compare
 ```
 
 ### Manual Setup
 
 1. Setup the server resources and launch the server (see details at [./server/README.md](./server/README.md#getting-started)).
-2. Launch the `taxonomy comparison interface` (see details at [./apps/compare/README.md](./apps/compare/README.md#how-to-use)).
+2. Start only the client: `pnpm --filter ./apps/compare dev` (environment flags: [./apps/compare/README.md](./apps/compare/README.md#how-to-use)).
 
 ## Reference
 
