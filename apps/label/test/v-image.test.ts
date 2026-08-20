@@ -32,6 +32,7 @@ const makeDataTransfer = () => {
       if (!types.includes(type)) types.push(type)
     },
     getData: (type: string) => store.get(type) ?? '',
+    setDragImage: () => undefined,
   }
 }
 
@@ -56,6 +57,33 @@ describe('vImage', () => {
     expect(dataTransfer.types).toContain(IMAGE_DRAG_MIME)
     expect(dataTransfer.getData(IMAGE_DRAG_MIME)).toBe('uuid-1')
     expect(dataTransfer.getData('text/plain')).toBe('uuid-1')
+    wrapper.unmount()
+  })
+
+  it('fades the image while it is being dragged', async () => {
+    const wrapper = mount(VImage, {
+      props: {
+        url: 'https://example.com/img.jpg',
+        uuid: 'uuid-1',
+      },
+    })
+
+    const img = wrapper.get('img')
+    const dataTransfer = {
+      ...makeDataTransfer(),
+      setDragImage: vi.fn(),
+    }
+    await img.trigger('dragstart', { dataTransfer })
+    expect(img.classes()).toContain('opacity-50')
+    expect(dataTransfer.setDragImage).toHaveBeenCalled()
+    const ghost = dataTransfer.setDragImage.mock.calls[0]?.[0]
+    expect(ghost).toBeInstanceOf(HTMLImageElement)
+    expect((ghost as HTMLImageElement).style.objectFit).toBe('contain')
+    expect(document.body.contains(ghost as Node)).toBe(true)
+    await img.trigger('dragend')
+    expect(img.classes()).not.toContain('opacity-50')
+    expect(document.body.contains(ghost as Node)).toBe(false)
+    wrapper.unmount()
   })
 
   it('shows a failure message instead of a bare broken image', () => {

@@ -19,7 +19,7 @@ const props = defineProps({
     type: Object as PropType<ElementNode>,
     required: true,
   },
-  /** Whether the user is dragging a tree node over this node. */
+  /** Inner node drop (as child or merge). False for before/after sibling insert. */
   isDraggingOver: {
     type: Boolean as PropType<boolean>,
     default: false,
@@ -203,13 +203,30 @@ const onDrop = (e: DragEvent) => {
   leafCategories.forEach((name) => unassignTaxon(uuid, name))
   assignTaxon(uuid, data.value.name)
 }
+
+const dropChipBorder = (active: boolean): string => (
+  active
+    ? 'border-2 border-black'
+    : 'border-2 border-gray-200 dark:border-gray-700'
+)
+
+const isDropTarget = computed(() => (
+  props.isDraggingOver || (isDraggingImageOver.value && props.node.isLeaf)
+))
+const isRowOutlined = computed(() => (
+  isDropTarget.value && !props.isInMergeZone && !isInMultiLabelZone.value
+))
 </script>
 
 <template>
   <div
     ref="container"
-    class="flex grow gap-2 items-center"
-    :class="{ 'bg-gray-100': isDraggingOver || (isDraggingImageOver && node.isLeaf) }"
+    class="flex grow gap-2 items-center px-0.5"
+    data-tree-row
+    :class="{
+      'bg-gray-100': isDropTarget,
+      'outline outline-2 outline-black': isRowOutlined,
+    }"
     @click.self="emit('nodeFilter', node.data as TreeNode)"
     @drop="onDrop"
     @dragover="onImageDragOver"
@@ -220,7 +237,7 @@ const onDrop = (e: DragEvent) => {
     <img
       v-if="USE_ALGORITHM_SERVICE && subjects.length !== 0 && url && !failed"
       :src="url"
-      class="pointer-events-none h-6 w-6 object-contain"
+      class="pointer-events-none h-5 w-5 object-contain"
       draggable="false"
       alt=""
       @error="onThumbnailError"
@@ -249,8 +266,8 @@ const onDrop = (e: DragEvent) => {
       v-if="node.isLeaf"
       v-show="isDraggingOver"
       data-merge-zone
-      class="flex h-6 items-center border border-gray-200 px-1 text-gray dark:border-gray-700"
-      :class="{ 'border-black border-width-2': isInMergeZone }"
+      class="flex h-5 items-center px-1 text-gray"
+      :class="dropChipBorder(isInMergeZone)"
     >
       merge
     </div>
@@ -260,11 +277,11 @@ const onDrop = (e: DragEvent) => {
     <div
       v-if="node.isLeaf"
       data-multi-label-zone
-      class="flex h-6 items-center border border-gray-200 px-1 text-gray dark:border-gray-700"
-      :class="{
-        'border-black border-width-2': isInMultiLabelZone,
-        'opacity-0 pointer-events-none': !isDraggingImageOver,
-      }"
+      class="flex h-5 items-center px-1 text-gray"
+      :class="[
+        dropChipBorder(isInMultiLabelZone),
+        { 'opacity-0 pointer-events-none': !isDraggingImageOver },
+      ]"
       @dragover="onMultiLabelDragOver"
       @dragleave="onMultiLabelDragLeave"
       @drop="onDrop"

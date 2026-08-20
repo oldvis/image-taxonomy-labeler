@@ -20,7 +20,7 @@ export default defineConfig({
     ['btn-neutral', `${chromeBtn} bg-neutral-600 text-white border-neutral-700 hover:bg-neutral-700 disabled:opacity-50 disabled:border-transparent`],
     ['btn-secondary', `${chromeBtn} border-gray-300 bg-white text-gray-800 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700`],
     ['btn-ghost', `${chromeBtn} border-transparent text-gray-700 hover:bg-gray-100 disabled:opacity-50 dark:text-gray-200 dark:hover:bg-gray-800`],
-    ['icon-btn', 'base-btn inline-flex items-center justify-center p-1 text-sm select-none opacity-75 transition hover:opacity-100 hover:text-teal-600'],
+    ['icon-btn', 'base-btn inline-flex items-center justify-center p-1 text-sm select-none opacity-75 transition hover:opacity-100 hover:text-teal-600 disabled:opacity-50 disabled:text-gray-400'],
     ['pill', `base-btn inline-flex items-center justify-center ${chromeControl} px-2 py-0 rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700`],
     ['pill-on', 'pill border-teal-600 bg-teal-50 text-teal-800 dark:border-teal-500 dark:bg-teal-900/40 dark:text-teal-200'],
     ['chip', `inline-flex ${chromeControl} max-h-6 items-center gap-1 px-2 rounded border border-gray-300 bg-white text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200`],

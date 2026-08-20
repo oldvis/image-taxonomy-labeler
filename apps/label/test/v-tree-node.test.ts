@@ -84,6 +84,7 @@ describe('vTreeNode image drop / thumbnail', () => {
     const img = wrapper.get('img')
     expect(img.attributes('draggable')).toBe('false')
     expect(img.classes()).toContain('pointer-events-none')
+    expect(img.classes()).toContain('h-5')
   })
 
   it('ignores non-image drags on drop', () => {
@@ -163,5 +164,112 @@ describe('vTreeNode image drop / thumbnail', () => {
     const values = (tax.annotationsByUuid.value['img-1'] ?? []).map((d) => d.value)
     expect(values).toContain('leafB')
     expect(values).not.toContain('leafA')
+  })
+
+  it('outlines the row for an inner node drop, not a sibling insert', () => {
+    const inner = mount(VTreeNode, {
+      props: {
+        node: makeLeafNode('leafB') as never,
+        isDraggingOver: true,
+      },
+      global: { stubs: { VInput: true } },
+    })
+    expect(inner.classes()).toContain('outline-2')
+    expect(inner.classes()).toContain('outline-black')
+    expect(inner.classes()).toContain('px-0.5')
+
+    const between = mount(VTreeNode, {
+      props: {
+        node: makeLeafNode('leafB') as never,
+        isDraggingOver: false,
+      },
+      global: { stubs: { VInput: true } },
+    })
+    expect(between.classes()).not.toContain('outline-2')
+    expect(between.get('[data-merge-zone]').isVisible()).toBe(false)
+  })
+
+  it('outlines the row while an image is dragged over a leaf', async () => {
+    const wrapper = mount(VTreeNode, {
+      props: {
+        node: makeLeafNode('leafB') as never,
+      },
+      global: { stubs: { VInput: true } },
+    })
+
+    wrapper.element.dispatchEvent(makeDragEvent('dragover', {
+      types: [IMAGE_DRAG_MIME, 'text/plain'],
+    }))
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.classes()).toContain('outline-2')
+    expect(wrapper.classes()).toContain('outline-black')
+  })
+
+  it('keeps a 2px merge-chip border idle so the active state does not resize', () => {
+    const wrapper = mount(VTreeNode, {
+      props: {
+        node: makeLeafNode('leafB') as never,
+        isDraggingOver: true,
+      },
+      global: { stubs: { VInput: true } },
+    })
+
+    const merge = wrapper.get('[data-merge-zone]')
+    expect(merge.classes()).toContain('border-2')
+    expect(merge.classes()).toContain('border-gray-200')
+    expect(merge.classes()).not.toContain('border-black')
+  })
+
+  it('uses a 2px black border on the merge chip in the merge zone', () => {
+    const wrapper = mount(VTreeNode, {
+      props: {
+        node: makeLeafNode('leafB') as never,
+        isDraggingOver: true,
+        isInMergeZone: true,
+      },
+      global: { stubs: { VInput: true } },
+    })
+
+    const merge = wrapper.get('[data-merge-zone]')
+    expect(merge.classes()).toContain('border-2')
+    expect(merge.classes()).toContain('border-black')
+    expect(merge.classes()).not.toContain('border-gray-200')
+    expect(merge.classes()).toContain('h-5')
+  })
+
+  it('does not outline the row while the merge chip is the drop target', () => {
+    const wrapper = mount(VTreeNode, {
+      props: {
+        node: makeLeafNode('leafB') as never,
+        isDraggingOver: true,
+        isInMergeZone: true,
+      },
+      global: { stubs: { VInput: true } },
+    })
+
+    expect(wrapper.classes()).not.toContain('outline-2')
+  })
+
+  it('does not outline the row while the multi-label chip is the drop target', async () => {
+    const wrapper = mount(VTreeNode, {
+      props: {
+        node: makeLeafNode('leafB') as never,
+      },
+      global: { stubs: { VInput: true } },
+    })
+
+    wrapper.element.dispatchEvent(makeDragEvent('dragover', {
+      types: [IMAGE_DRAG_MIME, 'text/plain'],
+    }))
+    const multi = wrapper.get('[data-multi-label-zone]')
+    multi.element.dispatchEvent(makeDragEvent('dragover', {
+      types: [IMAGE_DRAG_MIME, 'text/plain'],
+    }))
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.classes()).not.toContain('outline-2')
+    expect(multi.classes()).toContain('border-2')
+    expect(multi.classes()).toContain('border-black')
   })
 })

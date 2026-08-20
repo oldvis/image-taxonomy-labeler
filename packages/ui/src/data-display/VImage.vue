@@ -2,7 +2,7 @@
 import type { PropType } from 'vue'
 import { isHttps, isLocalhost } from '@image-taxonomy-labeler/shared/services/url'
 import { useImage } from '@vueuse/core'
-import { computed, toRefs } from 'vue'
+import { computed, onUnmounted, ref, toRefs } from 'vue'
 
 const props = defineProps({
   /** Render the given part of the visualization metadata. */
@@ -35,11 +35,53 @@ const urlActionHref = computed((): string | null => {
   }
 })
 
+const isDragging = ref(false)
+let dragGhost: HTMLImageElement | null = null
+
+const clearDragGhost = (): void => {
+  dragGhost?.remove()
+  dragGhost = null
+}
+
+/**
+ * The browser snapshots the drag preview when dragstart returns, before Vue
+ * re-renders the bound opacity class. Style a throwaway clone via the HTML5
+ * drag-image API instead of mutating this component's DOM.
+ */
+const setFadedDragImage = (e: DragEvent): void => {
+  const img = e.currentTarget
+  const dt = e.dataTransfer
+  if (!(img instanceof HTMLImageElement) || dt == null) return
+  if (typeof dt.setDragImage !== 'function') return
+  clearDragGhost()
+  const rect = img.getBoundingClientRect()
+  const ghost = img.cloneNode(true) as HTMLImageElement
+  ghost.removeAttribute('class')
+  ghost.style.opacity = '0.5'
+  ghost.style.objectFit = 'contain'
+  ghost.style.position = 'absolute'
+  ghost.style.left = '-9999px'
+  ghost.style.width = `${rect.width}px`
+  ghost.style.height = `${rect.height}px`
+  document.body.append(ghost)
+  dt.setDragImage(ghost, e.offsetX, e.offsetY)
+  dragGhost = ghost
+}
+
 const onDragStart = (e: DragEvent): void => {
   if (uuid.value === '') return
   e.dataTransfer?.setData(IMAGE_DRAG_MIME, uuid.value)
   e.dataTransfer?.setData('text/plain', uuid.value)
+  isDragging.value = true
+  setFadedDragImage(e)
 }
+
+const onDragEnd = (): void => {
+  isDragging.value = false
+  clearDragGhost()
+}
+
+onUnmounted(clearDragGhost)
 </script>
 
 <template>
@@ -79,8 +121,10 @@ const onDragStart = (e: DragEvent): void => {
         v-else
         :src="url"
         class="h-full w-full object-contain"
+        :class="{ 'opacity-50': isDragging }"
         draggable="true"
         @dragstart="onDragStart"
+        @dragend="onDragEnd"
       >
     </template>
     <span

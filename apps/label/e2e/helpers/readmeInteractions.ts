@@ -3,6 +3,9 @@ import { expect } from '@playwright/test'
 
 const IMAGE_DRAG_MIME = 'application/x-oldvis-image'
 
+/** Class-token match. String toHaveClass() compares the entire class attribute. */
+const BORDER_BLACK = /(^|\s)border-black(\s|$)/
+
 /** Groups-row content whose visible taxon name matches exactly. */
 export const taxonContent = (page: Page, name: string): Locator => (
   page.locator('.el-tree-node__content').filter({
@@ -146,11 +149,11 @@ export async function captureImageDragClips(
   const multi = row.locator('[data-multi-label-zone]')
   await dispatchImageDragOver(img, row, false)
   await expect(multi).not.toHaveClass(/opacity-0/)
-  await expect(multi).not.toHaveClass(/border-width-2/)
+  await expect(multi).not.toHaveClass(BORDER_BLACK)
   await taxonContent(page, taxon).screenshot({ path: singlePath, animations: 'disabled' })
 
   await dispatchImageDragOver(img, row, true)
-  await expect(multi).toHaveClass(/border-width-2/)
+  await expect(multi).toHaveClass(BORDER_BLACK)
   await taxonContent(page, taxon).screenshot({ path: multiPath, animations: 'disabled' })
 
   await row.evaluate((el) => {
@@ -175,7 +178,7 @@ export async function captureNodeDragClips(
 
   await dispatchNodeDragOver(page, source, target)
   await expect(targetContent.getByText('merge')).toBeVisible()
-  await expect(merge).not.toHaveClass(/border-width-2/)
+  await expect(merge).not.toHaveClass(BORDER_BLACK)
   await targetContent.screenshot({ path: movePath, animations: 'disabled' })
 
   const box = await merge.boundingBox()
@@ -184,7 +187,7 @@ export async function captureNodeDragClips(
     x: box.x + box.width / 2,
     y: box.y + box.height / 2,
   })
-  await expect(merge).toHaveClass(/border-width-2/)
+  await expect(merge).toHaveClass(BORDER_BLACK)
   await targetContent.screenshot({ path: mergePath, animations: 'disabled' })
 
   await cancelNodeDrag(page, source)

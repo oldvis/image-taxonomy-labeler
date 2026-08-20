@@ -32,7 +32,7 @@ const clickCategory = (uuid: string, category: string): void => {
   <div class="flex flex-row gap-1">
     <button
       type="button"
-      :class="isClassified(uuid, 'Unsure') ? 'btn-neutral' : 'btn-secondary'"
+      :class="isClassified(uuid, 'Unsure') ? 'pill-on' : 'pill'"
       title="Not sure if the annotation is accurate"
       @click="clickCategory(uuid, 'Unsure')"
     >
@@ -40,7 +40,7 @@ const clickCategory = (uuid: string, category: string): void => {
     </button>
     <button
       type="button"
-      :class="isClassified(uuid, 'Sure') ? 'pill-on' : 'btn-secondary'"
+      :class="isClassified(uuid, 'Sure') ? 'pill-on' : 'pill'"
       title="Sure that the annotation is accurate"
       @click="clickCategory(uuid, 'Sure')"
     >

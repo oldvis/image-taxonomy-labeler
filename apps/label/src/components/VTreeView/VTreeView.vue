@@ -27,20 +27,51 @@ const emit = defineEmits<{
   ): void
 }>()
 
+/**
+ * Opacity of the node being dragged, including the native HTML5 drag image.
+ *
+ * Stay at or below 0.35: 0.5 still covers the drop candidate's name and
+ * merge/multi chips, so you cannot see where the drop will land.
+ */
+const TREE_NODE_DRAG_OPACITY = 0.3
+
 const dragState = ref(null as null | {
   dragging: TreeNode
   draggingOver: TreeNode
+  isInnerDrop: boolean
   isInMergeZone: boolean
 })
 
-const isInMergeZone = ref(false)
-const checkInMergeZone = (e: DragEvent) => {
-  const target = e.target
-  if (!(target instanceof Element)) return false
+let draggingEl: HTMLElement | null = null
 
-  // Prefer the tree-node content root so hovering the merge chip itself still works.
-  const content = target.closest('.el-tree-node__content') ?? target
-  const elementMergeZone = content.querySelector('[data-merge-zone]')
+const fadeDraggingEl = (el: HTMLElement | null): void => {
+  if (draggingEl !== null && draggingEl !== el) {
+    draggingEl.style.opacity = ''
+  }
+  draggingEl = el
+  if (draggingEl !== null) {
+    draggingEl.style.opacity = String(TREE_NODE_DRAG_OPACITY)
+  }
+}
+
+const clearDraggingEl = (): void => {
+  if (draggingEl !== null) {
+    draggingEl.style.opacity = ''
+    draggingEl = null
+  }
+}
+
+const isInMergeZone = ref(false)
+const rowForNodeDrag = (target: EventTarget | null): Element | null => {
+  if (!(target instanceof Element)) return null
+  // ElTree disables pointer-events on row children while dragging, so
+  // dragover often lands on the content wrapper, not the slot root.
+  return target.closest('[data-tree-row]') ?? target.querySelector('[data-tree-row]')
+}
+
+const checkInMergeZone = (e: DragEvent) => {
+  const row = rowForNodeDrag(e.target)
+  const elementMergeZone = row?.querySelector('[data-merge-zone]') ?? null
   if (elementMergeZone === null) return false
 
   const { clientX, clientY } = e
@@ -53,17 +84,66 @@ const checkInMergeZone = (e: DragEvent) => {
   )
 }
 
+/** ElTree sets this class after it chooses inner vs before/after (blue line). */
+const isElTreeInnerDrop = (e: DragEvent): boolean => (
+  e.target instanceof Element
+  && e.target.closest('.el-tree-node.is-drop-inner') != null
+)
+
+/** ElTree draws before/after at the expand-icon edges, so after(A) and
+ *  before(B) sit at different Ys in the same gap. Snap to the content seam. */
+const snapDropIndicatorToRowSeam = (e: DragEvent): void => {
+  if (isElTreeInnerDrop(e) || !(e.target instanceof Element)) return
+  const content = e.target.closest('.el-tree-node__content')
+  const tree = e.target.closest('.el-tree')
+  const indicator = tree?.querySelector('.el-tree__drop-indicator')
+  if (
+    !(content instanceof HTMLElement)
+    || !(tree instanceof HTMLElement)
+    || !(indicator instanceof HTMLElement)
+  ) {
+    return
+  }
+  if (getComputedStyle(indicator).display === 'none') return
+
+  const treeRect = tree.getBoundingClientRect()
+  const contentRect = content.getBoundingClientRect()
+  const dropIsBefore = e.clientY < contentRect.top + contentRect.height / 2
+  const seam = dropIsBefore ? contentRect.top : contentRect.bottom
+  indicator.style.top = `${seam - treeRect.top + tree.scrollTop}px`
+}
+
+const onNodeDragStart = (
+  draggingNode: ElementNode,
+  e: DragEvent,
+): void => {
+  dragState.value = {
+    dragging: draggingNode.data as TreeNode,
+    draggingOver: draggingNode.data as TreeNode,
+    isInnerDrop: false,
+    isInMergeZone: false,
+  }
+  // Fade during dragstart so the browser's drag image is also translucent.
+  const host = e.currentTarget instanceof HTMLElement
+    ? e.currentTarget
+    : (e.target instanceof Element ? e.target.closest('[draggable="true"]') : null)
+  fadeDraggingEl(host instanceof HTMLElement ? host : null)
+}
+
 const onNodeDragOver = (
   draggingNode: ElementNode,
   dropNode: ElementNode,
   e: DragEvent,
 ): void => {
-  isInMergeZone.value = checkInMergeZone(e)
+  const isInnerDrop = isElTreeInnerDrop(e)
+  isInMergeZone.value = isInnerDrop && checkInMergeZone(e)
   dragState.value = {
     dragging: draggingNode.data as TreeNode,
     draggingOver: dropNode.data as TreeNode,
+    isInnerDrop,
     isInMergeZone: isInMergeZone.value,
   }
+  snapDropIndicatorToRowSeam(e)
 }
 
 const onNodeDragEnd = (
@@ -71,6 +151,7 @@ const onNodeDragEnd = (
   dropNode: ElementNode | null,
   type: 'before' | 'inner' | 'after' | 'none',
 ): void => {
+  clearDraggingEl()
   dragState.value = null
   // NOTE: When the dragging node and the drop node are the same, the type can be 'none'.
   if (dropNode === null || type === 'none') return
@@ -92,6 +173,7 @@ const onNodeDragEnd = (
     :default-expand-all="true"
     :expand-on-click-node="false"
     style="color: inherit; background: inherit;"
+    @node-drag-start="onNodeDragStart"
     @node-drag-over="onNodeDragOver"
     @node-drag-end="onNodeDragEnd"
   >

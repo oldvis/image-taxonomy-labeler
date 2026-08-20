@@ -176,7 +176,7 @@ const onNodeRemove = (node: TreeNode) => {
         <template #default="{ node, dragState }">
           <VTreeNode
             :node="node"
-            :is-dragging-over="(dragState?.draggingOver === node.data) && (dragState?.dragging !== node.data)"
+            :is-dragging-over="(dragState?.draggingOver === node.data) && (dragState?.dragging !== node.data) && dragState?.isInnerDrop"
             :is-in-merge-zone="(dragState?.draggingOver === node.data) && dragState?.isInMergeZone"
             :is-locked="isEditing"
             @node-append="onNodeAppend"
