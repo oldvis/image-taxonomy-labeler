@@ -2,19 +2,13 @@ import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('~/services/clustering', () => ({
+const mocks = vi.hoisted(() => ({
   findCenter: vi.fn(async () => 'center-uuid'),
 }))
 
-vi.mock('@image-taxonomy-labeler/shared/services/params', async (importOriginal) => {
-  const actual = await importOriginal<
-    typeof import('@image-taxonomy-labeler/shared/services/params')
-  >()
-  return {
-    ...actual,
-    USE_ALGORITHM_SERVICE: true,
-  }
-})
+vi.mock('~/services/clustering', () => ({
+  findCenter: mocks.findCenter,
+}))
 
 const { useLabelTask } = await import(
   '@image-taxonomy-labeler/ui/label-tasks/taxonomization/useLabelTask',
@@ -54,6 +48,7 @@ const makeDragEvent = (
 
 describe('vTreeNode image drop / thumbnail', () => {
   beforeEach(() => {
+    mocks.findCenter.mockClear()
     setActivePinia(createPinia())
     const tax = useLabelTask()
     tax.setAll([])

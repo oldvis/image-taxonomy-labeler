@@ -63,14 +63,19 @@ const upload = async () => {
   }
 
   const existingUsernames = profiles.value.map((d) => d.username)
-  const oldProfiles = await Promise.all(
-    taskProgressesByFile.map(({ file, taskProgresses }) => {
-      const newUsername = generateUniqueName(file.name, existingUsernames)
-      existingUsernames.push(newUsername)
-      return buildAnnotatorProfile(taskProgresses, newUsername)
-    }),
-  )
-  addProfiles(oldProfiles)
+  try {
+    const oldProfiles = await Promise.all(
+      taskProgressesByFile.map(({ file, taskProgresses }) => {
+        const newUsername = generateUniqueName(file.name, existingUsernames)
+        existingUsernames.push(newUsername)
+        return buildAnnotatorProfile(taskProgresses, newUsername)
+      }),
+    )
+    addProfiles(oldProfiles)
+  }
+  catch (err) {
+    addErrorMessage(err instanceof Error ? err.message : 'Invalid JSON file')
+  }
 }
 </script>
 

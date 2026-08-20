@@ -5,8 +5,25 @@ import { generateUniqueName as generateUniqueNameFrom } from './uniqueName'
 import { useLabelTask } from './useLabelTaskWithForest'
 
 /**
+ * Complexity notation (lookups scan arrays, not maps):
+ *   n — annotation rows (flat list)
+ *   t — categories
+ *   u — images assigned to the operated taxon
+ *   d — descendant categories (excluding self)
+ *   a — ancestor categories (depth)
+ *   m — annotations on one image (path + extra leaves)
+ *   k — annotation rows this call actually removes
+ *
+ * Lower-level costs:
+ *   addAnnotation     O(a · t)  — walk parents, O(1) map write per level
+ *   removeAnnotation  O(n)      — findIndex on the flat list
+ *   removeByValues    O(n)
+ */
+
+/**
  * Convert cluster labels to a list of clusters.
  * Each cluster is stored as the indices of items in the cluster.
+ * Complexity: O(u).
  */
 const clusterLabelsToGroups = (clusterLabels: number[]) => {
   const clusters: Record<number, number[]> = {}
@@ -24,12 +41,12 @@ const clusterLabelsToGroups = (clusterLabels: number[]) => {
   return groups
 }
 
-/** Find the parent of a category given its name. */
+/** Find the parent of a category given its name. Complexity: O(t). */
 const findParent = (categories: Category[], name: string): Category | undefined => {
   return categories.find((d) => d.children.includes(name))
 }
 
-/** Find the children of a category given its name. */
+/** Find the children of a category given its name. Complexity: O(t). */
 const findChildren = (categories: Category[], name: string): string[] => (
   categories.find((d) => d.name === name)?.children ?? []
 )
@@ -38,6 +55,7 @@ const findChildren = (categories: Category[], name: string): string[] => (
  * Find the siblings of a category given its name.
  * The category itself is not included in the siblings.
  * A root node in the forest is considered to have no siblings.
+ * Complexity: O(t).
  */
 const findSiblings = (categories: Category[], name: string): string[] => {
   const parent = categories.find((d) => d.children.includes(name))
@@ -48,11 +66,10 @@ const findSiblings = (categories: Category[], name: string): string[] => {
  * Find the ancestors of a category given its name.
  * The ancestors are sorted from parent to root.
  * The category itself is not included in the ancestors.
+ * Complexity: O(a · t).
+ * Can be made faster in the future if each node stored its root path.
  */
 const findAncestors = (categories: Category[], name: string): string[] => {
-  // NOTE: The search of ancestor can be faster
-  // if the path from the root is readily stored in each node.
-
   const ancestors: string[] = []
   let parent = findParent(categories, name)
   while (parent !== undefined) {
@@ -65,6 +82,7 @@ const findAncestors = (categories: Category[], name: string): string[] => {
 /**
  * Find the descendants of a category given its name.
  * The category itself is not included in the descendants.
+ * Complexity: O(d · t) from one findChildren per descendant.
  */
 const findDescendants = (categories: Category[], name: string): string[] => {
   const descendants: string[] = []
@@ -100,7 +118,10 @@ export const useOperators = (uuids: Ref<string[]>, userName: Ref<string | null>)
     renameCategory,
   } = useLabelTask()
 
-  /** Generate a new node name that differs from existing node names, based on a tentative name. */
+  /**
+   * Generate a new node name that differs from existing node names, based on a tentative name.
+   * Complexity: O(t).
+   */
   const generateUniqueName = (name: string = 'new category'): string => (
     generateUniqueNameFrom(categories.value.map((d) => d.name), name)
   )
@@ -109,6 +130,7 @@ export const useOperators = (uuids: Ref<string[]>, userName: Ref<string | null>)
    * Create a child taxon and append to the parent node.
    * If the parent is undefined, append a root node.
    * The uuids of the images belonging to the taxon is given.
+   * Complexity: O(t + u · a · t).
    */
   const createTaxon = (name: string, imageUuids: string[], parent?: TreeNode): void => {
     const parentName = parent?.name
@@ -120,6 +142,7 @@ export const useOperators = (uuids: Ref<string[]>, userName: Ref<string | null>)
   /**
    * Get the uuid of data objects given the category.
    * If the category is undefined, return all uuids.
+   * Complexity: O(1) if taxon is undefined, else O(n) scan of the flat list.
    */
   const getImageUuidsInTaxon = (taxon?: string): string[] => {
     if (taxon === undefined) return uuids.value
@@ -131,6 +154,7 @@ export const useOperators = (uuids: Ref<string[]>, userName: Ref<string | null>)
   /**
    * Create an empty child and append to the parent node.
    * If the parent is undefined, append a root node.
+   * Complexity: O(n + u · a · t).
    */
   const createTaxonEmpty = (parent?: TreeNode): void => {
     const parentName = parent?.name
@@ -158,6 +182,7 @@ export const useOperators = (uuids: Ref<string[]>, userName: Ref<string | null>)
   /**
    * Divide images belonging to the taxon into multiple clusters.
    * If the node is null, divide all images.
+   * Complexity: O(n + u · a · t) locally, plus clustering / findCenters / captions RPCs.
    */
   const divideTaxon = async (taxon?: string): Promise<void> => {
     // The UUIDs of images in the node.
@@ -184,18 +209,21 @@ export const useOperators = (uuids: Ref<string[]>, userName: Ref<string | null>)
     })
   }
 
-  /** Flatten the subtree at the node. */
+  /** Flatten the subtree at the node. Complexity: O(d · t + n). */
   const flattenTaxon = ({ name }: TreeNode): void => {
     flattenCategory(name)
   }
 
-  /** Check if an annotation exists. */
+  /** Check if an annotation exists. Complexity: O(m). */
   const checkAnnotationExists = (imageUuid: string, taxon: string): boolean => {
     if (imageUuid in annotationsByUuid.value === false) return false
     return annotationsByUuid.value[imageUuid].some((d) => d.value === taxon)
   }
 
-  /** Merge the subtree of source node `c1` to target node `c2`. */
+  /**
+   * Merge the subtree of source node `c1` to target node `c2`.
+   * Complexity: O(u · a · n).
+   */
   const mergeTaxa = ({ name: sourceName }: TreeNode, { name: targetName }: TreeNode): void => {
     const sourceUuids = getImageUuidsInTaxon(sourceName)
     sourceUuids.forEach((uuid) => addAnnotation(uuid, targetName, userName.value))
@@ -225,7 +253,10 @@ export const useOperators = (uuids: Ref<string[]>, userName: Ref<string | null>)
     removeAnnotationsByValues([sourceName])
   }
 
-  /** Move source node to be a child or sibling of target node. */
+  /**
+   * Move source node to be a child or sibling of target node.
+   * Complexity: O(u · a · n).
+   */
   const moveTaxon = (source: TreeNode, target: TreeNode, type: 'before' | 'inner' | 'after'): void => {
     const sourceUuids = getImageUuidsInTaxon(source.name)
 
@@ -258,12 +289,15 @@ export const useOperators = (uuids: Ref<string[]>, userName: Ref<string | null>)
     })
   }
 
-  /** Change the name of a node. */
+  /** Change the name of a node. Complexity: O(n + t). */
   const renameTaxon = ({ name: oldName }: TreeNode, newName: string): void => {
     renameCategory(oldName, generateUniqueName(newName))
   }
 
-  /** Remove a taxon `c` given its name. */
+  /**
+   * Remove a taxon `c` given its name.
+   * Complexity: O(u · a · n + d · t).
+   */
   const removeTaxon = ({ name }: TreeNode): void => {
     // For each image `d` belonging to `c`,
     // for each ancestor `c'` of `c` from parent to root,
@@ -292,18 +326,27 @@ export const useOperators = (uuids: Ref<string[]>, userName: Ref<string | null>)
     removeAnnotationsByValues([name])
   }
 
-  /** Assign a taxon to an image. */
+  /** Assign a taxon to an image. Complexity: O(a · t). */
   const assignTaxon = (imageUuid: string, taxon: string): void => {
     addAnnotation(imageUuid, taxon, userName.value)
   }
 
-  /** Unassign a taxon `c` to an image `d`. */
+  /**
+   * Unassign a taxon `c` to an image `d`.
+   * Complexity: O((1 + k) · n + d · (t + m)) with k ≤ d + a rows actually removed.
+   * Leaf UI path has d = 0, so O(a · n).
+   * The O(d · m) existence checks are cheaper than removeAnnotation O(n) per missing descendant.
+   */
   const unassignTaxon = (imageUuid: string, taxon: string): void => {
     removeAnnotation(imageUuid, taxon)
 
-    // Remove `d` from the descendants of `c`.
+    // Remove `d` from the descendants of `c` that actually have a label.
     const descendants = findDescendants(categories.value, taxon)
-    descendants.forEach((descendant) => removeAnnotation(imageUuid, descendant))
+    descendants.forEach((descendant) => {
+      if (checkAnnotationExists(imageUuid, descendant)) {
+        removeAnnotation(imageUuid, descendant)
+      }
+    })
 
     // For each ancestor `c'` of `c` from parent to root,
     // remove `d` from `c'`, if `d` is not assigned to at least one child of `c'`.

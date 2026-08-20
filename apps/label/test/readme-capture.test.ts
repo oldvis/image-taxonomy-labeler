@@ -69,7 +69,7 @@ describe('screenshot output names', () => {
       'assets/screenshot-tooltip.png',
     ])
     expect(Object.values(SCREENSHOT_OUTPUTS)).not.toContain(MAINTAINER_OVERVIEW)
-    expect(MAINTAINER_OVERVIEW).toBe('assets/screenshot.png')
+    expect(MAINTAINER_OVERVIEW).toBe('screenshot.png')
   })
 })
 

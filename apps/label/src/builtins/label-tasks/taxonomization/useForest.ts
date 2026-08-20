@@ -20,8 +20,15 @@ const findParent = (forest: TreeNode[], name: string): TreeNode | undefined => {
   return undefined
 }
 
+/** Remove `name` from this sibling list. No-op if it is not here. */
 const removeNodeWithName = (nodes: TreeNode[], name: string): void => {
-  nodes.splice(nodes.map((d) => d.name).indexOf(name), 1)
+  const index = nodes.findIndex((d) => d.name === name)
+  // Expected: moveNode detaches from the parent first, then may call this
+  // on `forest` when the inner drop has no anchor (treat as move to root).
+  // The node is not a root yet, so it is missing from this list. splice(-1)
+  // would delete a different root.
+  if (index === -1) return
+  nodes.splice(index, 1)
 }
 
 /**
@@ -142,7 +149,7 @@ export const useForest = () => {
     // Remove the node from its parent.
     // If the node is a root node, remove it from the forest.
     const siblings = parent ? parent.children : forest.value
-    siblings.splice(siblings.map((d) => d.name).indexOf(name), 1)
+    removeNodeWithName(siblings, name)
   }
 
   return {

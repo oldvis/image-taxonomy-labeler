@@ -3,6 +3,8 @@ import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { defineConfig, devices } from '@playwright/test'
 
+// README screenshot capture (`pnpm docs:screenshot`). Keep separate from root latency e2e.
+
 const PORT = 4173
 const rootDir = path.dirname(fileURLToPath(import.meta.url))
 const viteBin = path.join(rootDir, 'node_modules', '.bin', 'vite')
@@ -40,6 +42,9 @@ export default defineConfig({
         stderr: 'pipe',
         env: {
           ...process.env,
+          // Client flag, not a live server. Off → dense is a placeholder, Groups
+          // hide taxon thumbs, images use remote URLs (the spec aborts those).
+          // Pin true so a shell/.env `false` (or root e2e) cannot leak in via process.env.
           VITE_USE_SERVICES: 'true',
         },
       }

@@ -30,7 +30,7 @@ const { uuidsLoaded } = storeToRefs(useWorkspaceStore())
 const { name: userName } = storeToRefs(useUserStore())
 const { assignTaxon, unassignTaxon } = useOperators(uuidsLoaded, userName)
 
-/** The selected categories of the current image. */
+/** The selected categories of the current image (leaf plus ancestors). */
 const selected = computed(() => (
   [...new Set(annotationsByUuid.value[uuid]?.map((d) => d.value) ?? [])]
 ))

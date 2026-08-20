@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Visualization } from '@image-taxonomy-labeler/shared/plugins/visualization'
-import { assignGrid } from '@image-taxonomy-labeler/shared/services/layout'
+import { assignGrid, computeDenseGridShape } from '@image-taxonomy-labeler/shared/services/layout'
 import { USE_ALGORITHM_SERVICE } from '@image-taxonomy-labeler/shared/services/params'
 import { watchDebounced } from '@vueuse/core'
 import VDatumTooltip from '../VDatumTooltip.vue'
@@ -16,24 +16,7 @@ const props = defineProps({
 
 const { dataObjects } = toRefs(props)
 
-const shape = computed(() => {
-  const n = dataObjects.value.length
-  const aspectRatio = 2
-  let nRows = Math.ceil(Math.sqrt(n / aspectRatio))
-  let nCols = Math.ceil(Math.sqrt(n * aspectRatio))
-  while (nRows * nCols > n) {
-    if ((nRows >= 2) && ((nRows - 1) * nCols >= n)) {
-      nRows -= 1
-      continue
-    }
-    else if ((nCols >= 2) && (nRows * (nCols - 1) >= n)) {
-      nCols -= 1
-      continue
-    }
-    break
-  }
-  return { nRows, nCols }
-})
+const shape = computed(() => computeDenseGridShape(dataObjects.value.length))
 
 const uuid2cell = ref<Record<string, [number, number]>>()
 /** True when dense layout cannot run without the local algorithm server. */

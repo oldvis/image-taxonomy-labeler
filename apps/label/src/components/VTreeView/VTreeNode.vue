@@ -71,7 +71,18 @@ const subjects = computed(() => (
 const useThumbnail = (uuids: Ref<string[]>) => {
   const centerUuid = ref(null as string | null)
   const updateCenter = async () => {
-    centerUuid.value = await findCenter(uuids.value)
+    if (!USE_ALGORITHM_SERVICE) return
+    // Thumbnail is optional. On failure the template already shows
+    // the generic image icon (same as a broken URL). Do not toast: every
+    // labeled node calls this on mount, so a down algorithm server would
+    // spam one message per group. Contrast Divide, which toasts because
+    // the user clicked an action that mutates the tree.
+    try {
+      centerUuid.value = await findCenter(uuids.value)
+    }
+    catch {
+      centerUuid.value = null
+    }
   }
   onMounted(updateCenter)
   // For performance consideration, update center only when there is no previous center.

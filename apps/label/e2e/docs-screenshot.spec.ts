@@ -24,6 +24,11 @@ import {
   captureTaxonHoverClip,
 } from './helpers/readmeInteractions'
 
+// Opt-in README capture (`pnpm docs:screenshot`).
+// Seed light theme, stub assignGrid/findCenter and plates from server/static/images,
+// Upload the VisTaxa fixture, then: columns → raw, hover/drag clips, grid → dense, click → tooltip.
+// Viewport 1440×900. Never writes public/screenshot.png.
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const publicDir = path.resolve(__dirname, '../public')
 fs.mkdirSync(path.join(publicDir, 'assets'), { recursive: true })

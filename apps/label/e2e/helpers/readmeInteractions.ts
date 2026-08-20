@@ -1,6 +1,8 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 
+// Crop live Hover / Drag states for compositing onto public/screenshot.png. Does not draw callouts.
+
 const IMAGE_DRAG_MIME = 'application/x-oldvis-image'
 
 /** Class-token match. String toHaveClass() compares the entire class attribute. */

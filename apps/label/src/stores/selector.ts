@@ -190,6 +190,14 @@ export const useStore = defineStore('selectors', {
       const index = this.selectors.findIndex((d) => d.uuid === uuid)
       this.selectors.splice(index, 1)
     },
+    /** Drop Category selectors whose query is one of the given names. */
+    removeCategorySelectors(names: string[]): void {
+      const nameSet = new Set(names)
+      this.selectors = this.selectors.filter((d) => (
+        d.type !== SelectorType.Category
+        || !nameSet.has(d.query as string)
+      ))
+    },
     /** Apply a selector to the data entries. */
     applySelector,
     /** Apply all the stored selector to the data entries. */

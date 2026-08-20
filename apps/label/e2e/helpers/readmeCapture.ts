@@ -5,12 +5,14 @@ import { fileURLToPath } from 'node:url'
 const helperDir = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(helperDir, '../../../..')
 
-export const MAINTAINER_OVERVIEW = 'assets/screenshot.png'
+/** Annotated README hero (`public/screenshot.png`). Capture must never write this path. */
+export const MAINTAINER_OVERVIEW = 'screenshot.png'
 export const README_UNSURE_COUNT = 18
 
 export const SERVER_IMAGES_DIR = path.join(repoRoot, 'server/static/images')
 export const SERVER_THUMBNAILS_DIR = path.join(repoRoot, 'server/static/thumbnails')
 
+/** Generated plates under `public/assets/`. Hover/drag clips are live UI for compositing callouts. */
 export const SCREENSHOT_OUTPUTS = {
   raw: 'assets/screenshot-raw.png',
   hover: 'assets/screenshot-hover.png',

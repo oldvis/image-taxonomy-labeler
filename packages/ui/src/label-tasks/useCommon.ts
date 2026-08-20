@@ -8,6 +8,20 @@ const freezeList = (rows: Annotation[]): Annotation[] => (
   markRaw(rows.map((row) => freezeRow(row)))
 )
 
+const removeFromGroup = (
+  groups: Record<string, Annotation[]>,
+  key: string,
+  uuid: string,
+): void => {
+  const group = groups[key]
+  if (group.length === 1) {
+    delete groups[key]
+  }
+  else {
+    group.splice(group.findIndex((d) => d.uuid === uuid), 1)
+  }
+}
+
 /**
  * Shared annotation list for classification and taxonomization.
  *
@@ -94,16 +108,7 @@ export const useCommon = () => {
     annotations.value[index] = row
     triggerRef(annotations)
 
-    const uuidGroup = annotationsByUuid.value[oldValue.subject]
-    if (uuidGroup.length === 1) {
-      delete annotationsByUuid.value[oldValue.subject]
-    }
-    else {
-      uuidGroup.splice(
-        uuidGroup.map((d) => d.uuid).indexOf(oldValue.uuid),
-        1,
-      )
-    }
+    removeFromGroup(annotationsByUuid.value, oldValue.subject, oldValue.uuid)
     if (row.subject in annotationsByUuid.value) {
       annotationsByUuid.value[row.subject].push(row)
     }
@@ -111,16 +116,7 @@ export const useCommon = () => {
       annotationsByUuid.value[row.subject] = [row]
     }
 
-    const valueGroup = annotationsByValue.value[oldValue.value]
-    if (valueGroup.length === 1) {
-      delete annotationsByValue.value[oldValue.value]
-    }
-    else {
-      valueGroup.splice(
-        valueGroup.map((d) => d.uuid).indexOf(oldValue.uuid),
-        1,
-      )
-    }
+    removeFromGroup(annotationsByValue.value, oldValue.value, oldValue.uuid)
     if (row.value in annotationsByValue.value) {
       annotationsByValue.value[row.value].push(row)
     }
@@ -155,27 +151,8 @@ export const useCommon = () => {
     annotations.value.pop()
     triggerRef(annotations)
 
-    const uuidGroup = annotationsByUuid.value[annotation.subject]
-    if (uuidGroup.length === 1) {
-      delete annotationsByUuid.value[annotation.subject]
-    }
-    else {
-      uuidGroup.splice(
-        uuidGroup.map((d) => d.uuid).indexOf(annotation.uuid),
-        1,
-      )
-    }
-
-    const valueGroup = annotationsByValue.value[annotation.value]
-    if (valueGroup.length === 1) {
-      delete annotationsByValue.value[annotation.value]
-    }
-    else {
-      valueGroup.splice(
-        valueGroup.map((d) => d.uuid).indexOf(annotation.uuid),
-        1,
-      )
-    }
+    removeFromGroup(annotationsByUuid.value, annotation.subject, annotation.uuid)
+    removeFromGroup(annotationsByValue.value, annotation.value, annotation.uuid)
 
     if (!(annotation.subject in annotationsByUuid.value)) {
       annotatedUuids.value.delete(annotation.subject)
