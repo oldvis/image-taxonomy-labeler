@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import type { Annotation } from '@image-taxonomy-labeler/ui/label-tasks/types'
+import {
+  type LabelProgressFile,
+  formatLabelProgressError,
+  parseLabelProgressFile,
+} from '@image-taxonomy-labeler/shared/plugins/labelProgress'
 import { useLabelTask as useClassification } from '@image-taxonomy-labeler/ui/label-tasks/classification/useLabelTask'
 import { buildForest } from '@image-taxonomy-labeler/ui/label-tasks/taxonomization/utils'
 import { storeToRefs } from 'pinia'
@@ -8,19 +12,10 @@ import { saveJsonFile, uploadJsonFile } from '~/plugins/file'
 import { useStore as useMessageStore } from '~/stores/message'
 import { useStore as useWorkspaceStore } from '~/stores/workspace'
 
-interface TaskProgress {
-  taskName: string
-  categories: unknown[]
-  annotations: Annotation[]
-}
-
 const taskComposables = [
   useClassification,
   useTaxonomization,
 ]
-const taskNameToTaskComposable = computed(() => (
-  Object.fromEntries(taskComposables.map((d) => [d().taskName, d]))
-))
 const progresses = computed(() => (
   taskComposables.map((d) => {
     const { taskName, categories, annotations } = d()
@@ -44,25 +39,26 @@ const save = () => {
 const { uuidsLoaded } = storeToRefs(useWorkspaceStore())
 const { addErrorMessage } = useMessageStore()
 const upload = async () => {
-  let loadedProgresses: TaskProgress[]
+  let loadedProgresses: LabelProgressFile
   try {
     const loaded = await uploadJsonFile()
     if (loaded == null) return
-    if (!Array.isArray(loaded)) {
-      throw new TypeError('Invalid JSON file')
-    }
-    loadedProgresses = loaded as TaskProgress[]
+    loadedProgresses = parseLabelProgressFile(loaded)
   }
-  catch {
-    addErrorMessage('Invalid JSON file')
+  catch (err) {
+    addErrorMessage(formatLabelProgressError(err))
     return
   }
 
   loadedProgresses.forEach((d) => {
-    const { taskName } = d
-    const taskComposable = taskNameToTaskComposable.value[taskName]
-    const { categories, setAll } = taskComposable()
-    categories.value = d.categories as string[] | { name: string, children: string[] }[]
+    if (d.taskName === 'Classification') {
+      const { categories, setAll } = useClassification()
+      categories.value = d.categories
+      setAll(d.annotations)
+      return
+    }
+    const { categories, setAll } = useTaxonomization()
+    categories.value = d.categories
     setAll(d.annotations)
   })
   const { categories, forest } = useTaxonomization()

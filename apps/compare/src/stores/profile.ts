@@ -1,26 +1,13 @@
-import type { Annotation } from '@image-taxonomy-labeler/ui/label-tasks/types'
-import type { Category, TreeNode, TreeNodeWithUsers } from '~/builtins/label-tasks/taxonomization/types'
+import type {
+  ClassificationTaskProgress,
+  TaxonomizationTaskProgress,
+} from '@image-taxonomy-labeler/shared/plugins/labelProgress'
+import type { TreeNode, TreeNodeWithUsers } from '~/builtins/label-tasks/taxonomization/types'
 import { buildForest } from '@image-taxonomy-labeler/ui/label-tasks/taxonomization/utils'
 import { difference, isEqual } from 'lodash'
 import { acceptHMRUpdate, defineStore } from 'pinia'
 
 export type { TreeNodeWithUsers } from '~/builtins/label-tasks/taxonomization/types'
-
-interface TaskProgress {
-  taskName: string
-  categories: unknown[]
-  annotations: Annotation[]
-}
-
-interface ClassificationTaskProgress extends TaskProgress {
-  taskName: 'Classification'
-  categories: string[]
-}
-
-interface TaxonomizationTaskProgress extends TaskProgress {
-  taskName: 'Taxonomization'
-  categories: Category[]
-}
 
 /** Store users in tree nodes. */
 const storeUsersInNodes = (
@@ -38,31 +25,31 @@ export interface AnnotatorProfile {
   /** The annotator name. */
   username: string
   /** The annotations created by the annotator. */
-  annotations: Annotation[]
+  annotations: TaxonomizationTaskProgress['annotations']
   /** The taxonomy forest corresponding to the annotations. */
   forest: TreeNodeWithUsers[]
   /** The UUIDs of images whose annotations are unsure. */
   unsureUuids: string[]
 }
 
-/** Build an annotator profile given the annotation file. */
-export const buildAnnotatorProfile = async (
-  taskProgresses: TaskProgress[],
+/** Build an annotator profile given validated Classification and Taxonomization tasks. */
+export const buildAnnotatorProfile = (
+  tasks: {
+    classification: ClassificationTaskProgress
+    taxonomization: TaxonomizationTaskProgress
+  },
   username: string,
-): Promise<AnnotatorProfile> => {
-  const classificationProgress = taskProgresses
-    .find((d) => d.taskName === 'Classification') as ClassificationTaskProgress
-  const taxonomizationProgress = taskProgresses
-    .find((d) => d.taskName === 'Taxonomization') as TaxonomizationTaskProgress
-  return {
-    username,
-    annotations: taxonomizationProgress.annotations,
-    forest: storeUsersInNodes(buildForest(taxonomizationProgress.categories), [username]),
-    unsureUuids: classificationProgress.annotations
-      .filter((d) => d.value === 'Unsure')
-      .map((d) => d.subject),
-  }
-}
+): AnnotatorProfile => ({
+  username,
+  annotations: tasks.taxonomization.annotations,
+  forest: storeUsersInNodes(
+    buildForest(tasks.taxonomization.categories),
+    [username],
+  ),
+  unsureUuids: tasks.classification.annotations
+    .filter((d) => d.value === 'Unsure')
+    .map((d) => d.subject),
+})
 
 /**
  * Merge two taxonomy forest.

@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import type { Annotation } from '@image-taxonomy-labeler/ui/label-tasks/types'
+import {
+  formatLabelProgressError,
+  parseAnnotatorProfileFile,
+} from '@image-taxonomy-labeler/shared/plugins/labelProgress'
 import { storeToRefs } from 'pinia'
 import { parseJsonFile, uploadFiles } from '~/plugins/file'
 import { useStore as useMessageStore } from '~/stores/message'
 import { buildAnnotatorProfile, useStore } from '~/stores/profile'
-
-interface TaskProgress {
-  taskName: string
-  categories: unknown[]
-  annotations: Annotation[]
-}
 
 const { addProfiles } = useStore()
 const { profiles } = storeToRefs(useStore())
@@ -45,36 +42,21 @@ const upload = async () => {
   const files = await uploadFiles()
   if (files == null) return
 
-  let taskProgressesByFile: { file: File, taskProgresses: TaskProgress[] }[]
-  try {
-    taskProgressesByFile = await Promise.all(
-      Array.from(files).map(async (file) => {
-        const loaded = await parseJsonFile(file)
-        if (!Array.isArray(loaded)) {
-          throw new TypeError('Invalid JSON file')
-        }
-        return { file, taskProgresses: loaded as TaskProgress[] }
-      }),
-    )
-  }
-  catch {
-    addErrorMessage('Invalid JSON file')
-    return
-  }
-
   const existingUsernames = profiles.value.map((d) => d.username)
   try {
     const oldProfiles = await Promise.all(
-      taskProgressesByFile.map(({ file, taskProgresses }) => {
+      Array.from(files).map(async (file) => {
+        const loaded = await parseJsonFile(file)
+        const tasks = parseAnnotatorProfileFile(loaded)
         const newUsername = generateUniqueName(file.name, existingUsernames)
         existingUsernames.push(newUsername)
-        return buildAnnotatorProfile(taskProgresses, newUsername)
+        return buildAnnotatorProfile(tasks, newUsername)
       }),
     )
     addProfiles(oldProfiles)
   }
   catch (err) {
-    addErrorMessage(err instanceof Error ? err.message : 'Invalid JSON file')
+    addErrorMessage(formatLabelProgressError(err))
   }
 }
 </script>

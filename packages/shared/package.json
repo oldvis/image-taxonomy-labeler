@@ -22,7 +22,8 @@
     "axios": "^1.18.1",
     "iso-639-3": "^3.0.1",
     "seedrandom": "^3.0.5",
-    "with-progress-bar": "^0.1.2"
+    "with-progress-bar": "^0.1.2",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/seedrandom": "^3.0.8",
