@@ -33,7 +33,7 @@ Unset `VITE_USE_SERVICES` is fine locally (services on for localhost).
 
 The annotations to be compared can be exported from the [taxonomy labeling interface](../label/).
 
-The annotations to be compared can be obtained from [2025.VisTaxa.coding](https://github.com/zhangyu94/2025.VisTaxa.coding).
+The annotations to be compared can be obtained from [oldvis/image-taxonomy](https://github.com/oldvis/image-taxonomy).
 
 ## For Developers
 
