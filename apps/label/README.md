@@ -176,14 +176,8 @@ From the repository root:
 
 | Command | Description |
 | --- | --- |
-| `pnpm start:label` | Backend + this app (`http://localhost:5001` / `3333`) |
-| `pnpm --filter ./apps/label dev` | Client only (`http://localhost:3333`), when the API is already running |
 | `pnpm --filter ./apps/label test` | Run unit tests |
-| `pnpm --filter ./apps/label docs:screenshot` | Write `public/assets/screenshot-raw.png`, hover/drag clips, `screenshot-dense.png`, and `screenshot-tooltip.png` |
-
-`docs:screenshot` is opt-in (`DOCS_SCREENSHOT=1` in `apps/label/playwright.config.ts`). It is **not** `pnpm test:e2e`: that root suite forces `VITE_USE_SERVICES=false`, which disables dense layout. This command boots Vite on `127.0.0.1:4173` with services **on**, stubs `assignGrid` / `findCenter`, and serves plates from `server/static/images/` (run `uv run python static/setup_samples.py` from `server/` first; no image API required). It **never** overwrites the annotated hero `public/screenshot.png`. Interaction clips (`screenshot-hover.png`, `screenshot-drag-image-*.png`, `screenshot-drag-node-*.png`) are live Hover / Drag states for compositing callouts onto that overview.
-
-Playwright browsers: `pnpm exec playwright install chromium` if needed.
+| `pnpm --filter ./apps/label docs:screenshot` | Regenerate README screenshots in `public/assets/` |
 
 ## Notice
 

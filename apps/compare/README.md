@@ -35,6 +35,15 @@ The annotations to be compared can be exported from the [taxonomy labeling inter
 
 The annotations to be compared can be obtained from [2025.VisTaxa.coding](https://github.com/zhangyu94/2025.VisTaxa.coding).
 
+## For Developers
+
+From the repository root:
+
+| Command | Description |
+| --- | --- |
+| `pnpm --filter ./apps/compare test` | Run unit tests |
+| `pnpm --filter ./apps/compare docs:screenshot` | Regenerate README screenshots in `public/assets/` |
+
 ## Features
 
 - **Highlight** image overlap

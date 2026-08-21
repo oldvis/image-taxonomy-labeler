@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import type { LabelProgressFile } from '@image-taxonomy-labeler/shared/plugins/labelProgress'
 import {
-  type LabelProgressFile,
   formatLabelProgressError,
   parseLabelProgressFile,
 } from '@image-taxonomy-labeler/shared/plugins/labelProgress'

@@ -10,6 +10,7 @@ export default antfu(
       '**/auto-imports.d.ts',
       '**/components.d.ts',
       '**/src/**/*.json',
+      '**/e2e/fixtures/**',
       'packages/shared/assets/**/*.json',
     ],
   },

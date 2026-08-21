@@ -8,7 +8,8 @@
     "dev": "vite --port 3334 --open",
     "typecheck": "vue-tsc --noEmit",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "docs:screenshot": "DOCS_SCREENSHOT=1 playwright test e2e/docs-screenshot.spec.ts"
   },
   "dependencies": {
     "@image-taxonomy-labeler/shared": "workspace:*",
@@ -34,6 +35,7 @@
     "@iconify-json/fa6-brands": "^1.2.6",
     "@iconify-json/fa6-regular": "^1.2.4",
     "@iconify-json/fa6-solid": "^1.2.4",
+    "@playwright/test": "1.62.1",
     "@types/d3": "^7.4.3",
     "@types/file-saver": "^2.0.7",
     "@types/lodash": "^4.17.24",
