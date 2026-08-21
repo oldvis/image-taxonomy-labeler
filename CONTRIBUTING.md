@@ -58,7 +58,7 @@ Pull requests run `.github/workflows/ci.yml`:
 - ESLint (root config), `vue-tsc` / `tsc`, and Vitest across the pnpm workspace (`apps/*` + `packages/*` + `website`)
 - `black --check`, `flake8`, and `pytest` for `server/`
 
-Push to `main` also runs `.github/workflows/gh-pages.yml` (not on pull requests). See [website/README.md](./website/README.md) for the landing, local Pages preview, and the one-time Pages source switch.
+Push to `main` also runs `.github/workflows/gh-pages.yml` (not on pull requests). See [website/README.md](./website/README.md) for the landing and local Pages preview.
 
 Please run the same checks locally before opening a PR.
 

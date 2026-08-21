@@ -2,9 +2,7 @@
 
 The GitHub Pages site for OldVis image taxonomy labeler ([live demo](https://oldvis.github.io/image-taxonomy-labeler/)).
 
-`index.html` is a static landing page.
-
-The landing has no Vite/Vue build. On push to `main`, `.github/workflows/gh-pages.yml` builds the two apps, then `assemble.sh` copies this page plus `apps/label/dist` and `apps/compare/dist` into a `site/` tree. That tree is uploaded with `upload-pages-artifact` and published by `deploy-pages`. `site/` is gitignored.
+`index.html` is a static landing page with no Vite/Vue build.
 
 Server features are disabled in the live demos. For the full-fledged apps, see the [repository README](../README.md#how-to-use-the-taxonomy-labeling-interface).
 
@@ -39,9 +37,3 @@ GitHub Pages CI sets:
 Local `pnpm dev` for those apps still uses `VITE_BASE=/`.
 
 `assemble.sh` copies each app `index.html` to `404.html` so GitHub Pages can recover client-side routes. The local `python3 -m http.server` preview serves app roots and assets; it does not apply that 404 fallback.
-
-### Pages source
-
-One-time, after the Actions workflow is on `main`: **Settings → Pages → Build and deployment → Source = GitHub Actions**. Until that is set, the workflow can build while Pages still serves the old `gh-pages` branch.
-
-After Actions deploys successfully, the unused remote `gh-pages` branch can be deleted.
