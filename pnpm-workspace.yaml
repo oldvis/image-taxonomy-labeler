@@ -1,6 +1,7 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+  - 'website'
 
 allowBuilds:
   # Native deps required by Vite / Sass watch.

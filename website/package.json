@@ -1,0 +1,13 @@
+{
+  "name": "@image-taxonomy-labeler/website",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "assemble": "bash assemble.sh",
+    "preview": "bash preview.sh",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "4.1.10"
+  }
+}

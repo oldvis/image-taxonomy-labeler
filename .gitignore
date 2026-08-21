@@ -10,3 +10,4 @@ dist
 .superpowers/
 playwright-report/
 test-results/
+site/

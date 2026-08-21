@@ -6,7 +6,7 @@
   "scripts": {
     "start:label": "bash start-label.sh",
     "start:compare": "bash start-compare.sh",
-    "lint": "eslint apps packages",
+    "lint": "eslint apps packages website",
     "typecheck": "pnpm -r run typecheck",
     "test": "pnpm -r run test",
     "test:e2e": "playwright test",

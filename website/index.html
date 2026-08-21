@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OldVis Image Taxonomy Labeler</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #fff;
+        --fg: #1a1a1a;
+        --muted: #5c5c5c;
+        --link: #0d9488;
+        --link-hover: #0f766e;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #121212;
+          --fg: #e5e5e5;
+          --muted: #a3a3a3;
+          --link: #2dd4bf;
+          --link-hover: #5eead4;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+        line-height: 1.5;
+        color: var(--fg);
+        background: var(--bg);
+      }
+      main {
+        max-width: 36rem;
+        margin: 0 auto;
+        padding: 4.5rem 1.25rem;
+      }
+      h1 {
+        margin: 0 0 0.75rem;
+        font-size: 1.5rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+      .lede {
+        margin: 0 0 2rem;
+        color: var(--muted);
+      }
+      nav {
+        display: flex;
+        flex-direction: column;
+        gap: 1.35rem;
+      }
+      nav p {
+        margin: 0.3rem 0 0;
+        color: var(--muted);
+      }
+      a {
+        color: var(--link);
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.18em;
+      }
+      a:hover { color: var(--link-hover); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>OldVis Image Taxonomy Labeler</h1>
+      <p class="lede">A web-based system for taxonomy labeling and comparison of old visualization images.</p>
+      <nav>
+        <div>
+          <a href="./label/">Taxonomy labeling</a>
+          <p>Assign hierarchical labels, such as vis → bar chart → stacked bar chart, to a visualization image.</p>
+        </div>
+        <div>
+          <a href="./compare/">Taxonomy comparison</a>
+          <p>Compare taxonomy labels exported from the labeling interface across multiple annotators.</p>
+        </div>
+        <div>
+          <a href="https://github.com/oldvis/image-taxonomy-labeler">GitHub repository</a>
+          <p>Source code and setup for the full version. Server features are disabled in the two live demos above.</p>
+        </div>
+      </nav>
+    </main>
+  </body>
+</html>

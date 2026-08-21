@@ -2,7 +2,7 @@
 
 ![Screenshot of the taxonomy comparison interface](./public/screenshot.png)
 
-The `taxonomy comparison interface` of OldVis image taxonomy labeler.
+The `taxonomy comparison interface` of OldVis image taxonomy labeler ([live demo](https://oldvis.github.io/image-taxonomy-labeler/compare/)).
 
 The user can compare the taxonomy labels (exported from the `taxonomy labeling interface`) of multiple annotators.
 
@@ -27,7 +27,7 @@ Copy `.env.example` to `.env` if you need non-default settings:
 
 - `VITE_API_BASE` — backend origin (default `http://localhost:5001`)
 - `VITE_USE_SERVICES` — `true` / `false` / unset (see `.env.example`)
-- `VITE_BASE` — public path when not served from domain root (optional)
+- `VITE_BASE` — public path when not served from domain root (GitHub Pages CI sets `/image-taxonomy-labeler/compare/`; local default is `/`)
 
 Unset `VITE_USE_SERVICES` is fine locally (services on for localhost).
 

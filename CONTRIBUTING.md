@@ -6,7 +6,7 @@ Thanks for being interested in contributing to this project!
 
 ### Setup
 
-This repository is a pnpm workspace (`apps/*`, `packages/*`).
+This repository is a pnpm workspace (`apps/*`, `packages/*`, `website`).
 
 From the repo root (`pnpm start:*` starts the shared backend and one app):
 
@@ -55,8 +55,10 @@ uv run pytest
 
 Pull requests run `.github/workflows/ci.yml`:
 
-- ESLint (root config), `vue-tsc` / `tsc`, and Vitest across the pnpm workspace (`apps/*` + `packages/shared` + `packages/ui`)
+- ESLint (root config), `vue-tsc` / `tsc`, and Vitest across the pnpm workspace (`apps/*` + `packages/*` + `website`)
 - `black --check`, `flake8`, and `pytest` for `server/`
+
+Push to `main` also runs `.github/workflows/gh-pages.yml` (not on pull requests). See [website/README.md](./website/README.md) for the landing, local Pages preview, and the one-time Pages source switch.
 
 Please run the same checks locally before opening a PR.
 

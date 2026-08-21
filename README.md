@@ -2,19 +2,21 @@
 
 A web-based system for taxonomy labeling and comparison of old visualization images.
 
-You can find a live demo [here](https://oldvis.github.io/image-taxonomy-labeler/) for taxonomy labeling.
+You can find a live demo [here](https://oldvis.github.io/image-taxonomy-labeler/) with [taxonomy labeling](https://oldvis.github.io/image-taxonomy-labeler/label/) and [taxonomy comparison](https://oldvis.github.io/image-taxonomy-labeler/compare/).
 The functions related to the server are disabled in the live demo.
 To use the full-fledged version, please follow the instructions in [How to Use](#how-to-use-the-taxonomy-labeling-interface).
 
 This repository is structured as:
 - [`./apps/label`](./apps/label/): The interface for taxonomy labeling.
 - [`./apps/compare`](./apps/compare/): The interface for taxonomy comparison.
+- [`./website`](./website/): The GitHub Pages landing that links to both apps.
 - [`./packages/shared`](./packages/shared/): Shared leaf modules (`@image-taxonomy-labeler/shared`) — API helpers and the visualization catalog.
 - [`./packages/ui`](./packages/ui/): Shared Vue helpers and chrome (`@image-taxonomy-labeler/ui`) — label-task composables, `VImage`, dialogs, pagination, styles.
 - [`./scripts`](./scripts/): The scripts for one-time data preprocessing.
 - [`./server`](./server/): The server shared by the apps for serving image resource and computation services.
 
 From the repo root: `pnpm install`, then `pnpm start:label` (or `pnpm start:compare`).
+To preview the GitHub Pages site locally (landing + both apps): `pnpm --filter ./website preview`.
 
 > [!WARNING]  
 > The following instructions for setting up the interfaces assume the annotated dataset is [oldvis/dataset](https://github.com/oldvis/dataset/blob/main/dataset/output/visualizations.json).
