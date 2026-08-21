@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import { parseAnnotatorProfileFile } from '@image-taxonomy-labeler/shared/plugins/labelProgress'
+import { describe, expect, it } from 'vitest'
 import { buildAnnotatorProfile } from '~/stores/profile'
 
 const validFile = [

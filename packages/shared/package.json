@@ -23,7 +23,7 @@
     "iso-639-3": "catalog:",
     "seedrandom": "catalog:",
     "with-progress-bar": "catalog:",
-    "zod": "^4.4.3"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@types/seedrandom": "catalog:",
